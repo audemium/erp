@@ -1,9 +1,20 @@
-<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-<link href="images/favicon.ico" rel="shortcut icon" />
+<?php
+	/*
+	Copyright (C) 2014 Nicholas Anderson
+	
+	This file is part of ERPxyz.  ERPxyz is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-<link href="css/styles.css" rel="stylesheet" type="text/css" />
+    ERPxyz is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="js/functions.js"></script>
+    You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
+	*/
+?>
 
-test 2
+<meta charset="UTF-8">
+<link href="images/favicon.ico" rel="shortcut icon">
+
+<link type="text/css" rel="stylesheet" href="css/styles.css">
+
+<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>

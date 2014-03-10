@@ -1,47 +1,71 @@
-body{
-	background-color:#FFFFFF;
-	margin:0;
-	}
-
-#container{
-	width:1000px;
-	margin:0px auto;
-	}
-#header{
-	height:32px;
-	background-color:#EFD9B3;
-	padding:8px;
-	}
-#header ul {
-	margin:0px;
-	padding:0px;
-	list-style:none;
-	}
-#header li{
-	display:inline;
-	margin:0px;
-	padding:8px;
-	}
-#header img{
-	border:none;
-	}
+html, body {
+	background-color: #E5E5E5;
+	font-family: arial;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+}
+nav {
+	box-shadow: 1px 3px 8px #BBBBBB;
+	background-color: #FFFFFF;
+	height: 84%;
+	position: fixed;
+	top: 8%;
+	width: 64px;
+	border-radius: 0 16px 16px 0;
+}
+nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 8px 0;
 	
-#content{
-	width:1000px;
-	background-color:#BFFFC2;
-	float:left;
-	}
-#col1{
-	width:500px;
-	float:left;
-	}
-#col2{
-	width:500px;
-	float:right;
-	background-color:#F1BCF5;
-	}
-	
-#footer{
-	clear:both;
-	background-color:#FFBFC2;
-	}
+}
+nav li {
+	padding: 8px 0 0 16px;
+}
+nav img {
+	cursor: pointer;
+}
+#selectedPage {
+	border-left: 3px solid #1A87ED;
+	margin-left: 5px;
+}
+#selectedPage img {
+	margin-left: -8px;
+}
+.badge {
+	position: absolute;
+	border-radius: 16px;
+	font-weight: bold;
+	color: #FFFFFF;
+	border: 2px solid #FFFFFF;
+	box-shadow: 0 0 4px 1px #444444;
+	height: 21px;
+	padding: 2px 0px 0px 7px;
+	width: 16px;
+	background-color: #ED1A87;
+	margin: -34px 0 0 35px;
+}
+#content {
+	min-height: 100%;
+	padding-left: 104px;
+}
+#logo {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+button {
+	cursor: pointer;
+}
+a, a:visited {
+	color: #1A87ED;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}

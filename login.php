@@ -21,21 +21,26 @@
 	<?php
 		require('head.php');
 	?>
+	<link type="text/css" rel="stylesheet" href="css/login.css">
+	<script type="text/javascript" src="js/login.js"></script>
 </head>
 
 <body>
 	<img id="logo" src="images/logo.png" alt="logo">
-	<nav>
-		<ul>
-			<li><img src="images/icons/search_32.png"></li>
-			<li id="selectedPage"><img src="images/icons/home_32.png"></li>
-			<li><img src="images/icons/users_32.png"></li>
-			<li><img src="images/icons/money_32.png"><div id="moneyBadge" class="badge">3</div></li>
-		</ul>
-	</nav>
-	<div id="content">
-		content<br><br><br><br><br><br><br><br>hello<br><br><br><br><br><br><br><br><br>goodbye<br><br><br><br><br><br><br><br><br><br>looooooong cat<br><br><br><br><br><br><br><br><br><br>longer<br><br><br><br><br><br><br>yeah
-		
+	<div id="loginBox">
+		<h2>Sign in</h2>
+		<form id="loginForm">
+			<input type="text" id="username" placeholder="Username" autofocus>
+			<div id="usernameError" class="errorMessage">Please enter a username.</div>
+			<br>
+			<input type="password" id="password" placeholder="Password">
+			<div id="passwordError" class="errorMessage">Please enter a password.</div>
+			<br>
+			<div id="loginError">Incorrect username or password.</div>
+			<a href="#">Forgot password?</a>
+			<br><br>
+			<button type="submit" id="loginBtn">Submit</button>
+		</form>
 	</div>
 </body>
 </html>
