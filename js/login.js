@@ -33,9 +33,7 @@ $(document).ready(function() {
 					'password': $('#password').val()
 				}
 			}).done(function(data) {
-				console.log(data);
 				if (data.status == 'success') {
-					console.log(data.redirect);
 					window.location.replace(data.redirect);
 				}
 				else {

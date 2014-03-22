@@ -13,8 +13,10 @@
 ?>
 
 <meta charset="UTF-8">
-<link href="images/favicon.ico" rel="shortcut icon">
+<link rel="shortcut icon" href="images/favicon.ico">
 
+<link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
 <link type="text/css" rel="stylesheet" href="css/styles.css">
 
-<script type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/menu.js"></script>

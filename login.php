@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>erp</title>
+	<title>Sign in</title>
 	<?php
 		require('head.php');
 	?>

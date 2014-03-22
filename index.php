@@ -17,25 +17,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>erp</title>
+	<title>Home</title>
 	<?php
 		require('head.php');
 	?>
+	<script type="text/javascript" src="js/index.js"></script>
 </head>
 
 <body>
-	<img id="logo" src="images/logo.png" alt="logo">
-	<nav>
-		<ul>
-			<li><img src="images/icons/search_32.png"></li>
-			<li id="selectedPage"><img src="images/icons/home_32.png"></li>
-			<li><img src="images/icons/users_32.png"></li>
-			<li><img src="images/icons/money_32.png"><div id="moneyBadge" class="badge">3</div></li>
-		</ul>
-	</nav>
+	<?php
+		require('menu.php');
+	?>
 	<div id="content">
-		content<br><br><br><br><br><br><br><br>hello<br><br><br><br><br><br><br><br><br>goodbye<br><br><br><br><br><br><br><br><br><br>looooooong cat<br><br><br><br><br><br><br><br><br><br>longer<br><br><br><br><br><br><br>yeah
-		
+		<div id="col1">
+			<div class="module">
+				<h2>Notifications<div class="settings"></div></h2>
+				Nothing to notify you of.
+			</div>
+			<div class="module">
+				<h2>Products<div class="settings"></div></h2>
+				Summary would go here?
+			</div>
+			<div class="module">
+				<h2>Services<div class="settings"></div></h2>
+				Summary would go here?
+			</div>
+		</div>
+		<div id="col2">
+			<div class="module">
+				<h2>Customers<div class="settings"></div></h2>
+				Summary would go here?
+			</div>
+			<div class="module">
+				<h2>Finances<div class="settings"></div></h2>
+				Summary would go here?
+			</div>
+		</div>
 	</div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+/* General CSS */
 html, body {
 	background-color: #E5E5E5;
 	font-family: arial;
@@ -9,6 +10,34 @@ h1, h2, h3, h4, h5, h6 {
 	padding: 0;
 	margin: 0;
 }
+button {
+	cursor: pointer;
+}
+a, a:visited {
+	color: #1A87ED;
+	text-decoration: none;
+}
+a:hover {
+	color: #ED1A87;
+}
+#content {
+	min-height: 100%;
+	margin: 120px 90px 0 154px;
+}
+.settings {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -48px 0;
+	cursor: pointer;
+	float: right;
+	height: 16px;
+	width: 16px;
+}
+.settings:hover {
+	background-position: -48px -16px;
+}
+
+/* menu */
 nav {
 	box-shadow: 1px 3px 8px #BBBBBB;
 	background-color: #FFFFFF;
@@ -30,12 +59,15 @@ nav li {
 nav img {
 	cursor: pointer;
 }
-#selectedPage {
+.selectedPage {
 	border-left: 3px solid #1A87ED;
 	margin-left: 5px;
 }
-#selectedPage img {
+.selectedPage img {
 	margin-left: -8px;
+}
+.selectedPage .menuTooltip {
+	margin: -34px 0 0 45px;
 }
 .badge {
 	position: absolute;
@@ -50,22 +82,153 @@ nav img {
 	background-color: #ED1A87;
 	margin: -34px 0 0 35px;
 }
-#content {
-	min-height: 100%;
-	padding-left: 104px;
+.menuTooltip {
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	display: none;
+	font-size: 14px;
+	font-weight: bold;
+	margin: -35px 0 0 53px;
+	min-width: 100px;
+	padding: 4px 10px;
+	position: absolute;
+	text-align: center;
+}
+#searchDiv {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	display: none;
+	height: 80%;
+	padding: 20px;
+	position: fixed;
+	left: 124px;
+	width: 1200px;
+	top: 10%;
+	z-index: 20;
+}
+#searchTerm {
+	background-color: rgba(0, 0, 0, 0.15);
+	border: 2px solid #FFFFFF;
+	border-radius: 5px;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding: 5px;
+	width: 99%;
+}
+#searchResults {
+	margin-top: 10px;
+}
+.resultItem {
+	float: left;
+	margin: 10px 10px 40px;
+	text-align: center;
+	width: 96px;
 }
 #logo {
 	position: absolute;
 	top: 0;
 	right: 0;
 }
-button {
-	cursor: pointer;
+
+/* Home - modules */
+#col1, #col2 {
+	float: left;
 }
-a, a:visited {
-	color: #1A87ED;
-	text-decoration: none;
+#col2 {
+	margin-left: 50px;
 }
-a:hover {
-	text-decoration: underline;
+.module {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 100%;
+	box-shadow: 1px 3px 8px #BBBBBB;
+	background-color: #FFFFFF;
+	border-radius: 8px;
+	margin-bottom: 25px;
+	min-height: 200px;
+	padding: 12px;
+}
+.module h2 {
+	border-bottom: 2px solid #1A87ED;
+    font-size: 1em;
+	margin-bottom: 10px;
+}
+
+/* Datatables */
+#controls {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: #FFFFFF;
+	border-radius: 8px 8px 0 0;
+	padding: 10px;
+	z-index: 10;
+}
+
+#controlsLeft {
+	width: 33%;
+	display: inline-block;
+}
+#filter {
+	border: 1px solid #AAAAAA;
+	border-radius: 4px;
+	box-shadow: 0 0 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	padding: 3px;
+	width: 250px;
+}
+
+#controlsCenter {
+	width: 33%;
+	display: inline-block;
+	text-align: center;
+}
+#controlsCenter a:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: text-top;
+	width: 16px;
+}
+#controlsAdd:before {
+	background-position: 0 0;
+}
+#controlsAdd:hover:before {
+	background-position: 0 -16px;
+}
+#controlsEdit:before {
+	background-position: -16px 0;
+}
+#controlsEdit:hover:before {
+	background-position: -16px -16px;
+}
+#controlsDelete:before {
+	background-position: -32px 0;
+}
+#controlsDelete:hover:before {
+	background-position: -32px -16px;
+}
+#controlsAdd, #controlsEdit {
+	margin-right: 32px;
+}
+#controls .settings {
+	margin-top: 3px;
+}
+
+thead {
+	background-color: #FFFFFF;
+	box-shadow: 0 8px 6px -2px #BBBBBB;
+	z-index: 11;
+}
+table.dataTable thead th, table.dataTable thead td {
+	border-bottom: 0;
+	border-top: 1px solid #000000;
 }
