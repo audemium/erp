@@ -21,11 +21,9 @@
 	<?php
 		require('head.php');
 	?>
-	<!--<link type="text/css" rel="stylesheet" href="css/jquery-ui.custom.min.css">-->
-	<!--<link type="text/css" rel="stylesheet" href="css/jquery.dataTables_themeroller.min.css">-->
 	
 	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-	<!--<script type="text/javascript" src="js/dataTables.jqueryui.js"></script>-->
+	<script type="text/javascript" src="js/jquery.qtip.min.js"></script>
 	<script type="text/javascript" src="js/employees.js"></script>
 </head>
 
@@ -39,15 +37,16 @@
 				<input type="text" id="filter" placeholder="Filter">
 			</div>
 			<div id="controlsCenter">
-				<a id="controlsAdd" href="#">Add</a>
-				<a id="controlsEdit" href="#">Edit</a>
-				<a id="controlsDelete" href="#">Delete</a>
+				<a id="controlsAdd" class="controlsAddEnabled" href="#">Add</a>
+				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
+				<a id="controlsDelete" class="controlsDeleteDisabled" href="#">Delete</a>
 			</div>
 			<div class="settings"></div>
 		</div>
 		<table id="employeesTable" class="stripe row-border"> 
 			<thead>
 				<tr>
+					<th></th>
 					<th>Name</th>
 					<th>Position</th>
 					<th>Office</th>
@@ -58,6 +57,7 @@
 			</thead>
 			<tbody>
 				<tr>
+					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
 					<td>Tiger Nixon</td>
 					<td>System Architect</td>
 					<td>Edinburgh</td>
@@ -66,6 +66,7 @@
 					<td>$320,800</td>
 				</tr>
 				<tr>
+					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
 					<td>Elephant Nixon</td>
 					<td>System Architect</td>
 					<td>Edinburgh</td>
@@ -74,303 +75,8 @@
 					<td>$320,800</td>
 				</tr>
 				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Wombat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td>Pony Nixon</td>
+					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
+					<td>Goat Nixon</td>
 					<td>System Architect</td>
 					<td>Edinburgh</td>
 					<td>61</td>

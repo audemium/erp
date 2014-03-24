@@ -16,6 +16,7 @@
 <link rel="shortcut icon" href="images/favicon.ico">
 
 <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
+<link type="text/css" rel="stylesheet" href="css/jquery.qtip.min.css">
 <link type="text/css" rel="stylesheet" href="css/styles.css">
 
 <script type="text/javascript" src="js/jquery.min.js"></script>

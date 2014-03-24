@@ -94,7 +94,21 @@ nav img {
 	padding: 4px 10px;
 	position: absolute;
 	text-align: center;
+	z-index: 20;
 }
+/* qtip styles - custom version of tipsy */
+.qtip-tipsy-custom {
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	border: 0 solid transparent;
+	font-size: 12px;
+	font-weight: bold;
+}
+.qtip-tipsy-custom .qtip-content {
+	padding: 6px 20px;
+}
+
 #searchDiv {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -198,24 +212,40 @@ nav img {
 	vertical-align: text-top;
 	width: 16px;
 }
-#controlsAdd:before {
+
+.controlsAddDisabled, .controlsEditDisabled, .controlsDeleteDisabled {
+	color: #888888 !important;
+	cursor: default;
+}
+.controlsAddDisabled:before {
+	background-position: 0 -32px;
+}
+.controlsEditDisabled:before {
+	background-position: -16px -32px;
+}
+.controlsDeleteDisabled:before {
+	background-position: -32px -32px;
+}
+
+.controlsAddEnabled:before {
 	background-position: 0 0;
 }
-#controlsAdd:hover:before {
+.controlsAddEnabled:hover:before {
 	background-position: 0 -16px;
 }
-#controlsEdit:before {
+.controlsEditEnabled:before {
 	background-position: -16px 0;
 }
-#controlsEdit:hover:before {
+.controlsEditEnabled:hover:before {
 	background-position: -16px -16px;
 }
-#controlsDelete:before {
+.controlsDeleteEnabled:before {
 	background-position: -32px 0;
 }
-#controlsDelete:hover:before {
+.controlsDeleteEnabled:hover:before {
 	background-position: -32px -16px;
 }
+
 #controlsAdd, #controlsEdit {
 	margin-right: 32px;
 }
@@ -232,3 +262,5 @@ table.dataTable thead th, table.dataTable thead td {
 	border-bottom: 0;
 	border-top: 1px solid #000000;
 }
+.selectCol {
+	text-align: center;

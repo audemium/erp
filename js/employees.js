@@ -35,9 +35,38 @@ $(document).ready(function() {
 	//set up datatables
     var table = $('#employeesTable').DataTable({
 		'paging': false,
-		'dom': 'rti'
+		'dom': 'rti',
+		'order': [1, 'asc'],
+		'columnDefs': [
+			{'orderable': false, 'targets': 0},
+			{'searchable': false, 'targets': 0}
+		]
 	});
 	$('#filter').on('keyup', function() {
 		table.search(this.value).draw();
+	});
+	
+	//checkboxes
+	$('.selectCheckbox').click(function() {
+		if ($('.selectCheckbox:checked').length > 0) {
+			$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
+			$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
+			$('#controlsEdit, #controlsDelete').qtip('disable');
+		}
+		else {
+			$('#controlsEdit').addClass('controlsEditDisabled').removeClass('controlsEditEnabled');
+			$('#controlsDelete').addClass('controlsDeleteDisabled').removeClass('controlsDeleteEnabled');
+			$('#controlsEdit, #controlsDelete').qtip('enable');
+		}
+	});
+	
+	//qtip
+	$('#controls [title]').qtip({
+		'style': {'classes': 'qtip-tipsy-custom'},
+		'position': {
+			'my': 'bottom center',
+			'at': 'top center',
+			'adjust': {'y': -4}
+		}
 	});
 });
