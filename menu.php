@@ -20,25 +20,21 @@
 <nav>
 	<ul>
 		<li id="search">
-			<!-- empty div to make the hover js have the same number of parents for all elements-->
-			<div id="searchLink"><img src="images/icons/search_32.png"></div>
-			<div id="searchTooltip" class="menuTooltip">Search</div>
+			<!-- searchLink div is to make the hover js have the same number of parents for all elements-->
+			<div id="searchLink"><img src="images/icons/search_32.png" title="Search"></div>
 		</li>
 		<li id="index">
-			<a href="index.php"><img src="images/icons/home_32.png"></a>
-			<div id="indexTooltip" class="menuTooltip">Home</div>
+			<a href="index.php"><img src="images/icons/home_32.png" title="Home"></a>
 		</li>
 		<li id="employees">
-			<a href="employees.php"><img src="images/icons/users_32.png"></a>
-			<div id="employeesTooltip" class="menuTooltip">Employees</div>
+			<a href="employees.php"><img src="images/icons/users_32.png" title="Employees"></a>
 		</li>
 		<li id="finances">
-			<a href="finances.php"><img src="images/icons/money_32.png"></a>
+			<a href="finances.php"><img src="images/icons/money_32.png" title="Finances"></a>
 			<!--
 				possibly going to get rid of the badges
 				<div id="financesBadge" class="badge">3</div>
 			-->
-			<div id="financesTooltip" class="menuTooltip">Finances</div>
 		</li>
 	</ul>
 </nav>

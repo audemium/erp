@@ -37,7 +37,7 @@ a:hover {
 	background-position: -48px -16px;
 }
 
-/* menu */
+/* Menu */
 nav {
 	box-shadow: 1px 3px 8px #BBBBBB;
 	background-color: #FFFFFF;
@@ -82,33 +82,6 @@ nav img {
 	background-color: #ED1A87;
 	margin: -34px 0 0 35px;
 }
-.menuTooltip {
-	background-color: rgba(0, 0, 0, 0.85);
-	border-radius: 8px;
-	color: #FFFFFF;
-	display: none;
-	font-size: 14px;
-	font-weight: bold;
-	margin: -35px 0 0 53px;
-	min-width: 100px;
-	padding: 4px 10px;
-	position: absolute;
-	text-align: center;
-	z-index: 20;
-}
-/* qtip styles - custom version of tipsy */
-.qtip-tipsy-custom {
-	background-color: rgba(0, 0, 0, 0.85);
-	border-radius: 8px;
-	color: #FFFFFF;
-	border: 0 solid transparent;
-	font-size: 12px;
-	font-weight: bold;
-}
-.qtip-tipsy-custom .qtip-content {
-	padding: 6px 20px;
-}
-
 #searchDiv {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -172,6 +145,22 @@ nav img {
 	border-bottom: 2px solid #1A87ED;
     font-size: 1em;
 	margin-bottom: 10px;
+}
+
+/* Qtip2 - custom version of tipsy style for text and for menu */
+.qtip-tipsy-custom {
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	border: 0 solid transparent;
+	font-size: 12px;
+	font-weight: bold;
+}
+.qtip-tipsy-custom .qtip-content {
+	padding: 6px 20px;
+}
+.qtip-tipsy-custom-menu {
+	font-size: 14px;
 }
 
 /* Datatables */

@@ -39,7 +39,7 @@
 			<div id="controlsCenter">
 				<a id="controlsAdd" class="controlsAddEnabled" href="#">Add</a>
 				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
-				<a id="controlsDelete" class="controlsDeleteDisabled" href="#">Delete</a>
+				<a id="controlsDelete" class="controlsDeleteDisabled" href="#" title="Select one or more rows to delete.">Delete</a>
 			</div>
 			<div class="settings"></div>
 		</div>

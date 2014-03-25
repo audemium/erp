@@ -4,17 +4,23 @@ $(document).ready(function() {
     var filename = url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
 	$('#' + filename).addClass('selectedPage');
 	
-	//show tooltips when hovering over menu items
-	$('nav img').hover(
-		function() {
-			var eleID = $(this).parent().parent().attr('id');
-			$('#' + eleID + 'Tooltip').show();
+	//set qtip globals
+	$.fn.qtip.defaults = $.extend(true, {}, $.fn.qtip.defaults, {
+		'show': {
+			'delay': 0,
+			'effect': false
 		},
-		function() {
-			var eleID = $(this).parent().parent().attr('id');
-			$('#' + eleID + 'Tooltip').hide();
+		'hide': {'effect': false}
+	});
+	//activate menu qtips
+	$('nav [title]').qtip({
+		'style': {'classes': 'qtip-tipsy-custom qtip-tipsy-custom-menu'},
+		'position': {
+			'my': 'center left',
+			'at': 'center right',
+			'adjust': {'x': 8},
 		}
-	);
+	});
 	
 	//show or hide search box
 	$('#searchLink').click(function() {
