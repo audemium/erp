@@ -18,7 +18,7 @@ $(document).ready(function() {
 		'position': {
 			'my': 'center left',
 			'at': 'center right',
-			'adjust': {'x': 8},
+			'adjust': {'x': 16},
 		}
 	});
 	

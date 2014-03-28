@@ -66,7 +66,29 @@ $(document).ready(function() {
 		'position': {
 			'my': 'bottom center',
 			'at': 'top center',
-			'adjust': {'y': -4}
+			'adjust': {'y': -12}
 		}
+	});
+	
+	//add
+	$('#controlsAdd').click(function(event) {
+		alert('add');
+		event.preventDefault();
+	});
+	
+	//edit
+	$('#controlsEdit').click(function(event) {
+		if ($('#controlsEdit').hasClass('controlsEditEnabled')) {
+			alert('edit');
+		}
+		event.preventDefault();
+	});
+	
+	//delete
+	$('#controlsDelete').click(function(event) {
+		if ($('#controlsDelete').hasClass('controlsDeleteEnabled')) {
+			alert('delete');
+		}
+		event.preventDefault();
 	});
 });
