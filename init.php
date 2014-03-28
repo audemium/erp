@@ -33,8 +33,9 @@
 	}
 	spl_autoload_register('customAutoloader');
 	
-	//load settings
+	//load settings and helper functions
 	require('settings.php');
+	require('helpers.php');
 	
 	//connect to db
 	$dbh = new PDO(
