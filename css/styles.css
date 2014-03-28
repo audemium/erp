@@ -122,7 +122,7 @@ nav img {
 	right: 0;
 }
 
-/* Home - modules */
+/* Home */
 #col1, #col2 {
 	float: left;
 }
@@ -163,7 +163,7 @@ nav img {
 	font-size: 14px;
 }
 
-/* Datatables */
+/* List View */
 #controls {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
