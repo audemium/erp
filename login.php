@@ -21,7 +21,59 @@
 	<?php
 		require('head.php');
 	?>
-	<link type="text/css" rel="stylesheet" href="css/login.css">
+	<style type="text/css">
+		#loginBox {
+			box-shadow: 1px 3px 8px #BBBBBB;
+			background-color: #FFFFFF;
+			border-radius: 16px;
+			margin: 200px auto;
+			padding: 40px 20px;
+			width: 500px;
+			text-align: center;
+		}
+		h2 {
+			margin: 0 0 40px;
+		}
+		input {
+			border: 1px solid #AAAAAA;
+			border-radius: 4px;
+			box-shadow: 0 0 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+			margin-bottom: 20px;
+			padding: 7px;
+			width: 300px;
+		}
+		.valid {
+			border-color: #28921F;
+			box-shadow: 0 0 5px #5CD053;
+		}
+		.invalid {
+			border-color: #E52D2D;
+			box-shadow: 0 0 5px #D45252;
+		}
+		.errorMessage {
+			color: #E52D2D;
+			font-size: 12px;
+			margin: -15px 0 0 100px;
+			text-align: left;
+			visibility: hidden;
+		}
+		#loginError {
+			color: #E52D2D;
+			visibility: hidden;
+		}
+		#loginBtn {
+			color: #FFFFFF;
+			font-weight: bold;
+			border-radius: 4px;
+			padding: 7px 25px;
+			background: #1A87ED;
+			border: 1px solid #1A87ED;
+		}
+		#loginBtn:hover {
+			box-shadow: 1px 1px 2px 2px #BBB;
+		}
+	</style>
+	
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('input').focusout(function() {
