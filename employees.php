@@ -23,7 +23,6 @@
 	?>
 	
 	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" src="js/jquery.qtip.min.js"></script>
 	<script type="text/javascript" src="js/employees.js"></script>
 </head>
 
@@ -46,43 +45,85 @@
 		<table id="employeesTable" class="stripe row-border"> 
 			<thead>
 				<tr>
-					<th></th>
-					<th>Name</th>
-					<th>Position</th>
-					<th>Office</th>
-					<th>Age</th>
-					<th>Start date</th>
-					<th>Salary</th>
+					<?php
+						//get all column names for the table
+						$sth = $dbh->prepare(
+							'SELECT columnID, name 
+							FROM displayColumns 
+							WHERE dbTable = "employees"'
+						);
+						$sth->execute();
+						while ($row = $sth->fetch()) {
+							$columnNames[$row['columnID']] = $row['name'];
+						}
+					
+						//check to see if the user has a custom config, otherwise use default
+						$sth = $dbh->prepare(
+							'SELECT employees_displayColumns.columnID 
+							FROM employees_displayColumns, displayColumns 
+							WHERE employees_displayColumns.columnID = displayColumns.columnID AND employeeID = :employeeID AND dbTable = "employees"'
+						);
+						$sth->execute(array(':employeeID' => $_SESSION['employeeID']));
+						$result = $sth->fetchAll();
+						if (count($result) > 0) {
+							foreach ($result as $row) {
+								$userColumns[] = $row['columnID'];
+							}
+						}
+						else {
+							$userColumns = $columns['employees'];
+						}
+						
+						//print column headers
+						echo '<th></th>';
+						foreach ($userColumns as $column) {
+							echo '<th>'.$columnNames[$column].'</th>';
+						}
+					?>
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
-					<td>Tiger Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
-					<td>Elephant Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
-				<tr>
-					<td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>
-					<td>Goat Nixon</td>
-					<td>System Architect</td>
-					<td>Edinburgh</td>
-					<td>61</td>
-					<td>2011/04/25</td>
-					<td>$320,800</td>
-				</tr>
+				<?php
+					$sth = $dbh->prepare(
+						'SELECT employeeID, username, firstName, lastName, payType, payAmount, locations.name AS locationName, positions.name AS positionName
+						FROM employees, locations, positions
+						WHERE employees.active = 1 AND employees.locationID = locations.locationID AND employees.positionID = positions.positionID'
+					);
+					$sth->execute();
+					while ($row = $sth->fetch()) {
+						$i = 0;
+						while ($i < 25) {
+							echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>';
+							foreach ($userColumns as $column) {
+								switch ($column) {
+									case 1: //Name
+										echo '<td><a href="employees_view.php?id='.$row['employeeID'].'">'.$row['firstName'].' '.$row['lastName'].'</a></td>';
+										break;
+									case 2: //Username
+										echo '<td>'.$row['username'].'</td>';
+										break;
+									case 3: //Position
+										echo '<td>'.$row['positionName'].'</td>';
+										break;
+									case 4: //Location
+										echo '<td>'.$row['locationName'].'</td>';
+										break;
+									case 5: //Pay Type
+										$payType = ($row['payType'] == 'S') ? 'Salary' : 'Hourly';
+										echo '<td>'.$payType.'</td>';
+										break;
+									case 6: //Pay Amount
+										echo '<td>'.formatCurrency($row['payAmount']).'</td>';
+										break;
+									default:
+										echo '<td>Unknown Column</td>';
+								}
+							}
+							echo '</tr>';
+							$i++;
+						}
+					}
+				?>
 			</tbody>
 		</table>
 	</div>

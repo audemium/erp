@@ -36,6 +36,15 @@ a:hover {
 .settings:hover {
 	background-position: -48px -16px;
 }
+h1 {
+	font-size: 1.5em;
+	text-align: center;
+}
+h2 {
+	border-bottom: 2px solid #1A87ED;
+    font-size: 1em;
+	margin-bottom: 10px;
+}
 
 /* Menu */
 nav {
@@ -141,11 +150,6 @@ nav img {
 	min-height: 200px;
 	padding: 12px;
 }
-.module h2 {
-	border-bottom: 2px solid #1A87ED;
-    font-size: 1em;
-	margin-bottom: 10px;
-}
 
 /* Qtip2 - custom version of tipsy style for text and for menu */
 .qtip-tipsy-custom {
@@ -161,6 +165,17 @@ nav img {
 }
 .qtip-tipsy-custom-menu {
 	font-size: 14px;
+}
+
+/* Datatables */
+thead {
+	background-color: #FFFFFF;
+	box-shadow: 0 8px 6px -2px #BBBBBB;
+	z-index: 11;
+}
+table.dataTable thead th, table.dataTable thead td {
+	border-bottom: 0;
+	border-top: 1px solid #000000;
 }
 
 /* List View */
@@ -242,14 +257,21 @@ nav img {
 	margin-top: 3px;
 }
 
-thead {
-	background-color: #FFFFFF;
-	box-shadow: 0 8px 6px -2px #BBBBBB;
-	z-index: 11;
-}
-table.dataTable thead th, table.dataTable thead td {
-	border-bottom: 0;
-	border-top: 1px solid #000000;
-}
 .selectCol {
 	text-align: center;
+}
+
+/* Individual View */
+#data {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: #FFFFFF;
+	border-radius: 0 0 8px 8px;
+	padding: 10px;
+	z-index: 10;
+}
+#data h2 {
+	margin-top: 20px;
+	clear: both;
+}
