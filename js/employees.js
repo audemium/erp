@@ -1,5 +1,6 @@
 $(document).ready(function() {
 	//change controls and header when hitting the top of the page
+	//TODO: fix column width changing when header hits the top
 	$('#controls').data('top', $('#controls').offset().top);
 	$(window).scroll(function() {
 		if ($(window).scrollTop() > $('#controls').data('top')) { 

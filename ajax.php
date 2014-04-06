@@ -5,7 +5,7 @@
 	if ($_POST['action'] == 'login') {
 		$return = array('status' => 'fail');
 		
-		$sth = $dbh->prepare('SELECT employeeID, password FROM employees WHERE username = :username');
+		$sth = $dbh->prepare('SELECT employeeID, password, timeZone FROM employees WHERE username = :username');
 		$sth->execute(array(':username' => $_POST['username']));
 		$result = $sth->fetchAll();
 		if (count($result) == 1) {
@@ -14,6 +14,7 @@
 				session_regenerate_id(true);
 				$_SESSION['loggedIn'] = true;
 				$_SESSION['employeeID'] = $result[0]['employeeID'];
+				$_SESSION['timeZone'] = $result[0]['timeZone'];
 				$redirect = (isset($_SESSION['loginDestination']) && $_SESSION['loginDestination'] != '/login.php') ? $_SESSION['loginDestination'] : '/index.php';
 				unset($return);
 				$return = array('status' => 'success', 'redirect' => $redirect);

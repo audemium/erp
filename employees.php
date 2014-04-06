@@ -22,7 +22,6 @@
 		require('head.php');
 	?>
 	
-	<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="js/employees.js"></script>
 </head>
 
@@ -67,16 +66,16 @@
 						$result = $sth->fetchAll();
 						if (count($result) > 0) {
 							foreach ($result as $row) {
-								$userColumns[] = $row['columnID'];
+								$columns[] = $row['columnID'];
 							}
 						}
 						else {
-							$userColumns = $columns['employees'];
+							$columns = $settings['columns']['employees'];
 						}
 						
 						//print column headers
 						echo '<th></th>';
-						foreach ($userColumns as $column) {
+						foreach ($columns as $column) {
 							echo '<th>'.$columnNames[$column].'</th>';
 						}
 					?>
@@ -94,7 +93,7 @@
 						$i = 0;
 						while ($i < 25) {
 							echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox"></td>';
-							foreach ($userColumns as $column) {
+							foreach ($columns as $column) {
 								switch ($column) {
 									case 1: //Name
 										echo '<td><a href="employees_view.php?id='.$row['employeeID'].'">'.$row['firstName'].' '.$row['lastName'].'</a></td>';

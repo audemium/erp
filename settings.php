@@ -1,10 +1,13 @@
 <?php
 	//Database
-	$dbServer = 'localhost';
-	$dbName = 'erp';
-	$dbUser = 'root';
-	$dbPassword = 'dbPasswordHere';
+	$settings['dbServer'] = 'localhost';
+	$settings['dbName'] = 'erp';
+	$settings['dbUser'] = 'root';
+	$settings['dbPassword'] = 'dbPasswordHere';
+	
+	//Default timezone
+	$settings['timeZone'] = 'America/New_York';
 	
 	//Default columns
-	$columns['employees'] = array(1, 2, 3, 4, 5, 6);
+	$settings['columns']['employees'] = array(1, 2, 3, 4, 5, 6);
 ?>

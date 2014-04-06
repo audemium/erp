@@ -39,9 +39,9 @@
 	
 	//connect to db
 	$dbh = new PDO(
-		"mysql:host=$dbServer;dbname=$dbName",
-		$dbUser,
-		$dbPassword,
+		'mysql:host='.$settings['dbServer'].';dbname='.$settings['dbName'],
+		$settings['dbUser'],
+		$settings['dbPassword'],
 		array(
 			PDO::ATTR_PERSISTENT => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
@@ -61,9 +61,21 @@
     setcookie(session_name(), '', time() - 42000, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
 	session_destroy();*/
 	
+	//set up time zones
+	//can't do if/elseif/else because it's possible someone could set an invalid time zone and the function could fail
+	date_default_timezone_set('UTC');
+	//if a default is set in settings.php, use that
+	if (isset($settings['timeZone']) && $settings['timeZone'] != '') {
+		date_default_timezone_set($settings['timeZone']);
+	}
+	//if user sets a time zone, use that
+	if (isset($_SESSION['timeZone']) && $_SESSION['timeZone'] != '') {
+		date_default_timezone_set($_SESSION['timeZone']);
+	}
+	
 	//check if the user is logged in, if not then redirect
 	if (empty($_SESSION['loggedIn']) && $_SERVER['SCRIPT_NAME'] != '/login.php' && $_SERVER['SCRIPT_NAME'] != '/ajax.php') {
-		$_SESSION['loginDestination'] = $_SERVER['SCRIPT_NAME'];
+		$_SESSION['loginDestination'] = $_SERVER['REQUEST_URI'];
 		header('Location: login.php');
 		die();
 	}
