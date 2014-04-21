@@ -39,13 +39,23 @@
 	
 	//connect to db
 	$dbh = new PDO(
-		'mysql:host='.$settings['dbServer'].';dbname='.$settings['dbName'],
-		$settings['dbUser'],
-		$settings['dbPassword'],
+		'mysql:host='.$SETTINGS['dbServer'].';dbname='.$SETTINGS['dbName'],
+		$SETTINGS['dbUser'],
+		$SETTINGS['dbPassword'],
 		array(
 			PDO::ATTR_PERSISTENT => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		)
+	);
+	
+	//define types
+	$TYPES = array(
+		'employee' => array('pluralName' => 'employees', 'formalName' => 'Employee', 'idName' => 'employeeID'),
+		'location' => array('pluralName' => 'locations', 'formalName' => 'Location', 'idName' => 'locationID'),
+		'order' => array('pluralName' => 'orders', 'formalName' => 'Order', 'idName' => 'orderID'),
+		'position' => array('pluralName' => 'positions', 'formalName' => 'Position', 'idName' => 'positionID'),
+		'product' => array('pluralName' => 'products', 'formalName' => 'Product', 'idName' => 'productID'),
+		'service' => array('pluralName' => 'services', 'formalName' => 'Service', 'idName' => 'serviceID')
 	);
 
 	//change cookies to HttpOnly
@@ -65,8 +75,8 @@
 	//can't do if/elseif/else because it's possible someone could set an invalid time zone and the function could fail
 	date_default_timezone_set('UTC');
 	//if a default is set in settings.php, use that
-	if (isset($settings['timeZone']) && $settings['timeZone'] != '') {
-		date_default_timezone_set($settings['timeZone']);
+	if (isset($SETTINGS['timeZone']) && $SETTINGS['timeZone'] != '') {
+		date_default_timezone_set($SETTINGS['timeZone']);
 	}
 	//if user sets a time zone, use that
 	if (isset($_SESSION['timeZone']) && $_SESSION['timeZone'] != '') {

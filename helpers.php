@@ -14,4 +14,32 @@
 	function formatCurrency($amount) {
 		return '$'.number_format($amount, 2);
 	}
+	
+	function formatDateTime($unixTS) {
+		return date('d-M-Y H:i', $unixTS);
+	}
+	
+	function getName($type, $id) {
+		global $dbh;
+		global $TYPES;
+		
+		if ($type == 'employee') {
+			$sth = $dbh->prepare(
+				'SELECT firstName, lastName
+				FROM employees
+				WHERE employeeID = :id'
+			);
+		}
+		else {
+			$sth = $dbh->prepare(
+				'SELECT name
+				FROM '.$TYPES[$type]['pluralName'].'
+				WHERE '.$TYPES[$type]['idName'].' = :id'
+			);
+		}
+		$sth->execute(array(':id' => $id));
+		$row = $sth->fetch();
+		
+		return ($type == 'employee') ? $row['firstName'].' '.$row['lastName'] : $row['name'];
+	}
 ?>

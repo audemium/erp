@@ -32,7 +32,7 @@
 			width: 500px;
 			text-align: center;
 		}
-		h2 {
+		h1 {
 			margin: 0 0 40px;
 		}
 		input {
@@ -61,17 +61,6 @@
 		#loginError {
 			color: #E52D2D;
 			visibility: hidden;
-		}
-		#loginBtn {
-			color: #FFFFFF;
-			font-weight: bold;
-			border-radius: 4px;
-			padding: 7px 25px;
-			background: #1A87ED;
-			border: 1px solid #1A87ED;
-		}
-		#loginBtn:hover {
-			box-shadow: 1px 1px 2px 2px #BBB;
 		}
 	</style>
 	
@@ -131,7 +120,7 @@
 <body>
 	<img id="logo" src="images/logo.png" alt="logo">
 	<div id="loginBox">
-		<h2>Sign in</h2>
+		<h1>Sign in</h1>
 		<form id="loginForm">
 			<input type="text" id="username" placeholder="Username" autofocus>
 			<div id="usernameError" class="errorMessage">Please enter a username.</div>

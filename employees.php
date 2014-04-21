@@ -49,7 +49,7 @@
 						$sth = $dbh->prepare(
 							'SELECT columnID, name 
 							FROM displayColumns 
-							WHERE dbTable = "employees"'
+							WHERE type = "employee"'
 						);
 						$sth->execute();
 						while ($row = $sth->fetch()) {
@@ -59,8 +59,8 @@
 						//check to see if the user has a custom config, otherwise use default
 						$sth = $dbh->prepare(
 							'SELECT employees_displayColumns.columnID 
-							FROM employees_displayColumns, displayColumns 
-							WHERE employees_displayColumns.columnID = displayColumns.columnID AND employeeID = :employeeID AND dbTable = "employees"'
+							FROM employees_displayColumns, displayColumns
+							WHERE employees_displayColumns.columnID = displayColumns.columnID AND employeeID = :employeeID AND type = "employee"'
 						);
 						$sth->execute(array(':employeeID' => $_SESSION['employeeID']));
 						$result = $sth->fetchAll();
@@ -70,7 +70,7 @@
 							}
 						}
 						else {
-							$columns = $settings['columns']['employees'];
+							$columns = $SETTINGS['columns']['employees'];
 						}
 						
 						//print column headers

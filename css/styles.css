@@ -45,6 +45,21 @@ h2 {
     font-size: 1em;
 	margin-bottom: 10px;
 }
+#btnSpacer {
+	text-align: center;
+	padding: 20px 0 5px;
+}
+button {
+	color: #FFFFFF;
+	font-weight: bold;
+	border-radius: 4px;
+	padding: 6px 25px;
+	background: #1A87ED;
+	border: 1px solid #1A87ED;
+}
+button:hover {
+	box-shadow: 1px 1px 2px 2px #999999;
+}
 
 /* Menu */
 nav {
@@ -256,9 +271,11 @@ table.dataTable thead th, table.dataTable thead td {
 #controls .settings {
 	margin-top: 3px;
 }
-
 .selectCol {
 	text-align: center;
+}
+#employeesTable_wrapper {
+	margin-bottom: 50px;
 }
 
 /* Individual View */
@@ -268,10 +285,69 @@ table.dataTable thead th, table.dataTable thead td {
 	box-sizing: border-box;
 	background-color: #FFFFFF;
 	border-radius: 0 0 8px 8px;
-	padding: 10px;
+	padding: 10px 10px 30px;
+	margin-bottom: 50px;
 	z-index: 10;
 }
 #data h2 {
 	margin-top: 20px;
-	clear: both;
+}
+.nonDatatable {
+	padding: 0 50px;
+	table-layout: fixed;
+	width: 100%;
+}
+.fieldLabel {
+	font-weight: bold;
+	width: 150px;
+}
+#changesTable_wrapper, #historyTable_wrapper {
+    padding: 0 50px;
+}
+
+/* Popup */
+#popup {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+	z-index: 99999;
+	display: none;
+}
+#popup > div {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+	margin: 10% auto;
+    width: 700px;
+}
+.popupTable {
+	table-layout: fixed;
+	width: 100%;
+}
+.popupText {
+	text-align: center;
+}
+#popup select {
+	width: 75%;
+}
+#close {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px #000000;
+    color: #1A87ED;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 25px;
+    position: absolute;
+    right: -12px;
+    text-align: center;
+    top: -10px;
+    width: 24px;
+}
+#close:hover {
+	color: #ED1A87;
 }
