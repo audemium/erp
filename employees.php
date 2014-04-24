@@ -39,7 +39,9 @@
 				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
 				<a id="controlsDelete" class="controlsDeleteDisabled" href="#" title="Select one or more rows to delete.">Delete</a>
 			</div>
-			<div class="settings"></div>
+			<div id="controlsRight">
+				<a class="settings" href="#"></a>
+			</div>
 		</div>
 		<table id="employeesTable" class="stripe row-border"> 
 			<thead>
@@ -125,6 +127,9 @@
 				?>
 			</tbody>
 		</table>
+	</div>
+	<div id="popup">
+		<div></div>
 	</div>
 </body>
 </html>

@@ -203,11 +203,11 @@ table.dataTable thead th, table.dataTable thead td {
 	padding: 10px;
 	z-index: 10;
 }
-
-#controlsLeft {
+#controlsLeft, #controlsCenter, #controlsRight {
 	width: 33%;
 	display: inline-block;
 }
+
 #filter {
 	border: 1px solid #AAAAAA;
 	border-radius: 4px;
@@ -217,8 +217,6 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 #controlsCenter {
-	width: 33%;
-	display: inline-block;
 	text-align: center;
 }
 #controlsCenter a:before {
@@ -268,9 +266,6 @@ table.dataTable thead th, table.dataTable thead td {
 #controlsAdd, #controlsEdit {
 	margin-right: 32px;
 }
-#controls .settings {
-	margin-top: 3px;
-}
 .selectCol {
 	text-align: center;
 }
@@ -289,20 +284,33 @@ table.dataTable thead th, table.dataTable thead td {
 	margin-bottom: 50px;
 	z-index: 10;
 }
-#data h2 {
+section {
 	margin-top: 20px;
 }
-.nonDatatable {
+.sectionData {
 	padding: 0 50px;
-	table-layout: fixed;
-	width: 100%;
 }
-.fieldLabel {
-	font-weight: bold;
+.sectionData:after {
+	clear: both;
+	content: "";
+	display: block;
+}
+dl {
+	float: left;
+	width: 50%;
+	margin: 0;
+}
+dt {
+	float: left;
+	clear: both;
 	width: 150px;
+	font-weight: bold;
 }
-#changesTable_wrapper, #historyTable_wrapper {
-    padding: 0 50px;
+dt:after {
+	content: ":";
+}
+dd {
+	float: left;
 }
 
 /* Popup */

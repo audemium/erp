@@ -40,25 +40,25 @@
 	<div id="content">
 		<div id="col1">
 			<div class="module">
-				<h2>Notifications<div class="settings"></div></h2>
+				<h2>Notifications<a class="settings" href="#"></a></h2>
 				Nothing to notify you of.
 			</div>
 			<div class="module">
-				<h2>Products<div class="settings"></div></h2>
+				<h2>Products<a class="settings" href="#"></a></h2>
 				Summary would go here?
 			</div>
 			<div class="module">
-				<h2>Services<div class="settings"></div></h2>
+				<h2>Services<a class="settings" href="#"></a></h2>
 				Summary would go here?
 			</div>
 		</div>
 		<div id="col2">
 			<div class="module">
-				<h2>Customers<div class="settings"></div></h2>
+				<h2>Customers<a class="settings" href="#"></a></h2>
 				Summary would go here?
 			</div>
 			<div class="module">
-				<h2>Finances<div class="settings"></div></h2>
+				<h2>Finances<a class="settings" href="#"></a></h2>
 				Summary would go here?
 			</div>
 		</div>
