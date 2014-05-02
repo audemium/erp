@@ -47,7 +47,7 @@ h2 {
 }
 #btnSpacer {
 	text-align: center;
-	padding: 20px 0 5px;
+	padding-top: 20px;
 }
 button {
 	color: #FFFFFF;
@@ -288,7 +288,7 @@ section {
 	margin-top: 20px;
 }
 .sectionData {
-	padding: 0 50px;
+	padding: 0 4%;
 }
 .sectionData:after {
 	clear: both;
@@ -305,6 +305,7 @@ dt {
 	clear: both;
 	width: 150px;
 	font-weight: bold;
+	padding: 2px 0;
 }
 dt:after {
 	content: ":";
@@ -327,20 +328,10 @@ dd {
 #popup > div {
     background-color: #FFFFFF;
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 10px;
     position: relative;
 	margin: 10% auto;
     width: 700px;
-}
-.popupTable {
-	table-layout: fixed;
-	width: 100%;
-}
-.popupText {
-	text-align: center;
-}
-#popup select {
-	width: 75%;
 }
 #close {
     background-color: #FFFFFF;
@@ -358,4 +349,29 @@ dd {
 }
 #close:hover {
 	color: #ED1A87;
+}
+
+ul {
+	float: left;
+	width: 50%;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.sectionData li {
+    padding: 3px 0;
+}
+label {
+	display: inline-block;
+	width: 125px;
+	font-weight: bold;
+}
+label:after {
+	content: ":";
+}
+input[type="text"], select, textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 125px;
 }

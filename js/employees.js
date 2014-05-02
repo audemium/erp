@@ -1,86 +1,72 @@
 $(document).ready(function() {
-	//change controls and header when hitting the top of the page
-	//TODO: fix column width changing when header hits the top
-	$('#controls').data('top', $('#controls').offset().top);
-	$(window).scroll(function() {
-		if ($(window).scrollTop() > $('#controls').data('top')) { 
-			$('#controls').css({
-				'position': 'fixed',
-				'top': '0',
-				'width': $('#content').width(),
-				'border-radius': '0 0 0 0'
-			});
-			$('thead').css({
-				'position': 'fixed',
-				'top': $('#controls').css('height'),
-				'width': $('#content').width(),
-				'border-radius': '0 0 8px 8px'
-			}); 
-		}
-		else {
-			$('#controls').css({
-				'position': 'static',
-				'top': 'auto',
-				'width': '100%',
-				'border-radius': '8px 8px 0 0'
-			});
-			$('thead').css({
-				'position': 'static',
-				'top': 'auto',
-				'width': '100%',
-				'border-radius': '0 0 0 0'
-			});
-		}
-	});
-
-	//set up datatables
-    var table = $('#employeesTable').DataTable({
-		'paging': false,
-		'dom': 'rti',
-		'order': [1, 'asc'],
-		'columnDefs': [
-			{'orderable': false, 'targets': 0},
-			{'searchable': false, 'targets': 0}
-		]
-	});
-	$('#filter').on('keyup', function() {
-		table.search(this.value).draw();
-	});
-	
-	//checkboxes
-	$('.selectCheckbox').click(function() {
-		if ($('.selectCheckbox:checked').length > 0) {
-			$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
-			$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
-			$('#controlsEdit, #controlsDelete').qtip('disable');
-		}
-		else {
-			$('#controlsEdit').addClass('controlsEditDisabled').removeClass('controlsEditEnabled');
-			$('#controlsDelete').addClass('controlsDeleteDisabled').removeClass('controlsDeleteEnabled');
-			$('#controlsEdit, #controlsDelete').qtip('enable');
-		}
-	});
-	
-	//qtip
-	$('#controls [title]').qtip({
-		'style': {'classes': 'qtip-tipsy-custom'},
-		'position': {
-			'my': 'bottom center',
-			'at': 'top center',
-			'adjust': {'y': -12}
-		}
+	//add close for all actions
+	$('#popup').on('click', '#close', function(event) {
+		$('#popup').hide();
+		event.preventDefault();
 	});
 	
 	//add
 	$('#controlsAdd').click(function(event) {
-		alert('add');
+		$.ajax({
+			url: 'ajax.php',
+			type: 'POST',
+			data: {
+				'action': 'add',
+				'type': 'employee'
+			}
+		}).done(function(data) {
+			$('#popup > div').html(data.html);
+			$('#popup').show();
+			
+			$('#addBtn').click(function() {
+				var ajaxData = $('#popup input[type!="checkbox"], #popup select').serializeArray();
+				ajaxData.push({'name': 'action', 'value': 'addSave'});
+				ajaxData.push({'name': 'type', 'value': 'employee'});
+				$.ajax({
+					url: 'ajax.php',
+					type: 'POST',
+					data: ajaxData
+				}).done(function(data) {
+				});
+			});
+		});
 		event.preventDefault();
 	});
 	
 	//edit
 	$('#controlsEdit').click(function(event) {
 		if ($('#controlsEdit').hasClass('controlsEditEnabled')) {
-			alert('edit');
+			var ajaxData;
+			if ($('.selectCheckbox:checked').length == 0) {
+				ajaxData = {'action': 'edit', 'type': 'employee', 'id': id};
+			}
+			else if ($('.selectCheckbox:checked').length == 1) {
+				ajaxData = {'action': 'edit', 'type': 'employee', 'id': $('.selectCheckbox:checked').attr('id')};
+			}
+			else {
+				ajaxData = {'action': 'editMany', 'type': 'employee'};
+			}
+			$.ajax({
+				url: 'ajax.php',
+				type: 'POST',
+				data: ajaxData
+			}).done(function(data) {
+				$('#popup > div').html(data.html);
+				$('#popup').show();
+				if (ajaxData.action == 'editMany') {
+					$('#popup input[type="checkbox"]').click(function() {
+						$(this).next().next().prop('disabled', !$(this).prop('checked'));
+					});
+				}
+				
+				$('#editBtn').click(function() {
+					var selectedIDs = $('.selectCheckbox:checked')
+						.map(function() { return this.id; })
+						.get();
+					var action = ($('.selectCheckbox:checked').length > 1) ? 'editMany' : 'edit';
+					ajaxData = {'action': action, 'type': 'employee', 'id': selectedIDs};
+				});
+			});
 		}
 		event.preventDefault();
 	});
@@ -88,7 +74,17 @@ $(document).ready(function() {
 	//delete
 	$('#controlsDelete').click(function(event) {
 		if ($('#controlsDelete').hasClass('controlsDeleteEnabled')) {
-			alert('delete');
+			$.ajax({
+				url: 'ajax.php',
+				type: 'POST',
+				data: {
+					'action': 'delete',
+					'type': 'employee'
+				}
+			}).done(function(data) {
+				$('#popup > div').html(data.html);
+				$('#popup').show();
+			});
 		}
 		event.preventDefault();
 	});

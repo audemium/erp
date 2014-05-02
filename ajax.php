@@ -99,47 +99,61 @@
 		
 		$return['html'] = 
 			'<a id="close" title="Close">X</a>
-			<h1>Add employee</h1><br>
-			<table class="popupTable">
-				<tr>
-					<td class="fieldLabel">First Name:</td>
-					<td><input type="text" id="firstName"></td>
-					<td class="fieldLabel">Location:</td>
-					<td>
-						<select id="locationID">
-							<option value=""></option>
-							'.$locationOptions.'
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Last Name:</td>
-					<td><input type="text" id="lastName"></td>
-					<td class="fieldLabel">Position:</td>
-					<td>
-						<select id="positionID">
-							<option value=""></option>
-							'.$positionOptions.'
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Pay Type:</td>
-					<td>
-						<select id="payType">
-							<option value=""></option>
-							<option value="H">Hourly</option>
-							<option value="S">Salary</option>
-						</select>
-					</td>
-					<td class="fieldLabel"></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Pay Amount:</td>
-					<td><input type="text" id="payAmount"></td>
-				</tr>
-			</table>
+			<h1>Add employee</h1>
+			<section>
+				<h2>Basic Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<label for="firstName">First Name</label>
+							<input type="text" name="firstName">
+						</li>
+						<li>
+							<label for="lastName">Last Name</label>
+							<input type="text" name="lastName">
+						</li>
+						<li>
+							<label for="payType">Pay Type</label>
+							<select name="payType">
+								<option value=""></option>
+								<option value="H">Hourly</option>
+								<option value="S">Salary</option>
+							</select>
+						</li>
+						<li>
+							<label for="payAmount">Pay Amount</label>
+							<input type="text" name="payAmount">
+						</li>
+					</ul>
+					<ul>
+						<li>
+							<label for="locationID">Location</label>
+							<select name="locationID">
+								<option value=""></option>
+								'.$locationOptions.'
+							</select>
+						</li>
+						<li>
+							<label for="positionID">Position</label>
+							<select name="positionID">
+								<option value=""></option>
+								'.$positionOptions.'
+							</select>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section>
+				<h2>Personal Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<label for="address">Address</label>
+							<input type="text" name="address">
+						</li>
+					</ul>
+				</div>
+			</section>
 			<div id="btnSpacer"><button id="addBtn">Add</button></div>';
 		
 		echo json_encode($return);
@@ -157,8 +171,7 @@
 		$sth = $dbh->prepare(
 			'SELECT username, firstName, lastName, payType, payAmount, locationID, positionID, active
 			FROM employees
-			WHERE employeeID = :employeeID '
-		);
+			WHERE employeeID = :employeeID');
 		$sth->execute(array(':employeeID' => $_POST['id']));
 		$employee = $sth->fetch();
 		
@@ -203,44 +216,156 @@
 		
 		$return['html'] = 
 			'<a id="close" title="Close">X</a>
-			<h1>Edit employee</h1><br>
-			<table class="popupTable">
-				<tr>
-					<td class="fieldLabel">First Name:</td>
-					<td><input type="text" id="firstName" value="'.$employee['firstName'].'"></td>
-					<td class="fieldLabel">Location:</td>
-					<td>
-						<select id="locationID">
-							<option value=""></option>
-							'.$locationOptions.'
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Last Name:</td>
-					<td><input type="text" id="lastName" value="'.$employee['lastName'].'"></td>
-					<td class="fieldLabel">Position:</td>
-					<td>
-						<select id="positionID">
-							'.$positionOptions.'
-						</select>
-					</td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Pay Type:</td>
-					<td>
-						<select id="payType">
-							'.$payTypeOptions.'
-						</select>
-					</td>
-					<td class="fieldLabel"></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td class="fieldLabel">Pay Amount:</td>
-					<td><input type="text" id="payAmount" value="'.$employee['payAmount'].'"></td>
-				</tr>
-			</table>
+			<h1>Edit employee</h1>
+			<section>
+				<h2>Basic Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<label for="firstName">First Name</label>
+							<input type="text" id="firstName" value="'.$employee['firstName'].'">
+						</li>
+						<li>
+							<label for="lastName">Last Name</label>
+							<input type="text" id="lastName" value="'.$employee['lastName'].'">
+						</li>
+						<li>
+							<label for="payType">Pay Type</label>
+							<select id="payType">
+								'.$payTypeOptions.'
+							</select>
+						</li>
+						<li>
+							<label for="payAmount">Pay Amount</label>
+							<input type="text" id="payAmount" value="'.$employee['payAmount'].'">
+						</li>
+					</ul>
+					<ul>
+						<li>
+							<label for="locationID">Location</label>
+							<select id="locationID">
+								'.$locationOptions.'
+							</select>
+						</li>
+						<li>
+							<label for="positionID">Position</label>
+							<select id="positionID">
+								'.$positionOptions.'
+							</select>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section>
+				<h2>Personal Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<label for="address">Address</label>
+							<input type="text" id="address">
+						</li>
+					</ul>
+				</div>
+			</section>
+			<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
+		
+		echo json_encode($return);
+	}
+	
+	/*
+		Function: editMany
+		Inputs: 
+		Outputs: status (success / fail), html
+	*/
+	if ($_POST['action'] == 'editMany') {
+		$return = array('status' => 'success');
+		
+		//get list of locations
+		$locationOptions = '';
+		$sth = $dbh->prepare(
+			'SELECT locationID, name
+			FROM locations
+			WHERE active = 1
+			ORDER BY name');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$locationOptions .= '<option value="'.$row['locationID'].'">'.$row['name'].'</option>';
+		}
+		
+		//get list of positions
+		$positionOptions = '';
+		$sth = $dbh->prepare(
+			'SELECT positionID, name
+			FROM positions
+			WHERE active = 1
+			ORDER BY name');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$positionOptions .= '<option value="'.$row['positionID'].'">'.$row['name'].'</option>';
+		}
+		
+		$return['html'] = 
+			'<a id="close" title="Close">X</a>
+			<h1>Edit employees</h1>
+			<section>
+				<h2>Basic Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<input type="checkbox">
+							<label for="firstName">First Name</label>
+							<input type="text" id="firstName" disabled>
+						</li>
+						<li>
+							<input type="checkbox">
+							<label for="lastName">Last Name</label>
+							<input type="text" id="lastName" disabled>
+						</li>
+						<li>
+							<input type="checkbox">
+							<label for="payType">Pay Type</label>
+							<select id="payType" disabled>
+								<option value=""></option>
+								<option value="H">Hourly</option>
+								<option value="S">Salary</option>
+							</select>
+						</li>
+						<li>
+							<input type="checkbox">
+							<label for="payAmount">Pay Amount</label>
+							<input type="text" id="payAmount" disabled>
+						</li>
+					</ul>
+					<ul>
+						<li>
+							<input type="checkbox">
+							<label for="locationID">Location</label>
+							<select id="locationID" disabled>
+								'.$locationOptions.'
+							</select>
+						</li>
+						<li>
+							<input type="checkbox">
+							<label for="positionID">Position</label>
+							<select id="positionID" disabled>
+								'.$positionOptions.'
+							</select>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section>
+				<h2>Personal Information</h2>
+				<div class="sectionData">
+					<ul>
+						<li>
+							<input type="checkbox">
+							<label for="address">Address</label>
+							<input type="text" id="address" disabled>
+						</li>
+					</ul>
+				</div>
+			</section>
 			<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
 		
 		echo json_encode($return);
@@ -248,7 +373,7 @@
 	
 	/*
 		Function: delete
-		Inputs: id
+		Inputs: 
 		Outputs: status (success / fail), html
 	*/
 	if ($_POST['action'] == 'delete') {
@@ -257,7 +382,7 @@
 		$return['html'] = 
 			'<a id="close" title="Close">X</a>
 			<h1>Delete employee</h1><br>
-			<div class="popupText">Are you sure you want to delete this employee?  This will mark the employee as inactive, but will retain their information.</div>
+			<div style="text-align: center;">Are you sure you want to delete this employee?  This will mark the employee as inactive, but will retain their information.</div>
 			<div id="btnSpacer"><button id="deleteBtn">Delete</button></div>';
 		
 		echo json_encode($return);
