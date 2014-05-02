@@ -32,6 +32,7 @@
 		require('head.php');
 	?>
 	
+	<script type="text/javascript" src="js/employees.js"></script>
 	<script type="text/javascript">
 		var id = <?php echo $_GET['id']; ?>;
 	
@@ -45,61 +46,6 @@
 				'columnDefs': [
 					{'width': '125px', 'targets': 0}
 				]
-			});
-			
-			//add close for all actions
-			$('#popup').on('click', '#close', function(event) {
-				$('#popup').hide();
-				event.preventDefault();
-			});
-			
-			//add
-			$('#controlsAdd').click(function(event) {
-				$.ajax({
-					url: 'ajax.php',
-					type: 'POST',
-					data: {
-						'action': 'add',
-						'type': 'employee'
-					}
-				}).done(function(data) {
-					$('#popup > div').html(data.html);
-					$('#popup').show();
-				});
-				event.preventDefault();
-			});
-			
-			//edit
-			$('#controlsEdit').click(function(event) {
-				$.ajax({
-					url: 'ajax.php',
-					type: 'POST',
-					data: {
-						'action': 'edit',
-						'type': 'employee',
-						'id': id
-					}
-				}).done(function(data) {
-					$('#popup > div').html(data.html);
-					$('#popup').show();
-				});
-				event.preventDefault();
-			});
-			
-			//delete
-			$('#controlsDelete').click(function(event) {
-				$.ajax({
-					url: 'ajax.php',
-					type: 'POST',
-					data: {
-						'action': 'delete',
-						'type': 'employee'
-					}
-				}).done(function(data) {
-					$('#popup > div').html(data.html);
-					$('#popup').show();
-				});
-				event.preventDefault();
 			});
 		});
 	</script>
