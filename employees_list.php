@@ -75,16 +75,7 @@
 			
 			//checkboxes
 			$('.selectCheckbox').click(function() {
-				if ($('.selectCheckbox:checked').length > 0) {
-					$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
-					$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
-					$('#controlsEdit, #controlsDelete').qtip('disable');
-				}
-				else {
-					$('#controlsEdit').addClass('controlsEditDisabled').removeClass('controlsEditEnabled');
-					$('#controlsDelete').addClass('controlsDeleteDisabled').removeClass('controlsDeleteEnabled');
-					$('#controlsEdit, #controlsDelete').qtip('enable');
-				}
+				checkCheckboxes();
 			});
 			
 			//qtip
@@ -96,7 +87,23 @@
 					'adjust': {'y': -12}
 				}
 			});
+			
+			//run in any case browser cached any checks
+			checkCheckboxes();
 		});
+		
+		function checkCheckboxes() {
+			if ($('.selectCheckbox:checked').length > 0) {
+				$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
+				$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
+				$('#controlsEdit, #controlsDelete').qtip('disable');
+			}
+			else {
+				$('#controlsEdit').addClass('controlsEditDisabled').removeClass('controlsEditEnabled');
+				$('#controlsDelete').addClass('controlsDeleteDisabled').removeClass('controlsDeleteEnabled');
+				$('#controlsEdit, #controlsDelete').qtip('enable');
+			}
+		}
 	</script>
 </head>
 
