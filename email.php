@@ -31,7 +31,7 @@
 			<body style="font-family: arial;">
 				<div style="width:640px; margin:0 auto;">
 					<span style="font-weight:bold; font-size:1.5em;">Galaxy Think</span>
-					<div style="height:2px; background-color:#E5E5E5; margin:5px 0;">&nbsp;</div><br>
+					<div style="border-bottom: 2px solid #E5E5E5; margin:5px 0;">&nbsp;</div><br>
 					Thank you for your order.  Your invoice is below.<br><br>';
 		
 		//get order info
