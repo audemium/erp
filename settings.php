@@ -9,5 +9,5 @@
 	$SETTINGS['timeZone'] = 'America/New_York';
 	
 	//Default columns
-	$SETTINGS['columns']['employees'] = array(1, 2, 3, 4, 5, 6);
+	$SETTINGS['columns']['employees'] = [1, 2, 3, 4, 5, 6];
 ?>

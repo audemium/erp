@@ -39,7 +39,7 @@
 			'SELECT orderTime
 			FROM orders
 			WHERE orderID = :orderID');
-		$sth->execute(array(':orderID' => $_GET['orderID']));
+		$sth->execute([':orderID' => $_GET['orderID']]);
 		$row = $sth->fetch();
 		$html .= 
 			'<b>Order ID:</b> '.$_GET['orderID'].'<br>
@@ -57,18 +57,18 @@
 			';
 		
 		//get discounts
-		$discounts = array('S' => array(), 'P' => array(), 'O' => array());
+		$discounts = ['S' => [], 'P' => [], 'O' => []);
 		$sth = $dbh->prepare(
 			'SELECT name, type, amount, appliesToType, appliesToID
 			FROM discounts, orders_discounts
 			WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID');
-		$sth->execute(array(':orderID' => $_GET['orderID']));
+		$sth->execute([':orderID' => $_GET['orderID']]);
 		while ($row = $sth->fetch()) {
 			if ($row['appliesToType'] == 'O') {
-				$discounts['O'][] = array($row['name'], $row['type'], $row['amount']);
+				$discounts['O'][] = [$row['name'], $row['type'], $row['amount']];
 			}
 			else {
-				$discounts[$row['appliesToType']][$row['appliesToID']][] = array($row['name'], $row['type'], $row['amount']);
+				$discounts[$row['appliesToType']][$row['appliesToID']][] = [$row['name'], $row['type'], $row['amount']];
 			}
 		}
 		
@@ -77,7 +77,7 @@
 			'SELECT services.serviceID, name, quantity, unitPrice
 			FROM services, orders_services
 			WHERE orderID = :orderID AND services.serviceID = orders_services.serviceID');
-		$sth->execute(array(':orderID' => $_GET['orderID']));
+		$sth->execute([':orderID' => $_GET['orderID']]);
 		while ($row = $sth->fetch()) {
 			$html .= '<tr><td>'.$row['name'].'</td>';
 			$html .= '<td style="text-align:center;">'.($row['quantity'] + 0).'</td>'; //remove extra zeros and decimals
@@ -102,7 +102,7 @@
 			'SELECT products.productID, name, quantity, unitPrice
 			FROM products, orders_products
 			WHERE orderID = :orderID AND products.productID = orders_products.productID');
-		$sth->execute(array(':orderID' => $_GET['orderID']));
+		$sth->execute([':orderID' => $_GET['orderID']]);
 		while ($row = $sth->fetch()) {
 			$html .= '<tr><td>'.$row['name'].'</td>';
 			$html .= '<td style="text-align:center;">'.($row['quantity'] + 0).'</td>'; //remove extra zeros and decimals
@@ -138,7 +138,7 @@
 			'SELECT SUM(amount)
 			FROM payments
 			WHERE orderID = :orderID');
-		$sth->execute(array(':orderID' => $_GET['orderID']));
+		$sth->execute([':orderID' => $_GET['orderID']]);
 		$row = $sth->fetch();
 		$paidAmount = $row['SUM(amount)'];
 		

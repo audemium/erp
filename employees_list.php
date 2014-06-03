@@ -146,7 +146,7 @@
 							FROM employees_displayColumns, displayColumns
 							WHERE employees_displayColumns.columnID = displayColumns.columnID AND employeeID = :employeeID AND type = "employee"'
 						);
-						$sth->execute(array(':employeeID' => $_SESSION['employeeID']));
+						$sth->execute([':employeeID' => $_SESSION['employeeID']]);
 						$result = $sth->fetchAll();
 						if (count($result) > 0) {
 							foreach ($result as $row) {
@@ -192,11 +192,10 @@
 										echo '<td>'.$row['locationName'].'</td>';
 										break;
 									case 5: //Pay Type
-										$payType = ($row['payType'] == 'S') ? 'Salary' : 'Hourly';
-										echo '<td>'.$payType.'</td>';
+										echo '<td>'.parseValue('employee', 'payType', $row['payType']).'</td>';
 										break;
 									case 6: //Pay Amount
-										echo '<td>'.formatCurrency($row['payAmount']).'</td>';
+										echo '<td>'.parseValue('employee', 'payAmount', $row['payAmount']).'</td>';
 										break;
 									default:
 										echo '<td>Unknown Column</td>';
@@ -211,7 +210,10 @@
 		</table>
 	</div>
 	<div id="popup">
-		<div></div>
+		<div>
+			<a id="close" title="Close">X</a>
+			<div></div>
+		</div>
 	</div>
 </body>
 </html>

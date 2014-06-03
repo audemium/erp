@@ -18,9 +18,8 @@
 		FROM employees, locations, positions
 		WHERE employees.employeeID = :employeeID AND employees.locationID = locations.locationID AND employees.positionID = positions.positionID'
 	);
-	$sth->execute(array(':employeeID' => $_GET['id']));
+	$sth->execute([':employeeID' => $_GET['id']]);
 	$row = $sth->fetch();
-	$row['payType'] = ($row['payType'] == 'S') ? 'Salary' : 'Hourly';
 	$row['active'] = ($row['active'] == 1) ? 'Yes' : 'No';
 ?>
 
@@ -80,10 +79,10 @@
 						<dd><?php echo $row['lastName']; ?></dd>
 						
 						<dt>Pay Type</dt>
-						<dd><?php echo $row['payType']; ?></dd>
+						<dd><?php echo parseValue('employee', 'payType', $row['payType']); ?></dd>
 						
 						<dt>Pay Amount</dt>
-						<dd><?php echo formatCurrency($row['payAmount']); ?></dd>
+						<dd><?php echo parseValue('employee', 'payAmount', $row['payAmount']); ?></dd>
 					</dl>
 					<dl>
 						<dt>Location</dt>
@@ -125,19 +124,17 @@
 									FROM changes
 									WHERE employeeID = :employeeID'
 								);
-								$sth->execute(array(':employeeID' => $_GET['id']));
+								$sth->execute([':employeeID' => $_GET['id']]);
 								while ($row = $sth->fetch()) {
 									echo '<tr>';
 									echo '<td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="'.$row['type'].'s_view.php?id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
+									echo '<td><a href="'.$row['type'].'s_item.php?id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
 									echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
 									$dataStr = '';
 									$data = json_decode($row['data'], true);
 									foreach ($data as $key => $value) {
-										if ($key == 'Pay Amount') {
-											$value = formatCurrency($value);
-										}
-										$dataStr .= '<b>'.$key.':</b> '.$value.' ';
+										$value = parseValue($row['type'], $key, $value);
+										$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
 									}
 									echo '<td>'.$dataStr.'</td>';
 									echo '</tr>';
@@ -163,20 +160,18 @@
 								$sth = $dbh->prepare(
 									'SELECT *
 									FROM changes
-									WHERE type = "employee" AND id = :employeeID'
+									WHERE type = "employee" AND id = :id'
 								);
-								$sth->execute(array(':employeeID' => $_GET['id']));
+								$sth->execute([':id' => $_GET['id']]);
 								while ($row = $sth->fetch()) {
 									echo '<tr>';
 									echo '<td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="employees_view.php?id='.$row['employeeID'].'">'.getName('employee', $row['id']).'</a></td>';
+									echo '<td><a href="employees_view.php?id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
 									$dataStr = '';
 									$data = json_decode($row['data'], true);
 									foreach ($data as $key => $value) {
-										if ($key == 'Pay Amount') {
-											$value = formatCurrency($value);
-										}
-										$dataStr .= '<b>'.$key.':</b> '.$value.' ';
+										$value = parseValue($row['type'], $key, $value);
+										$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
 									}
 									echo '<td>'.$dataStr.'</td>';
 									echo '</tr>';
@@ -189,7 +184,10 @@
 		</div>
 	</div>
 	<div id="popup">
-		<div></div>
+		<div>
+			<a id="close" title="Close">X</a>
+			<div></div>
+		</div>
 	</div>
 </body>
 </html>
