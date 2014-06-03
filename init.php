@@ -42,21 +42,114 @@
 		'mysql:host='.$SETTINGS['dbServer'].';dbname='.$SETTINGS['dbName'],
 		$SETTINGS['dbUser'],
 		$SETTINGS['dbPassword'],
-		array(
+		[
 			PDO::ATTR_PERSISTENT => true,
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-		)
+		]
 	);
 	
 	//define types
-	$TYPES = array(
-		'employee' => array('pluralName' => 'employees', 'formalName' => 'Employee', 'idName' => 'employeeID'),
-		'location' => array('pluralName' => 'locations', 'formalName' => 'Location', 'idName' => 'locationID'),
-		'order' => array('pluralName' => 'orders', 'formalName' => 'Order', 'idName' => 'orderID'),
-		'position' => array('pluralName' => 'positions', 'formalName' => 'Position', 'idName' => 'positionID'),
-		'product' => array('pluralName' => 'products', 'formalName' => 'Product', 'idName' => 'productID'),
-		'service' => array('pluralName' => 'services', 'formalName' => 'Service', 'idName' => 'serviceID')
-	);
+	//verifyData explanation
+		//required: 0 = no, 1 = yes
+		//type: int = integer, id = object id, str = string, dec = decimal, opt = option
+		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt)
+	$TYPES = [
+		'employee' => [
+			'pluralName' => 'employees',
+			'formalName' => 'Employee',
+			'idName' => 'employeeID',
+			'fields' => [
+				'firstName' => [
+					'formalName' => 'First Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'lastName' => [
+					'formalName' => 'Last Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'payType' => [
+					'formalName' => 'Pay Type',
+					'verifyData' => [1, 'opt', ['S', 'H']]
+				],
+				'payAmount' => [
+					'formalName' => 'Pay Amount',
+					'verifyData' => [1, 'dec', [12, 2]]
+				],
+				'locationID' => [
+					'formalName' => 'Location',
+					'verifyData' => [1, 'id', 'location']
+				],
+				'positionID' => [
+					'formalName' => 'Position',
+					'verifyData' => [1, 'id', 'position']
+				],
+				'address' => [
+					'formalName' => 'Address',
+					'verifyData' => [0, 'str', 200]
+				]
+			]
+		],
+		'location' => [
+			'pluralName' => 'locations',
+			'formalName' => 'Location',
+			'idName' => 'locationID',
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'address' => [
+					'formalName' => 'Address',
+					'verifyData' => [1, 'str', 65535]
+				],
+				'city' => [
+					'formalName' => 'City',
+					'verifyData' => [1, 'str', 200]
+				],
+				'state' => [
+					'formalName' => 'State',
+					'verifyData' => [1, 'str', 2]
+				],
+				'zip' => [
+					'formalName' => 'Zip Code',
+					'verifyData' => [1, 'str', 10]
+				],
+				
+			]
+		],
+		'order' => [
+			'pluralName' => 'orders',
+			'formalName' => 'Order',
+			'idName' => 'orderID',
+			'fields' => [
+			]
+		],
+		'position' => [
+			'pluralName' => 'positions',
+			'formalName' => 'Position',
+			'idName' => 'positionID',
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				]
+			]
+		],
+		'product' => [
+			'pluralName' => 'products',
+			'formalName' => 'Product',
+			'idName' => 'productID',
+			'fields' => [
+			]
+		],
+		'service' => [
+			'pluralName' => 'services',
+			'formalName' => 'Service',
+			'idName' => 'serviceID',
+			'fields' => [
+			]
+		]
+	];
 
 	//change cookies to HttpOnly
 	$cookieParams = session_get_cookie_params();
