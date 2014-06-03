@@ -60,6 +60,14 @@ button {
 button:hover {
 	box-shadow: 1px 1px 2px 2px #999999;
 }
+.valid {
+	border-color: #28921F;
+	box-shadow: 0 0 5px #5CD053;
+}
+.invalid {
+	border-color: #E52D2D !important;
+	box-shadow: 0 0 5px #D45252 !important;
+}
 
 /* Menu */
 nav {
@@ -211,7 +219,7 @@ table.dataTable thead th, table.dataTable thead td {
 #filter {
 	border: 1px solid #AAAAAA;
 	border-radius: 4px;
-	box-shadow: 0 0 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+	box-shadow: 0 0 3px #CCCCCC;
 	padding: 3px;
 	width: 250px;
 }
@@ -322,7 +330,7 @@ dd {
 	bottom: 0;
 	left: 0;
 	background: rgba(0,0,0,0.8);
-	z-index: 99999;
+	z-index: 100;
 	display: none;
 }
 #popup > div {
@@ -369,9 +377,13 @@ label {
 label:after {
 	content: ":";
 }
-input[type="text"], select, textarea {
+#popup input[type="text"], #popup select, #popup textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	width: 125px;
+	border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    box-shadow: 0 0 3px #CCCCCC;
+    padding: 2px;
+    width: 125px;
 }

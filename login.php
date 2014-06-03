@@ -38,18 +38,10 @@
 		input {
 			border: 1px solid #AAAAAA;
 			border-radius: 4px;
-			box-shadow: 0 0 3px #CCCCCC, 0 10px 15px #EEEEEE inset;
+			box-shadow: 0 0 3px #CCCCCC;
 			margin-bottom: 20px;
 			padding: 7px;
 			width: 300px;
-		}
-		.valid {
-			border-color: #28921F;
-			box-shadow: 0 0 5px #5CD053;
-		}
-		.invalid {
-			border-color: #E52D2D;
-			box-shadow: 0 0 5px #D45252;
 		}
 		.errorMessage {
 			color: #E52D2D;
