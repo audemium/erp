@@ -459,13 +459,8 @@
 		$return = verifyData($_POST['type'], $data);
 		
 		if ($return['status'] != 'fail') {
-			//make ids safe
 			$idArr = explode(',', $_POST['id']);
-			foreach ($idArr as $id) {
-				$idArrSafe[] = $dbh->quote($id);
-			}
-			$ids = implode(',', $idArrSafe);
-			
+			$idArrSafe = [];
 			foreach ($data as $key => $value) {
 				$updateArr[] = $key.' = ?';
 				$valArr[] = $value;
@@ -482,18 +477,22 @@
 					WHERE '.$idName.' = :id');
 				$sth->execute([':id' => $id]);
 				$row = $sth->fetch();
-				$tempData = [];
-				foreach ($changeData as $key => $value) {
-					if ($row[$key] != $value) {
-						$tempData[$key] = $value;
+				if ($row['active'] == 1) {
+					$idArrSafe[] = $dbh->quote($id);
+					$tempData = [];
+					foreach ($changeData as $key => $value) {
+						if ($row[$key] != $value) {
+							$tempData[$key] = $value;
+						}
 					}
-				}
-				if (count($tempData) > 0) {
-					addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($tempData));
+					if (count($tempData) > 0) {
+						addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($tempData));
+					}
 				}
 			}
 			
 			//do the update
+			$ids = implode(',', $idArrSafe);
 			$sth = $dbh->prepare(
 				'UPDATE '.$tableName.'
 				SET '.$updateStr.'
@@ -545,19 +544,32 @@
 	if ($_POST['action'] == 'deleteSave') {
 		$return = ['status' => 'success'];
 		
-		//make ids safe
 		$idArr = explode(',', $_POST['id']);
-		foreach ($idArr as $id) {
-			$idArrSafe[] = $dbh->quote($id);
-		}
-		$ids = implode(',', $idArrSafe);
+		$idArrSafe = [];
 		$tableName = $TYPES[$_POST['type']]['pluralName'];
 		$idName = $TYPES[$_POST['type']]['idName'];
 		
-		//do the delete
+		//add to changes table
+		foreach ($idArr as $id) {
+			$sth = $dbh->prepare(
+				'SELECT active FROM '.$tableName.'
+				WHERE '.$idName.' = :id');
+			$sth->execute([':id' => $id]);
+			$row = $sth->fetch();
+			if ($row['active'] == 1) {
+				$idArrSafe[] = $dbh->quote($id);
+				addChange($_POST['type'], $id, $_SESSION['employeeID'], '');
+			}
+		}
+		
+		//mark items as inactive
+		$ids = implode(',', $idArrSafe);
 		$sth = $dbh->prepare(
-			'DELETE FROM '.$tableName.'
+			'UPDATE '.$tableName.'
+			SET active = 0
 			WHERE '.$idName.' IN ('.$ids.')');
-		$sth->execute($valArr);
+		$sth->execute();
+		
+		echo json_encode($return);
 	}
 ?>
