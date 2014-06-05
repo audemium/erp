@@ -20,7 +20,6 @@
 	);
 	$sth->execute([':employeeID' => $_GET['id']]);
 	$row = $sth->fetch();
-	$row['active'] = ($row['active'] == 1) ? 'Yes' : 'No';
 ?>
 
 <!DOCTYPE html>
@@ -34,6 +33,7 @@
 	<script type="text/javascript" src="js/employees.js"></script>
 	<script type="text/javascript">
 		var id = <?php echo $_GET['id']; ?>;
+		var active = <?php echo $row['active']; ?>;
 	
 		$(document).ready(function() {
 			//set up datatables
@@ -46,6 +46,22 @@
 					{'width': '125px', 'targets': 0}
 				]
 			});
+			
+			//qtip
+			$('#controls [title]').qtip({
+				'style': {'classes': 'qtip-tipsy-custom'},
+				'position': {
+					'my': 'bottom center',
+					'at': 'top center',
+					'adjust': {'y': -12}
+				}
+			});
+			
+			if (active == 1) {
+				$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
+				$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
+				$('#controlsEdit, #controlsDelete').qtip('disable');
+			}
 		});
 	</script>
 </head>
@@ -59,8 +75,8 @@
 			<div id="controlsLeft"></div>
 			<div id="controlsCenter">
 				<a id="controlsAdd" class="controlsAddEnabled" href="#">Add</a>
-				<a id="controlsEdit" class="controlsEditEnabled" href="#">Edit</a>
-				<a id="controlsDelete" class="controlsDeleteEnabled" href="#">Delete</a>
+				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Item is inactive and cannot be edited.">Edit</a>
+				<a id="controlsDelete" class="controlsDeleteDisabled" href="#" title="Item is inactive and cannot be deleted.">Delete</a>
 			</div>
 			<div id="controlsRight">
 				<a class="settings" href="#"></a>
@@ -92,7 +108,7 @@
 						<dd><?php echo $row['positionName']; ?></dd>
 						
 						<dt>Active</dt>
-						<dd><?php echo $row['active']; ?></dd>
+						<dd><?php echo ($row['active'] == 1) ? 'Yes' : 'No'; ?></dd>
 					</dl>
 				</div>
 			</section>
@@ -131,10 +147,15 @@
 									echo '<td><a href="'.$row['type'].'s_item.php?id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
 									echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
 									$dataStr = '';
-									$data = json_decode($row['data'], true);
-									foreach ($data as $key => $value) {
-										$value = parseValue($row['type'], $key, $value);
-										$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+									if ($row['data'] == '') {
+										$dataStr = 'Item deleted.';
+									}
+									else {
+										$data = json_decode($row['data'], true);
+										foreach ($data as $key => $value) {
+											$value = parseValue($row['type'], $key, $value);
+											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+										}
 									}
 									echo '<td>'.$dataStr.'</td>';
 									echo '</tr>';
@@ -166,12 +187,17 @@
 								while ($row = $sth->fetch()) {
 									echo '<tr>';
 									echo '<td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="employees_view.php?id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
+									echo '<td><a href="employees_item.php?id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
 									$dataStr = '';
-									$data = json_decode($row['data'], true);
-									foreach ($data as $key => $value) {
-										$value = parseValue($row['type'], $key, $value);
-										$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+									if ($row['data'] == '') {
+										$dataStr = 'Item deleted.';
+									}
+									else {
+										$data = json_decode($row['data'], true);
+										foreach ($data as $key => $value) {
+											$value = parseValue($row['type'], $key, $value);
+											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+										}
 									}
 									echo '<td>'.$dataStr.'</td>';
 									echo '</tr>';
