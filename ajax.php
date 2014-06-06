@@ -73,87 +73,29 @@
 	if ($_POST['action'] == 'add') {
 		$return = ['status' => 'success'];
 		
-		//get list of locations
-		$locationOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT locationID, name
-			FROM locations
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$locationOptions .= '<option value="'.$row['locationID'].'">'.$row['name'].'</option>';
+		$return['html'] = '<h1>Add '.$_POST['type'].'</h1>';
+		foreach ($TYPES[$_POST['type']]['formData'] as $key => $section) {
+			$return['html'] .= '<section><h2>'.$key.'</h2><div class="sectionData">';
+			foreach ($section as $column) {
+				$return['html'] .= '<ul>';
+				foreach ($column as $field) {
+					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
+					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off"></li>';
+					}
+					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
+						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
+						$return['html'] .= '</select></li>';
+					}
+				}
+				$return['html'] .= '</ul>';
+			}
+			$return['html'] .= '</div></section>';
 		}
-		
-		//get list of positions
-		$positionOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT positionID, name
-			FROM positions
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$positionOptions .= '<option value="'.$row['positionID'].'">'.$row['name'].'</option>';
-		}
-		
-		$return['html'] = 
-			'<h1>Add employee</h1>
-			<section>
-				<h2>Basic Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<label for="firstName">First Name</label>
-							<input type="text" name="firstName" autocomplete="off">
-						</li>
-						<li>
-							<label for="lastName">Last Name</label>
-							<input type="text" name="lastName" autocomplete="off">
-						</li>
-						<li>
-							<label for="payType">Pay Type</label>
-							<select name="payType">
-								<option value=""></option>
-								<option value="H">Hourly</option>
-								<option value="S">Salary</option>
-							</select>
-						</li>
-						<li>
-							<label for="payAmount">Pay Amount</label>
-							<input type="text" name="payAmount" autocomplete="off">
-						</li>
-					</ul>
-					<ul>
-						<li>
-							<label for="locationID">Location</label>
-							<select name="locationID">
-								<option value=""></option>
-								'.$locationOptions.'
-							</select>
-						</li>
-						<li>
-							<label for="positionID">Position</label>
-							<select name="positionID">
-								<option value=""></option>
-								'.$positionOptions.'
-							</select>
-						</li>
-					</ul>
-				</div>
-			</section>
-			<section>
-				<h2>Personal Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<label for="address">Address</label>
-							<input type="text" name="address" autocomplete="off">
-						</li>
-					</ul>
-				</div>
-			</section>
-			<div id="btnSpacer"><button id="addBtn">Add</button></div>';
+		$return['html'] .= '<div id="btnSpacer"><button id="addBtn">Add</button></div>';
 		
 		echo json_encode($return);
 	}
@@ -209,15 +151,15 @@
 				$valArr[] = $hash;
 			}
 			
-			//add to changes table
-			addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($changeData));
-			
 			//do the insert
 			$sth = $dbh->prepare(
 				'INSERT INTO '.$tableName.' ('.$idName.', active, '.implode(', ', $keyArr).')
 				VALUES(null, 1, '.implode(', ', $placeholderArr).')');
 			$sth->execute($valArr);
 			$id = $dbh->lastInsertId();
+			
+			//add to changes table
+			addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($changeData));
 			
 			if ($_POST['type'] == 'employee') {
 				$return['html'] = 
@@ -236,7 +178,7 @@
 	
 	/*
 		Function: edit
-		Inputs: id
+		Inputs: type, id
 		Outputs: status (success / fail), html
 	*/
 	if ($_POST['action'] == 'edit') {
@@ -244,202 +186,72 @@
 		
 		//get current values
 		$sth = $dbh->prepare(
-			'SELECT username, firstName, lastName, payType, payAmount, locationID, positionID, active
-			FROM employees
-			WHERE employeeID = :employeeID');
-		$sth->execute([':employeeID' => $_POST['id']]);
-		$employee = $sth->fetch();
+			'SELECT *
+			FROM '.$TYPES[$_POST['type']]['pluralName'].'
+			WHERE '.$TYPES[$_POST['type']]['idName'].' = :id');
+		$sth->execute([':id' => $_POST['id']]);
+		$item = $sth->fetch();
 		
-		//get list of locations
-		$locationOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT locationID, name
-			FROM locations
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$selected = '';
-			if ($employee['locationID'] == $row['locationID']) {
-				$selected = ' selected';
+		$return['html'] = '<h1>Edit '.$_POST['type'].'</h1>';
+		foreach ($TYPES[$_POST['type']]['formData'] as $key => $section) {
+			$return['html'] .= '<section><h2>'.$key.'</h2><div class="sectionData">';
+			foreach ($section as $column) {
+				$return['html'] .= '<ul>';
+				foreach ($column as $field) {
+					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
+					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" value="'.$item[$field].'"></li>';
+					}
+					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
+						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], false, $item[$field]) : generateFieldOptions($_POST['type'], $field, false, $item[$field]);
+						$return['html'] .= '</select></li>';
+					}
+				}
+				$return['html'] .= '</ul>';
 			}
-			$locationOptions .= '<option value="'.$row['locationID'].'"'.$selected.'>'.$row['name'].'</option>';
+			$return['html'] .= '</div></section>';
 		}
-		
-		//get list of positions
-		$positionOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT positionID, name
-			FROM positions
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$selected = '';
-			if ($employee['positionID'] == $row['positionID']) {
-				$selected = ' selected';
-			}
-			$positionOptions .= '<option value="'.$row['positionID'].'"'.$selected.'>'.$row['name'].'</option>';
-		}
-		
-		//get list of payTypes
-		$selected = ($employee['payType'] == 'H') ? ' selected' : '';
-		$payTypeOptions = '<option value="H"'.$selected.'>Hourly</option>';
-		$selected = ($employee['payType'] == 'S') ? ' selected' : '';
-		$payTypeOptions .= '<option value="S"'.$selected.'>Salary</option>';
-		
-		
-		$return['html'] = 
-			'<h1>Edit employee</h1>
-			<section>
-				<h2>Basic Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<label for="firstName">First Name</label>
-							<input type="text" name="firstName" autocomplete="off" value="'.$employee['firstName'].'">
-						</li>
-						<li>
-							<label for="lastName">Last Name</label>
-							<input type="text" name="lastName" autocomplete="off" value="'.$employee['lastName'].'">
-						</li>
-						<li>
-							<label for="payType">Pay Type</label>
-							<select name="payType">
-								'.$payTypeOptions.'
-							</select>
-						</li>
-						<li>
-							<label for="payAmount">Pay Amount</label>
-							<input type="text" name="payAmount" autocomplete="off" value="'.$employee['payAmount'].'">
-						</li>
-					</ul>
-					<ul>
-						<li>
-							<label for="locationID">Location</label>
-							<select name="locationID">
-								'.$locationOptions.'
-							</select>
-						</li>
-						<li>
-							<label for="positionID">Position</label>
-							<select name="positionID">
-								'.$positionOptions.'
-							</select>
-						</li>
-					</ul>
-				</div>
-			</section>
-			<section>
-				<h2>Personal Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<label for="address">Address</label>
-							<input type="text" name="address" autocomplete="off">
-						</li>
-					</ul>
-				</div>
-			</section>
-			<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
+		$return['html'] .= '<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
 		
 		echo json_encode($return);
 	}
 	
 	/*
 		Function: editMany
-		Inputs: 
+		Inputs: type
 		Outputs: status (success / fail), html
 	*/
 	if ($_POST['action'] == 'editMany') {
 		$return = ['status' => 'success'];
 		
-		//get list of locations
-		$locationOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT locationID, name
-			FROM locations
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$locationOptions .= '<option value="'.$row['locationID'].'">'.$row['name'].'</option>';
+		$return['html'] = '<h1>Edit '.$TYPES[$_POST['type']]['pluralName'].'</h1>';
+		foreach ($TYPES[$_POST['type']]['formData'] as $key => $section) {
+			$return['html'] .= '<section><h2>'.$key.'</h2><div class="sectionData">';
+			foreach ($section as $column) {
+				$return['html'] .= '<ul>';
+				foreach ($column as $field) {
+					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
+					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+						$return['html'] .= '<li><input type="checkbox">';
+						$return['html'] .= '<label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" disabled></li>';
+					}
+					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+						$return['html'] .= '<li><input type="checkbox">';
+						$return['html'] .= '<label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'" disabled>';
+						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
+						$return['html'] .= '</select></li>';
+					}
+				}
+				$return['html'] .= '</ul>';
+			}
+			$return['html'] .= '</div></section>';
 		}
-		
-		//get list of positions
-		$positionOptions = '';
-		$sth = $dbh->prepare(
-			'SELECT positionID, name
-			FROM positions
-			WHERE active = 1
-			ORDER BY name');
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$positionOptions .= '<option value="'.$row['positionID'].'">'.$row['name'].'</option>';
-		}
-		
-		$return['html'] = 
-			'<h1>Edit employees</h1>
-			<section>
-				<h2>Basic Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<input type="checkbox">
-							<label for="firstName">First Name</label>
-							<input type="text" name="firstName" autocomplete="off" disabled>
-						</li>
-						<li>
-							<input type="checkbox">
-							<label for="lastName">Last Name</label>
-							<input type="text" name="lastName" autocomplete="off" disabled>
-						</li>
-						<li>
-							<input type="checkbox">
-							<label for="payType">Pay Type</label>
-							<select name="payType" disabled>
-								<option value=""></option>
-								<option value="H">Hourly</option>
-								<option value="S">Salary</option>
-							</select>
-						</li>
-						<li>
-							<input type="checkbox">
-							<label for="payAmount">Pay Amount</label>
-							<input type="text" name="payAmount" autocomplete="off" disabled>
-						</li>
-					</ul>
-					<ul>
-						<li>
-							<input type="checkbox">
-							<label for="locationID">Location</label>
-							<select name="locationID" disabled>
-								'.$locationOptions.'
-							</select>
-						</li>
-						<li>
-							<input type="checkbox">
-							<label for="positionID">Position</label>
-							<select name="positionID" disabled>
-								'.$positionOptions.'
-							</select>
-						</li>
-					</ul>
-				</div>
-			</section>
-			<section>
-				<h2>Personal Information</h2>
-				<div class="sectionData">
-					<ul>
-						<li>
-							<input type="checkbox">
-							<label for="address">Address</label>
-							<input type="text" name="address" autocomplete="off" disabled>
-						</li>
-					</ul>
-				</div>
-			</section>
-			<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
+		$return['html'] .= '<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
 		
 		echo json_encode($return);
 	}

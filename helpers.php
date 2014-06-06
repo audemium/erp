@@ -163,4 +163,38 @@
 		
 		return $return;
 	}
+	
+	/* generateTypeOptions */
+	function generateTypeOptions($type, $empty, $value = '') {
+		global $dbh;
+		global $TYPES;
+		
+		$return = ($empty == true)? '<option value=""></option>' : '';
+		$sth = $dbh->prepare(
+			'SELECT '.$TYPES[$type]['idName'].', name
+			FROM '.$TYPES[$type]['pluralName'].'
+			WHERE active = 1
+			ORDER BY name');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$selected = ($row[$TYPES[$type]['idName']] == $value) ? ' selected' : '';
+			$return .= '<option value="'.$row[$TYPES[$type]['idName']].'"'.$selected.'>'.$row['name'].'</option>';
+		}
+		
+		return $return;
+	}
+	
+		/* generateFieldOptions */
+	function generateFieldOptions($type, $field, $empty, $value = '') {
+		global $TYPES;
+		
+		$return = ($empty == true) ? '<option value=""></option>' : '';
+		$options = $TYPES[$type]['fields'][$field]['verifyData'][2];
+		foreach ($options as $option) {
+			$selected = ($option == $value) ? ' selected' : '';
+			$return .= '<option value="'.$option.'"'.$selected.'>'.parseValue($type, $field, $option).'</option>';
+		}
+		
+		return $return;
+	}
 ?>

@@ -58,6 +58,16 @@
 			'pluralName' => 'employees',
 			'formalName' => 'Employee',
 			'idName' => 'employeeID',
+			'formData' => [
+				'Basic Information' => [
+					['firstName', 'lastName', 'payType', 'payAmount'],
+					['locationID', 'positionID']
+				],
+				'Personal Information' => [
+					['address'],
+					[]
+				]
+			],
 			'fields' => [
 				'firstName' => [
 					'formalName' => 'First Name',
