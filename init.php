@@ -57,6 +57,7 @@
 		'employee' => [
 			'pluralName' => 'employees',
 			'formalName' => 'Employee',
+			'formalPluralName' => 'Employees',
 			'idName' => 'employeeID',
 			'formData' => [
 				'Basic Information' => [

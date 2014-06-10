@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Employees</title>
+	<title><?php echo $TYPES[$_GET['type']]['formalPluralName']; ?></title>
 	<?php
 		require('head.php');
 	?>
@@ -60,7 +60,7 @@
 			});
 
 			//set up datatables
-			var table = $('#employeesTable').DataTable({
+			var table = $('#itemTable').DataTable({
 				'paging': false,
 				'dom': 'rti',
 				'order': [1, 'asc'],
@@ -125,42 +125,29 @@
 				<a class="settings" href="#"></a>
 			</div>
 		</div>
-		<table id="employeesTable" class="stripe row-border"> 
+		<table id="itemTable" class="stripe row-border"> 
 			<thead>
 				<tr>
 					<?php
-						//get all column names for the table
-						$sth = $dbh->prepare(
-							'SELECT columnID, name 
-							FROM displayColumns 
-							WHERE type = "employee"'
-						);
-						$sth->execute();
-						while ($row = $sth->fetch()) {
-							$columnNames[$row['columnID']] = $row['name'];
-						}
-					
 						//check to see if the user has a custom config, otherwise use default
 						$sth = $dbh->prepare(
-							'SELECT employees_displayColumns.columnID 
-							FROM employees_displayColumns, displayColumns
-							WHERE employees_displayColumns.columnID = displayColumns.columnID AND employeeID = :employeeID AND type = "employee"'
-						);
-						$sth->execute([':employeeID' => $_SESSION['employeeID']]);
+							'SELECT columnOrder 
+							FROM columns
+							WHERE type = :type AND employeeID = :employeeID');
+						$sth->execute([':type' => $_GET['type'], ':employeeID' => $_SESSION['employeeID']]);
 						$result = $sth->fetchAll();
 						if (count($result) > 0) {
-							foreach ($result as $row) {
-								$columns[] = $row['columnID'];
-							}
+							$columns = explode(',', $result[0]['columnOrder']);
 						}
 						else {
-							$columns = $SETTINGS['columns']['employees'];
+							$columns = $SETTINGS['columns'][$_GET['type']];
 						}
 						
 						//print column headers
 						echo '<th></th>';
 						foreach ($columns as $column) {
-							echo '<th>'.$columnNames[$column].'</th>';
+							$formalName = ($_GET['type'] == 'employee' && $column == 'name') ? 'Name' : $TYPES[$_GET['type']]['fields'][$column]['formalName'];
+							echo '<th>'.$formalName.'</th>';
 						}
 					?>
 				</tr>
@@ -168,37 +155,23 @@
 			<tbody>
 				<?php
 					$sth = $dbh->prepare(
-						'SELECT employeeID, username, firstName, lastName, payType, payAmount, locations.name AS locationName, positions.name AS positionName
-						FROM employees, locations, positions
-						WHERE employees.active = 1 AND employees.locationID = locations.locationID AND employees.positionID = positions.positionID'
-					);
+						'SELECT *
+						FROM '.$TYPES[$_GET['type']]['pluralName'].'
+						WHERE active = 1');
 					$sth->execute();
 					while ($row = $sth->fetch()) {
+						//TODO: get rid of the i while loop, it's just for testing
 						$i = 0;
-						while ($i < 15) {
-							echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox" id="'.$row['employeeID'].'"></td>';
+						while ($i < 10) {
+							$id = $row[$TYPES[$_GET['type']]['idName']];
+							echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox" id="'.$id.'"></td>';
 							foreach ($columns as $column) {
-								switch ($column) {
-									case 1: //Name
-										echo '<td><a href="employees_item.php?id='.$row['employeeID'].'">'.$row['firstName'].' '.$row['lastName'].'</a></td>';
-										break;
-									case 2: //Username
-										echo '<td>'.$row['username'].'</td>';
-										break;
-									case 3: //Position
-										echo '<td>'.$row['positionName'].'</td>';
-										break;
-									case 4: //Location
-										echo '<td>'.$row['locationName'].'</td>';
-										break;
-									case 5: //Pay Type
-										echo '<td>'.parseValue('employee', 'payType', $row['payType']).'</td>';
-										break;
-									case 6: //Pay Amount
-										echo '<td>'.parseValue('employee', 'payAmount', $row['payAmount']).'</td>';
-										break;
-									default:
-										echo '<td>Unknown Column</td>';
+								if ($column == 'name') {
+									$name = ($_GET['type'] == 'employee') ? $row['firstName'].' '.$row['lastName'] : $row['name'];
+									echo '<td><a href="item.php?type='.$_GET['type'].'&id='.$id.'">'.$name.'</a></td>';
+								}
+								else {
+									echo '<td>'.parseValue($_GET['type'], $column, $row[$column]).'</td>';
 								}
 							}
 							echo '</tr>';

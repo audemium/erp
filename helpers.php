@@ -184,7 +184,7 @@
 		return $return;
 	}
 	
-		/* generateFieldOptions */
+	/* generateFieldOptions */
 	function generateFieldOptions($type, $field, $empty, $value = '') {
 		global $TYPES;
 		
