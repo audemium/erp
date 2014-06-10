@@ -14,18 +14,18 @@
 	require_once('init.php');
 	
 	$sth = $dbh->prepare(
-		'SELECT username, firstName, lastName, payType, payAmount, locations.name AS locationName, positions.name AS positionName, employees.active AS active
-		FROM employees, locations, positions
-		WHERE employees.employeeID = :employeeID AND employees.locationID = locations.locationID AND employees.positionID = positions.positionID'
-	);
-	$sth->execute([':employeeID' => $_GET['id']]);
-	$row = $sth->fetch();
+		'SELECT *
+		FROM '.$TYPES[$_GET['type']]['pluralName'].'
+		WHERE '.$TYPES[$_GET['type']]['idName'].' = :id');
+	$sth->execute([':id' => $_GET['id']]);
+	$item = $sth->fetch();
+	$name = getName($_GET['type'], $_GET['id']);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo $row['firstName'].' '.$row['lastName']; ?></title>
+	<title><?php echo $name; ?></title>
 	<?php
 		require('head.php');
 	?>
@@ -33,7 +33,7 @@
 	<script type="text/javascript" src="js/employees.js"></script>
 	<script type="text/javascript">
 		var id = <?php echo $_GET['id']; ?>;
-		var active = <?php echo $row['active']; ?>;
+		var active = <?php echo $item['active']; ?>;
 	
 		$(document).ready(function() {
 			//set up datatables
@@ -83,88 +83,63 @@
 			</div>
 		</div>
 		<div id="data">
-			<h1><?php echo $row['firstName'].' '.$row['lastName']; ?></h1>
-			<section>
-				<h2>Basic Information</h2>
-				<div class="sectionData">
-					<dl>
-						<dt>First Name</dt>
-						<dd><?php echo $row['firstName']; ?></dd>
-						
-						<dt>Last Name</dt>
-						<dd><?php echo $row['lastName']; ?></dd>
-						
-						<dt>Pay Type</dt>
-						<dd><?php echo parseValue('employee', 'payType', $row['payType']); ?></dd>
-						
-						<dt>Pay Amount</dt>
-						<dd><?php echo parseValue('employee', 'payAmount', $row['payAmount']); ?></dd>
-					</dl>
-					<dl>
-						<dt>Location</dt>
-						<dd><?php echo $row['locationName']; ?></dd>
-						
-						<dt>Position</dt>
-						<dd><?php echo $row['positionName']; ?></dd>
-						
-						<dt>Active</dt>
-						<dd><?php echo ($row['active'] == 1) ? 'Yes' : 'No'; ?></dd>
-					</dl>
-				</div>
-			</section>
-			<section>
-				<h2>Personal Information</h2>
-				<div class="sectionData">
-					<dl>
-						<dt>Address</dt>
-						<dd>Test</dd>
-					</dl>
-				</div>
-			</section>
-			<section>
-				<h2>Changes Made</h2>
-				<div class="sectionData">
-					<table id="changesTable" class="stripe row-border"> 
-						<thead>
-							<tr>
-								<td>Time</td>
-								<td>Item</td>
-								<td>Type</td>
-								<td>Changes</td>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-								$sth = $dbh->prepare(
-									'SELECT *
-									FROM changes
-									WHERE employeeID = :employeeID'
-								);
-								$sth->execute([':employeeID' => $_GET['id']]);
-								while ($row = $sth->fetch()) {
-									echo '<tr>';
-									echo '<td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="'.$row['type'].'s_item.php?id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
-									echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
-									$dataStr = '';
-									if ($row['data'] == '') {
-										$dataStr = 'Item deleted.';
-									}
-									else {
-										$data = json_decode($row['data'], true);
-										foreach ($data as $key => $value) {
-											$value = parseValue($row['type'], $key, $value);
-											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+			<h1><?php echo $name; ?></h1>
+			<?php
+				foreach ($TYPES[$_GET['type']]['formData'] as $key => $section) {
+					echo '<section><h2>'.$key.'</h2><div class="sectionData">';
+					foreach ($section as $column) {
+						echo '<dl>';
+						foreach ($column as $field) {
+							echo '<dt>'.$TYPES[$_GET['type']]['fields'][$field]['formalName'].'</dt>';
+							echo '<dd>'.parseValue($_GET['type'], $field, $item[$field]).'</dd>';
+						}
+						echo '</dl>';
+					}
+					echo '</div></section>';
+				}
+				
+				if ($_GET['type'] == 'employee') {
+					echo '<section>
+						<h2>Changes Made</h2>
+						<div class="sectionData">
+							<table id="changesTable" class="stripe row-border"> 
+								<thead>
+									<tr>
+										<td>Time</td>
+										<td>Item</td>
+										<td>Type</td>
+										<td>Changes</td>
+									</tr>
+								</thead>
+								<tbody>';
+									$sth = $dbh->prepare(
+										'SELECT *
+										FROM changes
+										WHERE employeeID = :employeeID');
+									$sth->execute([':employeeID' => $_GET['id']]);
+									while ($row = $sth->fetch()) {
+										echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
+										echo '<td><a href="item.php?type='.$row['type'].'&id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
+										echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
+										$dataStr = '';
+										if ($row['data'] == '') {
+											$dataStr = 'Item deleted.';
 										}
+										else {
+											$data = json_decode($row['data'], true);
+											foreach ($data as $key => $value) {
+												$value = parseValue($row['type'], $key, $value);
+												$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+											}
+										}
+										echo '<td>'.$dataStr.'</td></tr>';
 									}
-									echo '<td>'.$dataStr.'</td>';
-									echo '</tr>';
-								}
-							?>
-						</tbody>
-					</table>
-				</div>
-			</section>
+								echo '</tbody>
+							</table>
+						</div>
+					</section>';
+				}
+			?>
 			<section>
 				<h2>History</h2>
 				<div class="sectionData">
@@ -181,13 +156,11 @@
 								$sth = $dbh->prepare(
 									'SELECT *
 									FROM changes
-									WHERE type = "employee" AND id = :id'
-								);
-								$sth->execute([':id' => $_GET['id']]);
+									WHERE type = :type AND id = :id');
+								$sth->execute([':type' => $_GET['type'], ':id' => $_GET['id']]);
 								while ($row = $sth->fetch()) {
-									echo '<tr>';
-									echo '<td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="employees_item.php?id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
+									echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
+									echo '<td><a href="item.php?type=employee&id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
 									$dataStr = '';
 									if ($row['data'] == '') {
 										$dataStr = 'Item deleted.';
@@ -199,8 +172,7 @@
 											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
 										}
 									}
-									echo '<td>'.$dataStr.'</td>';
-									echo '</tr>';
+									echo '<td>'.$dataStr.'</td></tr>';
 								}
 							?>
 						</tbody>
