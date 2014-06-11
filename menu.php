@@ -26,11 +26,11 @@
 		<li id="index">
 			<a href="index.php"><img src="images/icons/home_32.png" title="Home"></a>
 		</li>
-		<li id="employees">
-			<a href="employees_list.php"><img src="images/icons/users_32.png" title="Employees"></a>
+		<li id="employee">
+			<a href="list.php?type=employee"><img src="images/icons/users_32.png" title="Employees"></a>
 		</li>
-		<li id="finances">
-			<a href="finances_list.php"><img src="images/icons/money_32.png" title="Finances"></a>
+		<li id="finance">
+			<a href="list.php?type=finance"><img src="images/icons/money_32.png" title="Finances"></a>
 			<!--
 				possibly going to get rid of the badges
 				<div id="financesBadge" class="badge">3</div>

@@ -1,7 +1,11 @@
 $(document).ready(function() {
 	//determine the selectedPage and apply style
-    var url = window.location.pathname;
-    var filename = (url == '/index.php' || url == '/') ? 'index' : url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('_'));
+    var url = window.location.search;
+	var filename = 'index';
+	if (url != '') {
+		var stop = url.lastIndexOf('&');
+		filename = (stop == -1) ? url.substring(url.lastIndexOf('type') + 5) : url.substring(url.lastIndexOf('type') + 5, stop);
+	}
 	$('#' + filename).addClass('selectedPage');
 	
 	//set qtip globals
