@@ -30,8 +30,9 @@
 		require('head.php');
 	?>
 	
-	<script type="text/javascript" src="js/employees.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript">
+		var type = '<?php echo $_GET['type']; ?>';
 		var id = <?php echo $_GET['id']; ?>;
 		var active = <?php echo $item['active']; ?>;
 	
@@ -119,7 +120,7 @@
 									$sth->execute([':employeeID' => $_GET['id']]);
 									while ($row = $sth->fetch()) {
 										echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-										echo '<td><a href="item.php?type='.$row['type'].'&id='.$row['id'].'">'.getName($row['type'], $row['id']).'</a></td>';
+										echo '<td>'.getLinkedName($row['type'], $row['id']).'</td>';
 										echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
 										$dataStr = '';
 										if ($row['data'] == '') {
@@ -160,7 +161,7 @@
 								$sth->execute([':type' => $_GET['type'], ':id' => $_GET['id']]);
 								while ($row = $sth->fetch()) {
 									echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td><a href="item.php?type=employee&id='.$row['employeeID'].'">'.getName('employee', $row['employeeID']).'</a></td>';
+									echo '<td>'.getLinkedName('employee', $row['employeeID']).'</td>';
 									$dataStr = '';
 									if ($row['data'] == '') {
 										$dataStr = 'Item deleted.';

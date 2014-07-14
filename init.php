@@ -62,7 +62,7 @@
 			'formData' => [
 				'Basic Information' => [
 					['firstName', 'lastName', 'payType', 'payAmount'],
-					['locationID', 'positionID']
+					['locationID', 'positionID', 'managerID']
 				],
 				'Personal Information' => [
 					['address'],
@@ -94,6 +94,10 @@
 					'formalName' => 'Position',
 					'verifyData' => [1, 'id', 'position']
 				],
+				'managerID' => [
+					'formalName' => 'Manager',
+					'verifyData' => [1, 'id', 'employee']
+				],
 				'address' => [
 					'formalName' => 'Address',
 					'verifyData' => [0, 'str', 200]
@@ -103,7 +107,14 @@
 		'location' => [
 			'pluralName' => 'locations',
 			'formalName' => 'Location',
+			'formalPluralName' => 'Locations',
 			'idName' => 'locationID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'address'],
+					['city', 'state', 'zip']
+				],
+			],
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
@@ -131,14 +142,23 @@
 		'order' => [
 			'pluralName' => 'orders',
 			'formalName' => 'Order',
+			'formalPluralName' => 'Orders',
 			'idName' => 'orderID',
+			'formData' => [
+			],
 			'fields' => [
 			]
 		],
 		'position' => [
 			'pluralName' => 'positions',
 			'formalName' => 'Position',
+			'formalPluralName' => 'Positions',
 			'idName' => 'positionID',
+			'formData' => [
+				'Basic Information' => [
+					['name']
+				]
+			],
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
@@ -149,14 +169,20 @@
 		'product' => [
 			'pluralName' => 'products',
 			'formalName' => 'Product',
+			'formalPluralName' => 'Products',
 			'idName' => 'productID',
+			'formData' => [
+			],
 			'fields' => [
 			]
 		],
 		'service' => [
 			'pluralName' => 'services',
 			'formalName' => 'Service',
+			'formalPluralName' => 'Services',
 			'idName' => 'serviceID',
+			'formData' => [
+			],
 			'fields' => [
 			]
 		]

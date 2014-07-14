@@ -44,6 +44,11 @@
 		return ($type == 'employee') ? $row['firstName'].' '.$row['lastName'] : $row['name'];
 	}
 	
+	/* getLinkedName */
+	function getLinkedName($type, $id) {
+		return '<a href="item.php?type='.$type.'&id='.$id.'">'.getName($type, $id).'</a>';
+	}
+	
 	/* addChange */
 	function addChange($type, $id, $employeeID, $data) {
 		global $dbh;
@@ -60,7 +65,7 @@
 		
 		if ($type == 'employee') {
 			if ($TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
-				$value = getName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
+				$value = getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
 			}
 			switch ($field) {
 				case 'payType':
@@ -93,11 +98,11 @@
 			}
 			else {
 				$attributes = $TYPES[$type]['fields'][$key]['verifyData'];
-				if ($attributes[0] == 1 && $value == '') {
+				if ($attributes[0] == 1 && $value == '' && $key != 'managerID') { //UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
 					$return['status'] = 'fail';
 					$return[$key] = 'Required';
 				}
-				else {
+				elseif ($value != '') {
 					if ($attributes[1] == 'str') {
 						if (strlen($value) > $attributes[2]) {
 							$return['status'] = 'fail';
@@ -170,15 +175,25 @@
 		global $TYPES;
 		
 		$return = ($empty == true)? '<option value=""></option>' : '';
-		$sth = $dbh->prepare(
-			'SELECT '.$TYPES[$type]['idName'].', name
-			FROM '.$TYPES[$type]['pluralName'].'
-			WHERE active = 1
-			ORDER BY name');
+		if ($type == 'employee') {
+			$sth = $dbh->prepare(
+				'SELECT '.$TYPES[$type]['idName'].', firstName, lastName, username
+				FROM '.$TYPES[$type]['pluralName'].'
+				WHERE active = 1
+				ORDER BY firstName, lastName');
+		}
+		else {
+			$sth = $dbh->prepare(
+				'SELECT '.$TYPES[$type]['idName'].', name
+				FROM '.$TYPES[$type]['pluralName'].'
+				WHERE active = 1
+				ORDER BY name');
+		}
 		$sth->execute();
 		while ($row = $sth->fetch()) {
+			$name = ($type == 'employee') ? $row['firstName'].' '.$row['lastName'].' ('.$row['username'].')' : $row['name'];
 			$selected = ($row[$TYPES[$type]['idName']] == $value) ? ' selected' : '';
-			$return .= '<option value="'.$row[$TYPES[$type]['idName']].'"'.$selected.'>'.$row['name'].'</option>';
+			$return .= '<option value="'.$row[$TYPES[$type]['idName']].'"'.$selected.'>'.$name.'</option>';
 		}
 		
 		return $return;
@@ -196,5 +211,33 @@
 		}
 		
 		return $return;
+	}
+	
+	/* updateHierarchy */
+	function updateHierarchy($type, $parentID, $childID) {
+		global $dbh;
+		
+		if ($type == 'add') {
+			$sth = $dbh->prepare(
+				'INSERT INTO hierarchy (parentID, childID, depth)
+				VALUES(:childID, :childID, 0)');
+			$sth->execute([':childID' => $childID]);
+		
+			$sth = $dbh->prepare(
+				'INSERT INTO hierarchy (parentID, childID, depth)
+				SELECT p.parentID, c.childID, p.depth + c.depth + 1
+				FROM hierarchy p, hierarchy c
+				WHERE p.childID = :parentID AND c.parentID = :childID');
+			$sth->execute([':parentID' => $parentID, ':childID' => $childID]);
+		}
+		elseif ($type == 'delete') {
+			$sth = $dbh->prepare(
+				'DELETE link FROM hierarchy p, hierarchy link, hierarchy c, hierarchy to_delete
+				WHERE p.parentID = link.parentID AND c.childID = link.childID
+				AND p.childID = to_delete.parentID AND c.parentID = to_delete.childID
+				AND (to_delete.parentID = :childID OR to_delete.childID = :childID)
+				AND to_delete.depth < 2');
+			$sth->execute([':childID' => $childID]);
+		}
 	}
 ?>

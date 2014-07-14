@@ -113,6 +113,11 @@
 			}
 		}
 		$return = verifyData($_POST['type'], $data);
+		//manual check for managerID because it's required, but not checked in verifyData
+		if ($data['managerID'] == '') {
+			$return['status'] = 'fail';
+			$return['managerID'] = 'Required';
+		}
 		
 		if ($return['status'] != 'fail') {
 			foreach ($data as $key => $value) {
@@ -133,10 +138,10 @@
 					WHERE username LIKE '.$dbh->quote($alphaUser.'%'));
 				$sth->execute();
 				$row = $sth->fetch();
-				$idNum = (is_null($row['maxID'])) ? 1 : $row['maxID'] + 1;
+				$numUser = (is_null($row['maxID'])) ? 1 : $row['maxID'] + 1;
 				$keyArr[] = 'username';
 				$placeholderArr[] = '?';
-				$valArr[] = $alphaUser.$idNum;
+				$valArr[] = $alphaUser.$numUser;
 				
 				//generate temp password (excludes 0, o, 1, l and vowels)
 				$characters = 'bcdfghjkmnpqrstvwxyz23456789';
@@ -162,12 +167,15 @@
 			addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($changeData));
 			
 			if ($_POST['type'] == 'employee') {
+				//update hierarchy table
+				updateHierarchy('add', $_POST['managerID'], $id);
+			
 				$return['html'] = 
 					'<h1>Add employee</h1>
 					<div style="text-align: center;"><br>
-						Employee <a href="employees_item.php?id='.$id.'">'.$_POST['firstName'].' '.$_POST['lastName'].'</a> was added.<br>
+						Employee <a href="item.php?type=employee&id='.$id.'">'.$_POST['firstName'].' '.$_POST['lastName'].'</a> was added.<br>
 						Save the username and temporary password below to give to the employee.<br><br>
-						<b>Username: </b>'.$alphaUser.$idNum.'<br>
+						<b>Username: </b>'.$alphaUser.$numUser.'<br>
 						<b>Temporary Password: </b>'.$password.'
 					</div>';
 			}
@@ -205,8 +213,9 @@
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" value="'.$item[$field].'"></li>';
 					}
 					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+						$empty = ($attributes[0] == 0 || ($field == 'managerID' && $item[$field] == 0)) ? true : false; //allow empty field if it's not required, or if the item is the top employee
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
-						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], false, $item[$field]) : generateFieldOptions($_POST['type'], $field, false, $item[$field]);
+						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], $empty, $item[$field]) : generateFieldOptions($_POST['type'], $field, $empty, $item[$field]);
 						$return['html'] .= '</select></li>';
 					}
 				}
@@ -269,6 +278,11 @@
 			}
 		}
 		$return = verifyData($_POST['type'], $data);
+		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
+		if ($data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
+			$return['status'] = 'fail';
+			$return['managerID'] = 'Required';
+		}
 		
 		if ($return['status'] != 'fail') {
 			$idArr = explode(',', $_POST['id']);
@@ -299,6 +313,11 @@
 					}
 					if (count($tempData) > 0) {
 						addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($tempData));
+					}
+					//if we're changing an employee's manager, remove the current links and then add the new ones
+					if (isset($tempData['managerID'])) {
+						updateHierarchy('delete', null, $id);
+						updateHierarchy('add', $tempData['managerID'], $id);
 					}
 				}
 			}
@@ -371,6 +390,10 @@
 			if ($row['active'] == 1) {
 				$idArrSafe[] = $dbh->quote($id);
 				addChange($_POST['type'], $id, $_SESSION['employeeID'], '');
+				//if we're deleting an employee, remove them from the hierarchy
+				if ($_POST['type'] == 'employee') {
+					updateHierarchy('delete', null, $id);
+				}
 			}
 		}
 		

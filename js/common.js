@@ -12,7 +12,7 @@ $(document).ready(function() {
 			type: 'POST',
 			data: {
 				'action': 'add',
-				'type': 'employee'
+				'type': type
 			}
 		}).done(function(data) {
 			$('#popup > div > div').html(data.html);
@@ -21,7 +21,7 @@ $(document).ready(function() {
 			$('#addBtn').click(function() {
 				var ajaxData = $('#popup input[type!="checkbox"], #popup select').serializeArray();
 				ajaxData.push({'name': 'action', 'value': 'addSave'});
-				ajaxData.push({'name': 'type', 'value': 'employee'});
+				ajaxData.push({'name': 'type', 'value': type});
 				$.ajax({
 					url: 'ajax.php',
 					type: 'POST',
@@ -60,13 +60,13 @@ $(document).ready(function() {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {
-				ajaxData = {'action': 'edit', 'type': 'employee', 'id': id};
+				ajaxData = {'action': 'edit', 'type': type, 'id': id};
 			}
 			else if ($checked.length == 1) {
-				ajaxData = {'action': 'edit', 'type': 'employee', 'id': $checked.attr('id')};
+				ajaxData = {'action': 'edit', 'type': type, 'id': $checked.attr('id')};
 			}
 			else {
-				ajaxData = {'action': 'editMany', 'type': 'employee'};
+				ajaxData = {'action': 'editMany', 'type': type};
 			}
 			
 			$.ajax({
@@ -102,7 +102,7 @@ $(document).ready(function() {
 					
 					ajaxData = $('#popup input[type!="checkbox"], #popup select').serializeArray();
 					ajaxData.push({'name': 'action', 'value': 'editSave'});
-					ajaxData.push({'name': 'type', 'value': 'employee'});
+					ajaxData.push({'name': 'type', 'value': type});
 					ajaxData.push({'name': 'id', 'value': idStr});
 					
 					$.ajax({
@@ -144,13 +144,13 @@ $(document).ready(function() {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {
-				ajaxData = {'action': 'delete', 'type': 'employee', 'id': id};
+				ajaxData = {'action': 'delete', 'type': type, 'id': id};
 			}
 			else if ($checked.length == 1) {
-				ajaxData = {'action': 'delete', 'type': 'employee', 'id': $checked.attr('id')};
+				ajaxData = {'action': 'delete', 'type': type, 'id': $checked.attr('id')};
 			}
 			else {
-				ajaxData = {'action': 'deleteMany', 'type': 'employee'};
+				ajaxData = {'action': 'deleteMany', 'type': type};
 			}
 		
 			$.ajax({
@@ -179,7 +179,7 @@ $(document).ready(function() {
 						type: 'POST',
 						data: {
 							'action': 'deleteSave',
-							'type': 'employee',
+							'type': type,
 							'id': idStr
 						}
 					}).done(function(data) {
