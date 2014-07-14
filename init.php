@@ -27,12 +27,6 @@
 	}
 	set_exception_handler('customException');
 	
-	//global autoloader
-	function customAutoloader($class) {
-		include 'classes/'.$class.'.php';
-	}
-	spl_autoload_register('customAutoloader');
-	
 	//load settings and helper functions
 	require('settings.php');
 	require('helpers.php');
@@ -47,6 +41,31 @@
 			PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 		]
 	);
+	
+	//change cookies to HttpOnly
+	$cookieParams = session_get_cookie_params();
+	session_set_cookie_params($cookieParams['lifetime'], $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], true);
+	//set sessions to use the db functions, register session shutdown, then start the session
+	session_set_save_handler('dbSessionOpen', 'dbSessionClose', 'dbSessionRead', 'dbSessionWrite', 'dbSessionDestroy', 'dbSessionGc');
+	session_register_shutdown();
+	session_start();
+	
+	//destroy a session like this
+	/*$cookieParams = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
+	session_destroy();*/
+	
+	//set up time zones
+	//can't do if/elseif/else because it's possible someone could set an invalid time zone and the function could fail
+	date_default_timezone_set('UTC');
+	//if a default is set in settings.php, use that
+	if (isset($SETTINGS['timeZone']) && $SETTINGS['timeZone'] != '') {
+		date_default_timezone_set($SETTINGS['timeZone']);
+	}
+	//if user sets a time zone, use that
+	if (isset($_SESSION['timeZone']) && $_SESSION['timeZone'] != '') {
+		date_default_timezone_set($_SESSION['timeZone']);
+	}
 	
 	//define types
 	//verifyData explanation
@@ -187,31 +206,6 @@
 			]
 		]
 	];
-
-	//change cookies to HttpOnly
-	$cookieParams = session_get_cookie_params();
-	session_set_cookie_params($cookieParams['lifetime'], $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], true);
-	//set sessions to use the dbSession class, then start the session
-	$sessionHandler = new DbSession();
-	session_set_save_handler($sessionHandler, true);
-	session_start();
-	
-	//destroy a session like this
-	/*$cookieParams = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
-	session_destroy();*/
-	
-	//set up time zones
-	//can't do if/elseif/else because it's possible someone could set an invalid time zone and the function could fail
-	date_default_timezone_set('UTC');
-	//if a default is set in settings.php, use that
-	if (isset($SETTINGS['timeZone']) && $SETTINGS['timeZone'] != '') {
-		date_default_timezone_set($SETTINGS['timeZone']);
-	}
-	//if user sets a time zone, use that
-	if (isset($_SESSION['timeZone']) && $_SESSION['timeZone'] != '') {
-		date_default_timezone_set($_SESSION['timeZone']);
-	}
 	
 	//check if the user is logged in, if not then redirect
 	if (empty($_SESSION['loggedIn']) && $_SERVER['SCRIPT_NAME'] != '/login.php' && $_SERVER['SCRIPT_NAME'] != '/ajax.php') {

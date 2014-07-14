@@ -240,4 +240,65 @@
 			$sth->execute([':childID' => $childID]);
 		}
 	}
+	
+	///////////////     SESSION FUNCTIONS     ///////////////
+	function dbSessionOpen($savePath, $sessionName) {
+		return true;
+	}
+	
+	function dbSessionClose() {
+		return true;
+	}
+
+	function dbSessionRead($sessionID) {
+		global $dbh;
+		
+		$sth = $dbh->prepare(
+			'SELECT sessionData
+			FROM sessions
+			WHERE sessionID = :sessionID');
+		$sth->execute([':sessionID' => $sessionID]);
+		$result = $sth->fetchAll();
+		if (count($result) == 1) {
+			return $result[0]['sessionData'];
+		}
+		else {
+			return '';
+		}
+	}
+
+	function dbSessionWrite($sessionID, $sessionData) {
+		global $dbh;
+		
+		$creationTime = time();
+		$sth = $dbh->prepare(
+			'DELETE FROM sessions
+			WHERE sessionID = :sessionID');
+		$sth->execute([':sessionID' => $sessionID]);
+		$sth = $dbh->prepare(
+			'INSERT INTO sessions (sessionID, creationTime, sessionData)
+			VALUES(:sessionID, :creationTime, :sessionData)');
+		$sth->execute([':sessionID' => $sessionID, ':creationTime' => $creationTime, ':sessionData' => $sessionData]);
+		return true;
+	}
+
+	function dbSessionDestroy($sessionID) {
+		global $dbh;
+		
+		$sth = $dbh->prepare(
+			'DELETE FROM sessions
+			WHERE sessionID = :sessionID');
+		$sth->execute([':sessionID' => $sessionID]);
+		return true;
+	}
+
+	function dbSessionGc($maxlifetime) {
+		global $dbh;
+		
+		$sth = $dbh->prepare(
+			'DELETE FROM sessions
+			WHERE creationTime < UNIX_TIMESTAMP() - :maxlifetime');
+		$sth->execute([':maxlifetime' => $maxlifetime]);
+		return true;
+	}
 ?>
