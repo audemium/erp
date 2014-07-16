@@ -29,6 +29,9 @@
 		<li id="employee">
 			<a href="list.php?type=employee"><img src="images/icons/users_32.png" title="Employees"></a>
 		</li>
+		<li id="order">
+			<a href="list.php?type=order"><img src="images/icons/web_layout_32.png" title="Orders"></a>
+		</li>
 		<li id="finance">
 			<a href="list.php?type=finance"><img src="images/icons/money_32.png" title="Finances"></a>
 			<!--

@@ -27,10 +27,16 @@
 	}
 	set_exception_handler('customException');
 	
-	//load settings and helper functions
+	//global autoloader
+	function customAutoloader($class) {
+		include 'types/'.$class.'.php';
+	}
+	spl_autoload_register('customAutoloader');
+	
+	//load settings, helper functions and type definitions
 	require('settings.php');
 	require('helpers.php');
-	require('types/main.php');
+	require('types/types.php');
 	
 	//connect to db
 	$dbh = new PDO(

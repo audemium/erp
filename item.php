@@ -99,47 +99,8 @@
 					echo '</div></section>';
 				}
 				
-				if ($_GET['type'] == 'employee') {
-					echo '<section>
-						<h2>Changes Made</h2>
-						<div class="sectionData">
-							<table id="changesTable" class="stripe row-border"> 
-								<thead>
-									<tr>
-										<td>Time</td>
-										<td>Item</td>
-										<td>Type</td>
-										<td>Changes</td>
-									</tr>
-								</thead>
-								<tbody>';
-									$sth = $dbh->prepare(
-										'SELECT *
-										FROM changes
-										WHERE employeeID = :employeeID');
-									$sth->execute([':employeeID' => $_GET['id']]);
-									while ($row = $sth->fetch()) {
-										echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-										echo '<td>'.getLinkedName($row['type'], $row['id']).'</td>';
-										echo '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
-										$dataStr = '';
-										if ($row['data'] == '') {
-											$dataStr = 'Item deleted.';
-										}
-										else {
-											$data = json_decode($row['data'], true);
-											foreach ($data as $key => $value) {
-												$value = parseValue($row['type'], $key, $value);
-												$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
-											}
-										}
-										echo '<td>'.$dataStr.'</td></tr>';
-									}
-								echo '</tbody>
-							</table>
-						</div>
-					</section>';
-				}
+				$item = Factory::createItem($_GET['type']);
+				echo $item->printItemBody($_GET['id']);
 			?>
 			<section>
 				<h2>History</h2>
