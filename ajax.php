@@ -279,7 +279,7 @@
 		}
 		$return = verifyData($_POST['type'], $data);
 		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
-		if ($data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
+		if (array_key_exists('managerID', $data) && $data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
 			$return['status'] = 'fail';
 			$return['managerID'] = 'Required';
 		}
@@ -307,6 +307,7 @@
 					$idArrSafe[] = $dbh->quote($id);
 					$tempData = [];
 					foreach ($changeData as $key => $value) {
+						//TODO: fix the if test below to not add managerID when editing the CEO
 						if ($row[$key] != $value) {
 							$tempData[$key] = $value;
 						}

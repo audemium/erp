@@ -38,7 +38,7 @@
 	
 		$(document).ready(function() {
 			//set up datatables
-			var table = $('#changesTable, #historyTable').DataTable({
+			var table = $('.datatable').DataTable({
 				'paging': false,
 				'dom': 't',
 				'order': [0, 'desc'],
@@ -105,7 +105,7 @@
 			<section>
 				<h2>History</h2>
 				<div class="sectionData">
-					<table id="historyTable" class="stripe row-border"> 
+					<table class="datatable stripe row-border"> 
 						<thead>
 							<tr>
 								<td>Time</td>

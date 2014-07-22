@@ -22,8 +22,10 @@
 		require('head.php');
 	?>
 	
-	<script type="text/javascript" src="js/employees.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript">
+		var type = '<?php echo $_GET['type']; ?>';
+	
 		$(document).ready(function() {
 			//change controls and header when hitting the top of the page
 			//TODO: fix column width changing when header hits the top
@@ -146,7 +148,7 @@
 						//print column headers
 						echo '<th></th>';
 						foreach ($columns as $column) {
-							$formalName = ($_GET['type'] == 'employee' && $column == 'name') ? 'Name' : $TYPES[$_GET['type']]['fields'][$column]['formalName'];
+							$formalName = (!isset($TYPES[$_GET['type']]['fields'][$column]) && $column == 'name') ? 'Name' : $TYPES[$_GET['type']]['fields'][$column]['formalName'];
 							echo '<th>'.$formalName.'</th>';
 						}
 					?>
@@ -160,23 +162,21 @@
 						WHERE active = 1');
 					$sth->execute();
 					while ($row = $sth->fetch()) {
-						//TODO: get rid of the i while loop, it's just for testing
-						$i = 0;
-						while ($i < 10) {
-							$id = $row[$TYPES[$_GET['type']]['idName']];
-							echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox" id="'.$id.'"></td>';
-							foreach ($columns as $column) {
-								if ($column == 'name') {
-									$name = ($_GET['type'] == 'employee') ? $row['firstName'].' '.$row['lastName'] : $row['name'];
-									echo '<td><a href="item.php?type='.$_GET['type'].'&id='.$id.'">'.$name.'</a></td>';
-								}
-								else {
-									echo '<td>'.parseValue($_GET['type'], $column, $row[$column]).'</td>';
-								}
+						$id = $row[$TYPES[$_GET['type']]['idName']];
+						echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox" id="'.$id.'"></td>';
+						foreach ($columns as $column) {
+							if ($column == 'name') {
+								$temp = getLinkedName($_GET['type'], $id);
 							}
-							echo '</tr>';
-							$i++;
+							elseif ($column == 'orderID') {
+								$temp = '<a href="item.php?type=order&id='.$id.'">'.$id.'</a>';
+							}
+							else {
+								$temp = parseValue($_GET['type'], $column, $row[$column]);
+							}
+							echo '<td>'.$temp.'</td>';
 						}
+						echo '</tr>';
 					}
 				?>
 			</tbody>
