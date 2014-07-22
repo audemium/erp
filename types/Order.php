@@ -11,45 +11,18 @@
     You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	class Item {
+	class Order extends Item {
 		public function printItemBody($id) {
-			return '';
+			global $dbh;
+			global $TYPES;
+		
+			$return = 'stuff will go here';
+			
+			return $return;
 		}
 		
 		public function getName($type, $id) {
-			global $dbh;
-			global $TYPES;
-			
-			$sth = $dbh->prepare(
-				'SELECT name
-				FROM '.$TYPES[$type]['pluralName'].'
-				WHERE '.$TYPES[$type]['idName'].' = :id');
-			$sth->execute([':id' => $id]);
-			$row = $sth->fetch();
-			
-			return $row['name'];
-		}
-		
-		public function parseValue($type, $field, $value) {
-			return $value;
-		}
-		
-		public function generateTypeOptions($type) {
-			global $dbh;
-			global $TYPES;
-			$return = [];
-			
-			$sth = $dbh->prepare(
-				'SELECT '.$TYPES[$type]['idName'].', name
-				FROM '.$TYPES[$type]['pluralName'].'
-				WHERE active = 1
-				ORDER BY name');
-			$sth->execute();
-			while ($row = $sth->fetch()) {
-				$return[] = [$row[$TYPES[$type]['idName']], $row['name']];
-			}
-			
-			return $return;
+			return 'Order #'.$id;
 		}
 	}
 ?>

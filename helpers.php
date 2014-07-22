@@ -23,25 +23,8 @@
 	
 	/* getName */
 	function getName($type, $id) {
-		global $dbh;
-		global $TYPES;
-		
-		if ($type == 'employee') {
-			$sth = $dbh->prepare(
-				'SELECT firstName, lastName
-				FROM employees
-				WHERE employeeID = :id');
-		}
-		else {
-			$sth = $dbh->prepare(
-				'SELECT name
-				FROM '.$TYPES[$type]['pluralName'].'
-				WHERE '.$TYPES[$type]['idName'].' = :id');
-		}
-		$sth->execute([':id' => $id]);
-		$row = $sth->fetch();
-		
-		return ($type == 'employee') ? $row['firstName'].' '.$row['lastName'] : $row['name'];
+		$item = Factory::createItem($type);
+		return $item->getName($type, $id);
 	}
 	
 	/* getLinkedName */
@@ -63,23 +46,12 @@
 	function parseValue($type, $field, $value) {
 		global $TYPES;
 		
-		if ($type == 'employee') {
-			if ($TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
-				$value = getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
-			}
-			switch ($field) {
-				case 'payType':
-					$parsed = ($value == 'S') ? 'Salary' : 'Hourly';
-					break;
-				case 'payAmount':
-					$parsed = formatCurrency($value);
-					break;
-				default:
-					$parsed = $value;
-			}
+		if ($TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
+			$parsed = getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
 		}
 		else {
-			$parsed = $value;
+			$item = Factory::createItem($type);
+			$parsed = $item->parseValue($type, $field, $value);
 		}
 		
 		return $parsed;
@@ -171,29 +143,13 @@
 	
 	/* generateTypeOptions */
 	function generateTypeOptions($type, $empty, $value = '') {
-		global $dbh;
-		global $TYPES;
-		
 		$return = ($empty == true)? '<option value=""></option>' : '';
-		if ($type == 'employee') {
-			$sth = $dbh->prepare(
-				'SELECT '.$TYPES[$type]['idName'].', firstName, lastName, username
-				FROM '.$TYPES[$type]['pluralName'].'
-				WHERE active = 1
-				ORDER BY firstName, lastName');
-		}
-		else {
-			$sth = $dbh->prepare(
-				'SELECT '.$TYPES[$type]['idName'].', name
-				FROM '.$TYPES[$type]['pluralName'].'
-				WHERE active = 1
-				ORDER BY name');
-		}
-		$sth->execute();
-		while ($row = $sth->fetch()) {
-			$name = ($type == 'employee') ? $row['firstName'].' '.$row['lastName'].' ('.$row['username'].')' : $row['name'];
-			$selected = ($row[$TYPES[$type]['idName']] == $value) ? ' selected' : '';
-			$return .= '<option value="'.$row[$TYPES[$type]['idName']].'"'.$selected.'>'.$name.'</option>';
+		
+		$item = Factory::createItem($type);
+		$optArr = $item->generateTypeOptions($type);
+		foreach ($optArr as $opt) {
+			$selected = ($opt[0] == $value) ? ' selected' : '';
+			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.$opt[1].'</option>';
 		}
 		
 		return $return;

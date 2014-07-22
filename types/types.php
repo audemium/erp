@@ -33,6 +33,15 @@
 				]
 			],
 			'fields' => [
+				//TODO: do I need to add the idName column here? because no other type has it
+				'employeeID' => [
+					'formalName' => 'Employee Number',
+					'verifyData' => [1, 'int', 4294967295]
+				],
+				'username' => [
+					'formalName' => 'Username',
+					'verifyData' => [1, 'str', 100]
+				],
 				'firstName' => [
 					'formalName' => 'First Name',
 					'verifyData' => [1, 'str', 200]
@@ -76,7 +85,7 @@
 				'Basic Information' => [
 					['name', 'address'],
 					['city', 'state', 'zip']
-				],
+				]
 			],
 			'fields' => [
 				'name' => [
@@ -108,8 +117,24 @@
 			'formalPluralName' => 'Orders',
 			'idName' => 'orderID',
 			'formData' => [
+				'Basic Information' => [
+					['customerID'],
+					['employeeID']
+				]
 			],
 			'fields' => [
+				'orderID' => [
+					'formalName' => 'Order Number',
+					'verifyData' => [1, 'int', 4294967295]
+				],
+				'customerID' => [
+					'formalName' => 'Customer',
+					'verifyData' => [0, 'id', 'customer']
+				],
+				'employeeID' => [
+					'formalName' => 'Employee',
+					'verifyData' => [1, 'id', 'employee']
+				]
 			]
 		],
 		'position' => [
@@ -135,8 +160,24 @@
 			'formalPluralName' => 'Products',
 			'idName' => 'productID',
 			'formData' => [
+				'Basic Information' => [
+					['name', 'description'],
+					['defaultPrice']
+				]
 			],
 			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'description' => [
+					'formalName' => 'Description',
+					'verifyData' => [1, 'str', 65535]
+				],
+				'defaultPrice' => [
+					'formalName' => 'Price',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
 			]
 		],
 		'service' => [
@@ -145,8 +186,71 @@
 			'formalPluralName' => 'Services',
 			'idName' => 'serviceID',
 			'formData' => [
+				'Basic Information' => [
+					['name', 'description'],
+					['defaultPrice']
+				]
 			],
 			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'description' => [
+					'formalName' => 'Description',
+					'verifyData' => [1, 'str', 65535]
+				],
+				'defaultPrice' => [
+					'formalName' => 'Price',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
+			]
+		],
+		'customer' => [
+			'pluralName' => 'customers',
+			'formalName' => 'Customer',
+			'formalPluralName' => 'Customers',
+			'idName' => 'customerID',
+			'formData' => [
+				'Basic Information' => [
+					['firstName', 'lastName']
+				]
+			],
+			'fields' => [
+				'firstName' => [
+					'formalName' => 'First Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'lastName' => [
+					'formalName' => 'Last Name',
+					'verifyData' => [1, 'str', 200]
+				]
+			]
+		],
+		'discount' => [
+			'pluralName' => 'discounts',
+			'formalName' => 'Discount',
+			'formalPluralName' => 'Discounts',
+			'idName' => 'discountID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'amount'],
+					['type']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'type' => [
+					'formalName' => 'Type',
+					'verifyData' => [1, 'opt', ['P', 'C']]
+				],
+				'amount' => [
+					'formalName' => 'Amount',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
 			]
 		]
 	];

@@ -19,7 +19,7 @@
 			$return = '<section>
 				<h2>Changes Made</h2>
 				<div class="sectionData">
-					<table id="changesTable" class="stripe row-border"> 
+					<table class="datatable stripe row-border"> 
 						<thead>
 							<tr>
 								<td>Time</td>
@@ -55,6 +55,50 @@
 					</table>
 				</div>
 			</section>';
+			
+			return $return;
+		}
+		
+		public function getName($type, $id) {
+			global $dbh;
+			
+			$sth = $dbh->prepare(
+				'SELECT firstName, lastName
+				FROM employees
+				WHERE employeeID = :id');
+			$sth->execute([':id' => $id]);
+			$row = $sth->fetch();
+			
+			return $row['firstName'].' '.$row['lastName'];
+		}
+		
+		public function parseValue($type, $field, $value) {
+			switch ($field) {
+				case 'payType':
+					$parsed = ($value == 'S') ? 'Salary' : 'Hourly';
+					break;
+				case 'payAmount':
+					$parsed = formatCurrency($value);
+					break;
+				default:
+					$parsed = $value;
+			}
+			
+			return $parsed;
+		}
+		
+		public function generateTypeOptions($type) {
+			global $dbh;
+			
+			$sth = $dbh->prepare(
+				'SELECT employeeID, firstName, lastName, username
+				FROM employees
+				WHERE active = 1
+				ORDER BY firstName, lastName');
+			$sth->execute();
+			while ($row = $sth->fetch()) {
+				$return[] = [$row['employeeID'], $row['firstName'].' '.$row['lastName'].' ('.$row['username'].')'];
+			}
 			
 			return $return;
 		}
