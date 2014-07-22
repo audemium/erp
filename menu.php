@@ -21,23 +21,21 @@
 	<ul>
 		<li id="search">
 			<!-- searchLink div is to make the hover js have the same number of parents for all elements-->
-			<div id="searchLink"><img src="images/icons/search_32.png" title="Search"></div>
+			<div id="searchLink"><img src="images/icons/search.png" title="Search"></div>
 		</li>
 		<li id="index">
-			<a href="index.php"><img src="images/icons/home_32.png" title="Home"></a>
+			<a href="index.php"><img src="images/icons/home.png" title="Home"></a>
 		</li>
-		<li id="employee">
-			<a href="list.php?type=employee"><img src="images/icons/users_32.png" title="Employees"></a>
-		</li>
-		<li id="order">
-			<a href="list.php?type=order"><img src="images/icons/web_layout_32.png" title="Orders"></a>
-		</li>
-		<li id="finance">
-			<a href="list.php?type=finance"><img src="images/icons/money_32.png" title="Finances"></a>
-			<!--
-				possibly going to get rid of the badges
-				<div id="financesBadge" class="badge">3</div>
-			-->
-		</li>
+		
+		<?php
+			foreach ($TYPES as $key => $value) {
+				//TODO: get rid of $keyImg when we have real icons for everything
+				$keyImg = ($key == 'employee' || $key == 'order') ? $key : 'star';
+			
+				echo '<li id="'.$key.'">';
+				echo '<a href="list.php?type='.$key.'"><img src="images/icons/'.$keyImg.'.png" title="'.$value['formalPluralName'].'"></a>';
+				echo '</li>';
+			}
+		?>
 	</ul>
 </nav>
