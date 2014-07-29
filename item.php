@@ -44,7 +44,7 @@
 				'order': [0, 'desc'],
 				'autoWidth': false,
 				'columnDefs': [
-					{'width': '125px', 'targets': 0}
+					{'width': '125px', 'targets': 'dateTimeHeader'}
 				]
 			});
 			
@@ -108,9 +108,9 @@
 					<table class="datatable stripe row-border"> 
 						<thead>
 							<tr>
-								<td>Time</td>
-								<td>Employee</td>
-								<td>Changes</td>
+								<th class="dateTimeHeader">Time</th>
+								<th>Employee</th>
+								<th>Changes</th>
 							</tr>
 						</thead>
 						<tbody>

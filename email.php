@@ -47,10 +47,10 @@
 			<table style="width:100%;">
 				<thead style="font-weight:bold;">
 					<tr>
-						<td>Item</td>
-						<td style="text-align:center;">Quantity</td>
-						<td style="text-align:center;">Unit Price</td>
-						<td style="text-align:right;">Item Total</td>
+						<th>Item</th>
+						<th style="text-align:center;">Quantity</th>
+						<th style="text-align:center;">Unit Price</th>
+						<th style="text-align:right;">Item Total</th>
 					</tr>
 				</thead>
 				<tbody>

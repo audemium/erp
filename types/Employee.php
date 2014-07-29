@@ -22,10 +22,10 @@
 					<table class="datatable stripe row-border"> 
 						<thead>
 							<tr>
-								<td>Time</td>
-								<td>Item</td>
-								<td>Type</td>
-								<td>Changes</td>
+								<th class="dateTimeHeader">Time</th>
+								<th>Item</th>
+								<th>Type</th>
+								<th>Changes</th>
 							</tr>
 						</thead>
 						<tbody>';
