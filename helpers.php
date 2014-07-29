@@ -18,7 +18,9 @@
 	
 	/* formatDateTime */
 	function formatDateTime($unixTS) {
-		return date('d-M-Y H:i', $unixTS);
+		global $SETTINGS;
+		
+		return date($SETTINGS['timeFormat'], $unixTS);
 	}
 	
 	/* getName */

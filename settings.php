@@ -5,8 +5,11 @@
 	$SETTINGS['dbUser'] = 'root';
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
-	//Default timezone
+	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';
+	
+	//Default time format (see http://php.net/manual/en/function.date.php for options)
+	$SETTINGS['timeFormat'] = 'd-M-Y H:i';
 	
 	//Default columns
 	$SETTINGS['columns']['employee'] = ['name', 'positionID', 'locationID', 'payType', 'payAmount'];
