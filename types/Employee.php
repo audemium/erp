@@ -33,7 +33,7 @@
 								'SELECT *
 								FROM changes
 								WHERE employeeID = :employeeID');
-							$sth->execute([':employeeID' => $_GET['id']]);
+							$sth->execute([':employeeID' => $id]);
 							while ($row = $sth->fetch()) {
 								$return .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
 								$return .= '<td>'.getLinkedName($row['type'], $row['id']).'</td>';
