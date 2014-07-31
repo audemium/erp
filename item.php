@@ -37,8 +37,8 @@
 		var active = <?php echo $item['active']; ?>;
 	
 		$(document).ready(function() {
-			//set up datatables
-			var table = $('.datatable').DataTable({
+			//set up dataTables
+			var table = $('.dataTable').DataTable({
 				'paging': false,
 				'dom': 't',
 				'order': [0, 'desc'],
@@ -105,7 +105,7 @@
 			<section>
 				<h2>History</h2>
 				<div class="sectionData">
-					<table class="datatable stripe row-border"> 
+					<table class="dataTable stripe row-border"> 
 						<thead>
 							<tr>
 								<th class="dateTimeHeader">Time</th>

@@ -19,7 +19,7 @@
 			$return = '<section>
 				<h2>Changes Made</h2>
 				<div class="sectionData">
-					<table class="datatable stripe row-border"> 
+					<table class="dataTable stripe row-border"> 
 						<thead>
 							<tr>
 								<th class="dateTimeHeader">Time</th>

@@ -61,7 +61,7 @@
 				}
 			});
 
-			//set up datatables
+			//set up dataTables
 			var table = $('#itemTable').DataTable({
 				'paging': false,
 				'dom': 'rti',
