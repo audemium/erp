@@ -33,11 +33,6 @@
 				]
 			],
 			'fields' => [
-				//TODO: do I need to add the idName column here? because no other type has it
-				'employeeID' => [
-					'formalName' => 'Employee Number',
-					'verifyData' => [1, 'int', 4294967295]
-				],
 				'username' => [
 					'formalName' => 'Username',
 					'verifyData' => [1, 'str', 100]
@@ -51,7 +46,7 @@
 					'verifyData' => [1, 'str', 200]
 				],
 				'payType' => [
-					'formalName' => 'Pay Type',
+					'formalName' => 'Type',
 					'verifyData' => [1, 'opt', ['S', 'H']]
 				],
 				'payAmount' => [
@@ -234,8 +229,8 @@
 			'idName' => 'discountID',
 			'formData' => [
 				'Basic Information' => [
-					['name', 'amount'],
-					['type']
+					['name', 'discountAmount'],
+					['discountType']
 				]
 			],
 			'fields' => [
@@ -243,11 +238,11 @@
 					'formalName' => 'Name',
 					'verifyData' => [1, 'str', 200]
 				],
-				'type' => [
+				'discountType' => [
 					'formalName' => 'Type',
 					'verifyData' => [1, 'opt', ['P', 'C']]
 				],
-				'amount' => [
+				'discountAmount' => [
 					'formalName' => 'Amount',
 					'verifyData' => [1, 'dec', [12, 2]]
 				]
