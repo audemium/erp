@@ -12,5 +12,36 @@
 	*/
 
 	class Product extends Item {
+		public function printItemBody($id) {
+			global $dbh;
+			global $TYPES;
+		
+			$return = '<section>
+				<h2>Inventory</h2>
+				<div class="sectionData">
+					<table class="dataTable stripe row-border"> 
+						<thead>
+							<tr>
+								<th>Location</th>
+								<th>Quantity</th>
+							</tr>
+						</thead>
+						<tbody>';
+							$sth = $dbh->prepare(
+								'SELECT *
+								FROM locations_products
+								WHERE productID = :productID');
+							$sth->execute([':productID' => $id]);
+							while ($row = $sth->fetch()) {
+								$return .= '<tr><td>'.getLinkedName('location', $row['locationID']).'</td>';
+								$return .= '<td>'.$row['quantity'].'</td></tr>';
+							}
+						$return .= '</tbody>
+					</table>
+				</div>
+			</section>';
+			
+			return $return;
+		}
 	}
 ?>

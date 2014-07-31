@@ -12,6 +12,40 @@
 	*/
 
 	class Customer extends Item {
+		public function printItemBody($id) {
+			global $dbh;
+			global $TYPES;
+		
+			$return = '<section>
+				<h2>Orders</h2>
+				<div class="sectionData">
+					<table class="dataTable stripe row-border"> 
+						<thead>
+							<tr>
+								<th class="dateTimeHeader">Time</th>
+								<th>Order</th>
+								<th>Employee</th>
+							</tr>
+						</thead>
+						<tbody>';
+							$sth = $dbh->prepare(
+								'SELECT orders.*, MIN(changeTime) AS changeTime
+								FROM orders, changes
+								WHERE customerID = :customerID AND type = "order" AND id = orderID');
+							$sth->execute([':customerID' => $id]);
+							while ($row = $sth->fetch()) {
+								$return .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
+								$return .= '<td>'.getLinkedName('order', $row['orderID']).'</td>';
+								$return .= '<td>'.getLinkedName('employee', $row['employeeID']).'</td></tr>';
+							}
+						$return .= '</tbody>
+					</table>
+				</div>
+			</section>';
+			
+			return $return;
+		}
+	
 		public function getName($type, $id) {
 			global $dbh;
 			
