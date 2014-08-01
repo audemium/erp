@@ -6,7 +6,7 @@ $(document).ready(function() {
 	});
 	
 	//add
-	$('#controlsAdd').click(function(event) {
+	$('.controlAdd').click(function(event) {
 		$.ajax({
 			url: 'ajax.php',
 			type: 'POST',
@@ -55,8 +55,8 @@ $(document).ready(function() {
 	});
 	
 	//edit
-	$('#controlsEdit').click(function(event) {
-		if ($('#controlsEdit').hasClass('controlsEditEnabled')) {
+	$('.controlEdit').click(function(event) {
+		if ($('.controlEdit').hasClass('editEnabled')) {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {
@@ -139,8 +139,8 @@ $(document).ready(function() {
 	});
 	
 	//delete
-	$('#controlsDelete').click(function(event) {
-		if ($('#controlsDelete').hasClass('controlsDeleteEnabled')) {
+	$('.controlDelete').click(function(event) {
+		if ($('.controlDelete').hasClass('deleteEnabled')) {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {

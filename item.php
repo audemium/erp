@@ -59,9 +59,9 @@
 			});
 			
 			if (active == 1) {
-				$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
-				$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
-				$('#controlsEdit, #controlsDelete').qtip('disable');
+				$('#topControlCenter .controlEdit').addClass('editEnabled').removeClass('editDisabled');
+				$('#topControlCenter .controlDelete').addClass('deleteEnabled').removeClass('deleteDisabled');
+				$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').qtip('disable');
 			}
 		});
 	</script>
@@ -72,16 +72,14 @@
 		require('menu.php');
 	?>
 	<div id="content">
-		<div id="controls">
-			<div id="controlsLeft"></div>
-			<div id="controlsCenter">
-				<a id="controlsAdd" class="controlsAddEnabled" href="#">Add</a>
-				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Item is inactive and cannot be edited.">Edit</a>
-				<a id="controlsDelete" class="controlsDeleteDisabled" href="#" title="Item is inactive and cannot be deleted.">Delete</a>
+		<div id="topControls">
+			<div id="topControlLeft"></div>
+			<div id="topControlCenter">
+				<a class="controlAdd addEnabled" href="#">Add</a>
+				<a class="controlEdit editDisabled" href="#" title="Item is inactive and cannot be edited.">Edit</a>
+				<a class="controlDelete deleteDisabled" href="#" title="Item is inactive and cannot be deleted.">Delete</a>
 			</div>
-			<div id="controlsRight">
-				<a class="settings" href="#"></a>
-			</div>
+			<div id="topControlRight"></div>
 		</div>
 		<div id="data">
 			<h1><?php echo $name; ?></h1>

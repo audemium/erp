@@ -27,12 +27,12 @@
 		var type = '<?php echo $_GET['type']; ?>';
 	
 		$(document).ready(function() {
-			//change controls and header when hitting the top of the page
+			//change topControls and header when hitting the top of the page
 			//TODO: fix column width changing when header hits the top
-			$('#controls').data('top', $('#controls').offset().top);
+			$('#topControls').data('top', $('#topControls').offset().top);
 			$(window).scroll(function() {
-				if ($(window).scrollTop() > $('#controls').data('top')) { 
-					$('#controls').css({
+				if ($(window).scrollTop() > $('#topControls').data('top')) { 
+					$('#topControls').css({
 						'position': 'fixed',
 						'top': '0',
 						'width': $('#content').width(),
@@ -40,13 +40,13 @@
 					});
 					$('thead').css({
 						'position': 'fixed',
-						'top': $('#controls').css('height'),
+						'top': $('#topControls').css('height'),
 						'width': $('#content').width(),
 						'border-radius': '0 0 8px 8px'
 					}); 
 				}
 				else {
-					$('#controls').css({
+					$('#topControls').css({
 						'position': 'static',
 						'top': 'auto',
 						'width': '100%',
@@ -81,7 +81,7 @@
 			});
 			
 			//qtip
-			$('#controls [title]').qtip({
+			$('#topControls [title]').qtip({
 				'style': {'classes': 'qtip-tipsy-custom'},
 				'position': {
 					'my': 'bottom center',
@@ -96,14 +96,14 @@
 		
 		function checkCheckboxes() {
 			if ($('.selectCheckbox:checked').length > 0) {
-				$('#controlsEdit').addClass('controlsEditEnabled').removeClass('controlsEditDisabled');
-				$('#controlsDelete').addClass('controlsDeleteEnabled').removeClass('controlsDeleteDisabled');
-				$('#controlsEdit, #controlsDelete').qtip('disable');
+				$('#topControlCenter .controlEdit').addClass('editEnabled').removeClass('editDisabled');
+				$('#topControlCenter .controlDelete').addClass('deleteEnabled').removeClass('deleteDisabled');
+				$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').qtip('disable');
 			}
 			else {
-				$('#controlsEdit').addClass('controlsEditDisabled').removeClass('controlsEditEnabled');
-				$('#controlsDelete').addClass('controlsDeleteDisabled').removeClass('controlsDeleteEnabled');
-				$('#controlsEdit, #controlsDelete').qtip('enable');
+				$('#topControlCenter .controlEdit').addClass('editDisabled').removeClass('editEnabled');
+				$('#topControlCenter .controlDelete').addClass('deleteDisabled').removeClass('deleteEnabled');
+				$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').qtip('enable');
 			}
 		}
 	</script>
@@ -114,16 +114,16 @@
 		require('menu.php');
 	?>
 	<div id="content">
-		<div id="controls">
-			<div id="controlsLeft">
+		<div id="topControls">
+			<div id="topControlLeft">
 				<input type="text" id="filter" placeholder="Filter">
 			</div>
-			<div id="controlsCenter">
-				<a id="controlsAdd" class="controlsAddEnabled" href="#">Add</a>
-				<a id="controlsEdit" class="controlsEditDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
-				<a id="controlsDelete" class="controlsDeleteDisabled" href="#" title="Select one or more rows to delete.">Delete</a>
+			<div id="topControlCenter">
+				<a class="controlAdd addEnabled" href="#">Add</a>
+				<a class="controlEdit editDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
+				<a class="controlDelete deleteDisabled" href="#" title="Select one or more rows to delete.">Delete</a>
 			</div>
-			<div id="controlsRight">
+			<div id="topControlRight">
 				<a class="settings" href="#"></a>
 			</div>
 		</div>

@@ -68,6 +68,12 @@ button:hover {
 	border-color: #E52D2D !important;
 	box-shadow: 0 0 5px #D45252 !important;
 }
+.textCenter {
+	text-align: center;
+}
+.textRight {
+	text-align: right;
+}
 
 /* Menu */
 nav {
@@ -202,7 +208,7 @@ table.dataTable thead th, table.dataTable thead td {
 }
 
 /* List View */
-#controls {
+#topControls {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -211,7 +217,7 @@ table.dataTable thead th, table.dataTable thead td {
 	padding: 10px;
 	z-index: 10;
 }
-#controlsLeft, #controlsCenter, #controlsRight {
+#topControlLeft, #topControlCenter, #topControlRight {
 	width: 33%;
 	display: inline-block;
 }
@@ -224,10 +230,10 @@ table.dataTable thead th, table.dataTable thead td {
 	width: 250px;
 }
 
-#controlsCenter {
+#topControlCenter {
 	text-align: center;
 }
-#controlsCenter a:before {
+.controlAdd:before , .controlEdit:before, .controlDelete:before {
 	background-image: url("../images/sprites_16.png");
 	background-repeat: no-repeat;
 	content: "";
@@ -238,40 +244,40 @@ table.dataTable thead th, table.dataTable thead td {
 	width: 16px;
 }
 
-.controlsAddDisabled, .controlsEditDisabled, .controlsDeleteDisabled {
+.addDisabled, .editDisabled, .deleteDisabled {
 	color: #888888 !important;
 	cursor: default;
 }
-.controlsAddDisabled:before {
+.addDisabled:before {
 	background-position: 0 -32px;
 }
-.controlsEditDisabled:before {
+.editDisabled:before {
 	background-position: -16px -32px;
 }
-.controlsDeleteDisabled:before {
+.deleteDisabled:before {
 	background-position: -32px -32px;
 }
 
-.controlsAddEnabled:before {
+.addEnabled:before {
 	background-position: 0 0;
 }
-.controlsAddEnabled:hover:before {
+.addEnabled:hover:before {
 	background-position: 0 -16px;
 }
-.controlsEditEnabled:before {
+.editEnabled:before {
 	background-position: -16px 0;
 }
-.controlsEditEnabled:hover:before {
+.editEnabled:hover:before {
 	background-position: -16px -16px;
 }
-.controlsDeleteEnabled:before {
+.deleteEnabled:before {
 	background-position: -32px 0;
 }
-.controlsDeleteEnabled:hover:before {
+.deleteEnabled:hover:before {
 	background-position: -32px -16px;
 }
 
-#controlsAdd, #controlsEdit {
+.controlAdd , .controlEdit {
 	margin-right: 32px;
 }
 .selectCol {
@@ -293,7 +299,7 @@ table.dataTable thead th, table.dataTable thead td {
 	z-index: 10;
 }
 section {
-	margin-top: 20px;
+	margin-top: 30px;
 }
 .sectionData {
 	padding: 0 4%;
@@ -320,6 +326,21 @@ dt:after {
 }
 dd {
 	float: left;
+}
+table.customTable {
+	border-spacing: 0;
+	border-bottom: 1px solid #111111;
+}
+table.customTable thead th, table.customTable thead td {
+	padding: 10px 18px;
+	border-top: 1px solid #000000;
+}
+table.customTable tbody th, table.customTable tbody td {
+    padding: 8px 10px;
+	border-top: 1px solid #DDDDDD;
+}
+table.customTable tbody tr:nth-child(odd) {
+	background-color: #F9F9F9;
 }
 
 /* Popup */
