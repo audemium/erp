@@ -114,7 +114,7 @@
 		}
 		$return = verifyData($_POST['type'], $data);
 		//manual check for managerID because it's required, but not checked in verifyData
-		if ($data['managerID'] == '') {
+		if (array_key_exists('managerID', $data) && $data['managerID'] == '') {
 			$return['status'] = 'fail';
 			$return['managerID'] = 'Required';
 		}
