@@ -21,10 +21,10 @@
 	<ul>
 		<li id="search">
 			<!-- searchLink div is to make the hover js have the same number of parents for all elements-->
-			<div id="searchLink"><img src="images/icons/search.png" title="Search"></div>
+			<div id="searchLink"><img src="images/icons/search.png" title="Search" alt="search"></div>
 		</li>
 		<li id="index">
-			<a href="index.php"><img src="images/icons/home.png" title="Home"></a>
+			<a href="index.php"><img src="images/icons/home.png" title="Home" alt="home"></a>
 		</li>
 		
 		<?php
@@ -33,7 +33,7 @@
 				$keyImg = ($key == 'employee' || $key == 'order') ? $key : 'star';
 			
 				echo '<li id="'.$key.'">';
-				echo '<a href="list.php?type='.$key.'"><img src="images/icons/'.$keyImg.'.png" title="'.$value['formalPluralName'].'"></a>';
+				echo '<a href="list.php?type='.$key.'"><img src="images/icons/'.$keyImg.'.png" title="'.$value['formalPluralName'].'" alt="'.$key.'"></a>';
 				echo '</li>';
 			}
 		?>
