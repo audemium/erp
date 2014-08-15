@@ -1,3 +1,20 @@
+function formatCurrency(amount) {
+	var temp = amount.toFixed(2);
+	temp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	return '$' + temp;
+}
+
+function debounce(fn, delay) {
+	var timer = null;
+	return function () {
+		var context = this, args = arguments;
+		clearTimeout(timer);
+		timer = setTimeout(function () {
+			fn.apply(context, args);
+		}, delay);
+	};
+}
+
 $(document).ready(function() {
 	//add close for all actions
 	$('#popup').on('click', '#close', function(event) {
@@ -6,7 +23,7 @@ $(document).ready(function() {
 	});
 	
 	//add
-	$('.controlAdd').click(function(event) {
+	$('#topControlCenter .controlAdd').click(function(event) {
 		$.ajax({
 			url: 'ajax.php',
 			type: 'POST',
@@ -29,6 +46,7 @@ $(document).ready(function() {
 				}).done(function(data) {
 					$('#popup .invalid').removeClass('invalid');
 					if (data.status == 'success') {
+						//TODO: do something if it doesn't get sent html
 						$('#popup > div > div').html(data.html);
 					}
 					else {
@@ -55,17 +73,20 @@ $(document).ready(function() {
 	});
 	
 	//edit
-	$('.controlEdit').click(function(event) {
-		if ($('.controlEdit').hasClass('editEnabled')) {
+	$('#topControlCenter .controlEdit').click(function(event) {
+		if ($(this).hasClass('editEnabled')) {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {
+				//item view
 				ajaxData = {'action': 'edit', 'type': type, 'id': id};
 			}
 			else if ($checked.length == 1) {
+				//list view, one checked
 				ajaxData = {'action': 'edit', 'type': type, 'id': $checked.attr('id')};
 			}
 			else {
+				//list view, more than one checked
 				ajaxData = {'action': 'editMany', 'type': type};
 			}
 			
@@ -139,17 +160,20 @@ $(document).ready(function() {
 	});
 	
 	//delete
-	$('.controlDelete').click(function(event) {
-		if ($('.controlDelete').hasClass('deleteEnabled')) {
+	$('#topControlCenter .controlDelete').click(function(event) {
+		if ($(this).hasClass('deleteEnabled')) {
 			var ajaxData;
 			var $checked = $('.selectCheckbox:checked');
 			if ($checked.length == 0) {
+				//item view
 				ajaxData = {'action': 'delete', 'type': type, 'id': id};
 			}
 			else if ($checked.length == 1) {
+				//list view, one checked
 				ajaxData = {'action': 'delete', 'type': type, 'id': $checked.attr('id')};
 			}
 			else {
+				//list view, more than one checked
 				ajaxData = {'action': 'deleteMany', 'type': type};
 			}
 		

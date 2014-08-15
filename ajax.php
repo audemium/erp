@@ -46,22 +46,43 @@
 	}
 	
 	/*
-		Function: login
+		Function: search
 		Inputs: 
 		Outputs: status (success / fail), results
 	*/
 	if ($_POST['action'] == 'search') {
-		$return = ['status' => 'fail'];
+		$sql = [];
+		$results = [];
 		
-		//TODO: get search results
-		unset($return);
-		$results = [
-			['name' => 'Nicholas Anderson', 'type' => 'employeee', 'image' => 'user_blue_32.png', 'url' => 'employees.php?id=1'],
-			['name' => 'Website Development', 'type' => 'service', 'image' => 'basket_32.png', 'url' => 'services.php?id=1'],
-			['name' => 'Owner', 'type' => 'position', 'image' => 'user_business_32.png', 'url' => 'positions.php?id=1']
-		];
+		foreach ($TYPES as $key => $type) {
+			if (isset($type['fields']['firstName']) && isset($type['fields']['lastName'])) {
+				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, firstName AS name1, lastName AS name2 FROM '.$type['pluralName'].' WHERE firstName LIKE :term1 OR lastName LIKE :term1 OR CONCAT(firstName, " ", lastName) LIKE :term1';
+			}
+			elseif (isset($type['fields']['name'])) {
+				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, name AS name1, "" AS name2 FROM '.$type['pluralName'].' WHERE name LIKE :term1';
+			}
+			else {
+				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, "" AS name1, "" AS name2 FROM '.$type['pluralName'].' WHERE '.$type['idName'].' = :term2';
+			}
+		}
+		$sqlStr = implode(' UNION ', $sql);
+		
+		$sth = $dbh->prepare($sqlStr);
+		$sth->execute([':term1' => '%'.$_POST['term'].'%', ':term2' => $_POST['term']]);
+		while ($row = $sth->fetch()) {
+			if ($row['name1'] != '' && $row['name2'] != '') {
+				$name = $row['name1'].' '.$row['name2'];
+			}
+			elseif ($row['name1'] != '') {
+				$name = $row['name1'];
+			}
+			else {
+				$name = $TYPES[$row['type']]['formalName'].' #'.$row['id'];
+			}
+			$results[] = ['type' => $row['type'], 'id' => $row['id'], 'name' => $name];
+		}
+		
 		$return = ['status' => 'success', 'results' => $results];
-		
 		echo json_encode($return);
 	}
 	
@@ -135,8 +156,8 @@
 				$sth = $dbh->prepare(
 					'SELECT MAX(CAST(SUBSTRING(username, 3, LENGTH(username) - 2) AS UNSIGNED)) AS maxID
 					FROM employees
-					WHERE username LIKE '.$dbh->quote($alphaUser.'%'));
-				$sth->execute();
+					WHERE username LIKE :username');
+				$sth->execute([':username' => $alphaUser.'%']);
 				$row = $sth->fetch();
 				$numUser = (is_null($row['maxID'])) ? 1 : $row['maxID'] + 1;
 				$keyArr[] = 'username';
@@ -405,6 +426,24 @@
 			SET active = 0
 			WHERE '.$idName.' IN ('.$ids.')');
 		$sth->execute();
+		
+		echo json_encode($return);
+	}
+	
+	/*
+		Function: customAjax
+		Inputs: 
+		Outputs: 
+	*/
+	if ($_POST['action'] == 'customAjax') {
+		foreach ($_POST as $key => $value) {
+			if ($key != 'action' && $key != 'type' && $key != 'id') {
+				$data[$key] = $value;
+			}
+		}
+	
+		$item = Factory::createItem($_POST['type']);
+		$return = $item->customAjax($_POST['id'], $data);
 		
 		echo json_encode($return);
 	}

@@ -34,13 +34,15 @@ $(document).ready(function() {
 		else {
 			$('#searchDiv').show();
 			$('#searchTerm').val('');
+			$('#searchResults').html('Type to begin searching...');
 			$('#searchTerm').focus();
 		}
 	});
 	
 	//search function
-	$('#searchTerm').keyup(function() {
-		$.ajax({
+	$('#searchTerm').keyup(debounce(function(event) {
+		if ($('#searchTerm').val() != '') {
+			$.ajax({
 				url: 'ajax.php',
 				type: 'POST',
 				data: {
@@ -51,8 +53,9 @@ $(document).ready(function() {
 				if (data.status == 'success') {
 					var searchHtml = '';
 					$.each(data.results, function(index, result) {
-						searchHtml += '<a href="' + result.url + '"><div class = "resultItem">';
-						searchHtml += '<img src="images/icons/' + result.image + '" alt="' + result.name + '"><br>';
+						keyImg = (result.type == 'employee' || result.type == 'order') ? result.type : 'star';
+						searchHtml += '<a href="item.php?type=' + result.type + '&id=' + result.id + '"><div class = "resultItem">';
+						searchHtml += '<img src="images/icons/' + keyImg + '.png" alt="' + result.name + '"><br>';
 						searchHtml += result.name;
 						searchHtml += '</div></a>';
 					});
@@ -62,7 +65,11 @@ $(document).ready(function() {
 					//TODO: error message
 				}
 			});
-	});
+		}
+		else {
+			$('#searchResults').html('Type to begin searching...');
+		}
+	}, 250));
 	
 	$(window).resize(function() {
 		var searchWidth = $(window).width() - 124 - 60;

@@ -15,7 +15,7 @@
 <img id="logo" src="images/logo.png" alt="logo">
 <div id="searchDiv">
 	<input type="text" id="searchTerm" placeholder="Search">
-	<div id="searchResults"></div>
+	<div id="searchResults">Type to begin searching...</div>
 </div>
 <nav>
 	<ul>
