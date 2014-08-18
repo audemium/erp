@@ -57,11 +57,6 @@
 	session_register_shutdown();
 	session_start();
 	
-	//destroy a session like this
-	/*$cookieParams = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
-	session_destroy();*/
-	
 	//set up time zones
 	//can't do if/elseif/else because it's possible someone could set an invalid time zone and the function could fail
 	date_default_timezone_set('UTC');

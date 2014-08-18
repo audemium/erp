@@ -26,7 +26,6 @@
 		<li id="index">
 			<a href="index.php"><img src="images/icons/home.png" title="Home" alt="home"></a>
 		</li>
-		
 		<?php
 			foreach ($TYPES as $key => $value) {
 				//TODO: get rid of $keyImg when we have real icons for everything
@@ -37,5 +36,8 @@
 				echo '</li>';
 			}
 		?>
+		<li id="logout">
+			<a href="logout.php"><img src="images/icons/logout.png" title="Sign out" alt="sign out"></a>
+		</li>
 	</ul>
 </nav>
