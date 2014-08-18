@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	class Discount extends Item {
+	class Discount extends GenericItem {
 		public function parseValue($type, $field, $value) {
 			switch ($field) {
 				case 'type':

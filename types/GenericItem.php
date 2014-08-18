@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	class Item {
+	class GenericItem {
 		public function printItemBody($id) {
 			return '';
 		}
@@ -50,6 +50,14 @@
 			}
 			
 			return $return;
+		}
+		
+		public function customAjax($id, $data) {
+			return $return = ['status' => 'success'];;
+		}
+		
+		public function printPopups() {
+			return '';
 		}
 	}
 ?>

@@ -11,6 +11,6 @@
     You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	class Service extends Item {
+	class Service extends GenericItem {
 	}
 ?>

@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	class Product extends Item {
+	class Product extends GenericItem {
 		public function printItemBody($id) {
 			global $dbh;
 			global $TYPES;
