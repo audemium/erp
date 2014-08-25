@@ -25,8 +25,8 @@
 	
 	/* getName */
 	function getName($type, $id) {
-		$item = Factory::createItem($type);
-		return $item->getName($type, $id);
+		$factoryItem = Factory::createItem($type);
+		return $factoryItem->getName($type, $id);
 	}
 	
 	/* getLinkedName */
@@ -52,8 +52,8 @@
 			$parsed = getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
 		}
 		else {
-			$item = Factory::createItem($type);
-			$parsed = $item->parseValue($type, $field, $value);
+			$factoryItem = Factory::createItem($type);
+			$parsed = $factoryItem->parseValue($type, $field, $value);
 		}
 		
 		return $parsed;
@@ -91,9 +91,9 @@
 					}
 					if ($attributes[1] == 'id') {
 						$sth = $dbh->prepare(
-							'SELECT  '.$TYPES[$type]['idName'].'
-							FROM '.$TYPES[$type]['pluralName'].'
-							WHERE '.$TYPES[$type]['idName'].' = :value AND active = 1');
+							'SELECT  '.$TYPES[$attributes[2]]['idName'].'
+							FROM '.$TYPES[$attributes[2]]['pluralName'].'
+							WHERE '.$TYPES[$attributes[2]]['idName'].' = :value AND active = 1');
 						$sth->execute([':value' => $value]);
 						$result = $sth->fetchAll();
 						if (count($result) != 1) {
@@ -147,8 +147,8 @@
 	function generateTypeOptions($type, $empty, $value = '') {
 		$return = ($empty == true)? '<option value=""></option>' : '';
 		
-		$item = Factory::createItem($type);
-		$optArr = $item->generateTypeOptions($type);
+		$factoryItem = Factory::createItem($type);
+		$optArr = $factoryItem->generateTypeOptions($type);
 		foreach ($optArr as $opt) {
 			$selected = ($opt[0] == $value) ? ' selected' : '';
 			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.$opt[1].'</option>';
