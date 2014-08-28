@@ -22,7 +22,6 @@
 		require('head.php');
 	?>
 	
-	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript">
 		var type = '<?php echo $_GET['type']; ?>';
 	
@@ -182,9 +181,9 @@
 			</tbody>
 		</table>
 	</div>
-	<div id="popup">
+	<div class="popup" id="defaultPopup">
 		<div>
-			<a id="close" title="Close">X</a>
+			<a class="close" title="Close">X</a>
 			<div></div>
 		</div>
 	</div>

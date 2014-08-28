@@ -21,5 +21,6 @@
 
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="js/helpers.js"></script>
 <script type="text/javascript" src="js/menu.js"></script>
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>

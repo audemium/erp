@@ -30,7 +30,6 @@
 		require('head.php');
 	?>
 	
-	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript">
 		var type = '<?php echo $_GET['type']; ?>';
 		var id = <?php echo $_GET['id']; ?>;
@@ -65,6 +64,12 @@
 			}
 		});
 	</script>
+	<?php
+		$file = 'js/'.$TYPES[$_GET['type']]['formalName'].'.js';
+		if (file_exists($file)) {
+			echo '<script type="text/javascript" src="'.$file.'"></script>';
+		}
+	?>
 </head>
 
 <body>
@@ -97,8 +102,8 @@
 					echo '</div></section>';
 				}
 				
-				$item = Factory::createItem($_GET['type']);
-				echo $item->printItemBody($_GET['id']);
+				$factoryItem = Factory::createItem($_GET['type']);
+				echo $factoryItem->printItemBody($_GET['id']);
 			?>
 			<section>
 				<h2>History</h2>
@@ -107,7 +112,7 @@
 						<thead>
 							<tr>
 								<th class="dateTimeHeader">Time</th>
-								<th>Employee</th>
+								<th>Modified By</th>
 								<th>Changes</th>
 							</tr>
 						</thead>
@@ -127,9 +132,15 @@
 									}
 									else {
 										$data = json_decode($row['data'], true);
-										foreach ($data as $key => $value) {
-											$value = parseValue($row['type'], $key, $value);
-											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+										if (isset($data['type'])) {
+											//TODO: implement subtypes in history
+											$dataStr .= 'TODO: stuff will go here';
+										}
+										else {
+											foreach ($data as $key => $value) {
+												$value = parseValue($row['type'], $key, $value);
+												$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+											}
 										}
 									}
 									echo '<td>'.$dataStr.'</td></tr>';
@@ -141,11 +152,14 @@
 			</section>
 		</div>
 	</div>
-	<div id="popup">
+	<div class="popup" id="defaultPopup">
 		<div>
-			<a id="close" title="Close">X</a>
+			<a class="close" title="Close">X</a>
 			<div></div>
 		</div>
 	</div>
+	<?php
+		echo $factoryItem->printPopups();
+	?>
 </body>
 </html>

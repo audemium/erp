@@ -44,9 +44,15 @@
 								}
 								else {
 									$data = json_decode($row['data'], true);
-									foreach ($data as $key => $value) {
-										$value = parseValue($row['type'], $key, $value);
-										$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+									if (isset($data['type'])) {
+										//TODO: implement subtypes in history
+										$dataStr .= 'TODO: stuff will go here';
+									}
+									else {
+										foreach ($data as $key => $value) {
+											$value = parseValue($row['type'], $key, $value);
+											$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
+										}
 									}
 								}
 								$return .= '<td>'.$dataStr.'</td></tr>';
