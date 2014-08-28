@@ -12,6 +12,11 @@
 	*/
 
 	require_once('init.php');
+	if (empty($_SESSION['loggedIn']) && $_POST['action'] != 'login') {
+		$_SESSION['loginDestination'] = $_SERVER['HTTP_REFERER'];
+		http_response_code(401);
+		die();
+	}
 	header('Content-Type: application/json');
 	
 	/*
@@ -128,12 +133,10 @@
 	*/
 	if ($_POST['action'] == 'addSave') {
 		//verify data
-		foreach ($_POST as $key => $value) {
-			if ($key != 'action' && $key != 'type') {
-				$data[$key] = $value;
-			}
-		}
-		$return = verifyData($_POST['type'], $data);
+		$data = $_POST;
+		unset($data['action']);
+		unset($data['type']);
+		$return = verifyData($_POST['type'], $data, null);
 		//manual check for managerID because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '') {
 			$return['status'] = 'fail';
@@ -293,12 +296,11 @@
 	*/
 	if ($_POST['action'] == 'editSave') {
 		//verify data
-		foreach ($_POST as $key => $value) {
-			if ($key != 'action' && $key != 'type' && $key != 'id') {
-				$data[$key] = $value;
-			}
-		}
-		$return = verifyData($_POST['type'], $data);
+		$data = $_POST;
+		unset($data['action']);
+		unset($data['type']);
+		unset($data['id']);
+		$return = verifyData($_POST['type'], $data, null);
 		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
 			$return['status'] = 'fail';
@@ -436,14 +438,13 @@
 		Outputs: 
 	*/
 	if ($_POST['action'] == 'customAjax') {
-		foreach ($_POST as $key => $value) {
-			if ($key != 'action' && $key != 'type' && $key != 'id') {
-				$data[$key] = $value;
-			}
-		}
+		$data = $_POST;
+		unset($data['action']);
+		unset($data['type']);
+		unset($data['id']);
 	
-		$item = Factory::createItem($_POST['type']);
-		$return = $item->customAjax($_POST['id'], $data);
+		$factoryItem = Factory::createItem($_POST['type']);
+		$return = $factoryItem->customAjax($_POST['id'], $data);
 		
 		echo json_encode($return);
 	}

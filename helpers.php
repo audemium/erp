@@ -60,18 +60,21 @@
 	}
 	
 	/* verifyData */
-	function verifyData($type, $data) {
+	function verifyData($type, $data, $fields) {
 		global $dbh;
 		global $TYPES;
 		$return = ['status' => 'success'];
 		
+		if ($fields === null) {
+			$fields = $TYPES[$type]['fields'];
+		}
 		foreach ($data as $key => $value) {
-			if (isset($TYPES[$type]['fields'][$key]['verifyData']) != true) {
+			if (!isset($fields[$key]['verifyData'])) {
 				$return['status'] = 'fail';
 				$return[$key] = 'Could not verify data';
 			}
 			else {
-				$attributes = $TYPES[$type]['fields'][$key]['verifyData'];
+				$attributes = $fields[$key]['verifyData'];
 				if ($attributes[0] == 1 && $value == '' && $key != 'managerID') { //UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
 					$return['status'] = 'fail';
 					$return[$key] = 'Required';
