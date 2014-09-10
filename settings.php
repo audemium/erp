@@ -19,5 +19,5 @@
 	$SETTINGS['columns']['product'] = ['name', 'defaultPrice'];
 	$SETTINGS['columns']['service'] = ['name', 'defaultPrice'];
 	$SETTINGS['columns']['customer'] = ['name'];
-	$SETTINGS['columns']['discount'] = ['name', 'type', 'amount'];
+	$SETTINGS['columns']['discount'] = ['name', 'discountType', 'discountAmount'];
 ?>
