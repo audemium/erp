@@ -16,9 +16,15 @@ function debounce(fn, delay) {
 }
 
 $(document).ready(function() {
+	$(document).ajaxError(function(event, jqxhr, settings, exception) {
+		if (jqxhr.status === 401) {
+			window.location.href = 'login.php';
+		}
+	});
+
 	//add close for all actions
-	$('#popup').on('click', '#close', function(event) {
-		$('#popup').hide();
+	$('.popup').on('click', '.close', function(event) {
+		$('.popup').hide();
 		event.preventDefault();
 	});
 	
@@ -32,28 +38,30 @@ $(document).ready(function() {
 				'type': type
 			}
 		}).done(function(data) {
-			$('#popup > div > div').html(data.html);
-			$('#popup').show();
+			$('#defaultPopup > div > div').html(data.html);
+			$('#defaultPopup').show();
 			
 			$('#addBtn').click(function() {
-				var ajaxData = $('#popup input[type!="checkbox"], #popup select').serializeArray();
-				ajaxData.push({'name': 'action', 'value': 'addSave'});
-				ajaxData.push({'name': 'type', 'value': type});
+				var ajaxData = $('#defaultPopup input[type!="checkbox"], #defaultPopup select').serializeArray();
+				ajaxData.push(
+					{'name': 'action', 'value': 'addSave'},
+					{'name': 'type', 'value': type}
+				);
 				$.ajax({
 					url: 'ajax.php',
 					type: 'POST',
 					data: ajaxData
 				}).done(function(data) {
-					$('#popup .invalid').removeClass('invalid');
+					$('#defaultPopup .invalid').removeClass('invalid');
 					if (data.status == 'success') {
 						//TODO: do something if it doesn't get sent html
-						$('#popup > div > div').html(data.html);
+						$('#defaultPopup > div > div').html(data.html);
 					}
 					else {
 						$.each(data, function(key, value) {
 							if (key != 'status') {
-								$('#popup [name=' + key + ']').addClass('invalid');
-								$('#popup [name=' + key + ']').qtip({
+								$('#defaultPopup [name=' + key + ']').addClass('invalid');
+								$('#defaultPopup [name=' + key + ']').qtip({
 									'content': value,
 									'style': {'classes': 'qtip-tipsy-custom'},
 									'position': {
@@ -95,17 +103,17 @@ $(document).ready(function() {
 				type: 'POST',
 				data: ajaxData
 			}).done(function(data) {
-				$('#popup > div > div').html(data.html);
-				$('#popup').show();
+				$('#defaultPopup > div > div').html(data.html);
+				$('#defaultPopup').show();
 				if (ajaxData.action == 'editMany') {
-					$('#popup input[type="checkbox"]').click(function() {
+					$('#defaultPopup input[type="checkbox"]').click(function() {
 						$(this).next().next().prop('disabled', !$(this).prop('checked'));
 					});
 				}
 				
 				$('#editBtn').click(function() {
 					//if action is editMany, make sure we selected at least one field to change
-					if ($checked.length > 1 && $('#popup input[type="checkbox"]:checked').length == 0) {
+					if ($checked.length > 1 && $('#defaultPopup input[type="checkbox"]:checked').length == 0) {
 						return;
 					}
 					
@@ -121,25 +129,27 @@ $(document).ready(function() {
 					}
 					var idStr = selectedIDs.join();
 					
-					ajaxData = $('#popup input[type!="checkbox"], #popup select').serializeArray();
-					ajaxData.push({'name': 'action', 'value': 'editSave'});
-					ajaxData.push({'name': 'type', 'value': type});
-					ajaxData.push({'name': 'id', 'value': idStr});
+					ajaxData = $('#defaultPopup input[type!="checkbox"], #defaultPopup select').serializeArray();
+					ajaxData.push(
+						{'name': 'action', 'value': 'editSave'},
+						{'name': 'type', 'value': type},
+						{'name': 'id', 'value': idStr}
+					);
 					
 					$.ajax({
 						url: 'ajax.php',
 						type: 'POST',
 						data: ajaxData
 					}).done(function(data) {
-						$('#popup .invalid').removeClass('invalid');
+						$('#defaultPopup .invalid').removeClass('invalid');
 						if (data.status == 'success') {
 							location.reload();
 						}
 						else {
 							$.each(data, function(key, value) {
 								if (key != 'status') {
-									$('#popup [name=' + key + ']').addClass('invalid');
-									$('#popup [name=' + key + ']').qtip({
+									$('#defaultPopup [name=' + key + ']').addClass('invalid');
+									$('#defaultPopup [name=' + key + ']').qtip({
 										'content': value,
 										'style': {'classes': 'qtip-tipsy-custom'},
 										'position': {
@@ -182,8 +192,8 @@ $(document).ready(function() {
 				type: 'POST',
 				data: ajaxData
 			}).done(function(data) {
-				$('#popup > div > div').html(data.html);
-				$('#popup').show();
+				$('#defaultPopup > div > div').html(data.html);
+				$('#defaultPopup').show();
 				
 				$('#deleteBtn').click(function() {
 					//get the ids we're changing

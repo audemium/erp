@@ -277,7 +277,7 @@ table.dataTable thead th, table.dataTable thead td {
 	background-position: -32px -16px;
 }
 
-.controlAdd , .controlEdit {
+#topControlCenter .controlAdd , #topControlCenter .controlEdit {
 	margin-right: 32px;
 }
 .selectCol {
@@ -342,9 +342,14 @@ table.customTable tbody th, table.customTable tbody td {
 table.customTable tbody tr:nth-child(odd) {
 	background-color: #F9F9F9;
 }
+.customAddLink {
+	margin-bottom: 10px;
+	text-align: right;
+	width: 100%;
+}
 
-/* Popup */
-#popup {
+/* Popups */
+.popup {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -354,7 +359,7 @@ table.customTable tbody tr:nth-child(odd) {
 	z-index: 100;
 	display: none;
 }
-#popup > div {
+.popup > div {
     background-color: #FFFFFF;
     border-radius: 8px;
     padding: 20px 10px;
@@ -362,7 +367,7 @@ table.customTable tbody tr:nth-child(odd) {
 	margin: 10% auto;
     width: 700px;
 }
-#close {
+.close {
     background-color: #FFFFFF;
     border-radius: 12px;
     box-shadow: 0 1px 3px #000000;
@@ -376,7 +381,7 @@ table.customTable tbody tr:nth-child(odd) {
     top: -10px;
     width: 24px;
 }
-#close:hover {
+.close:hover {
 	color: #ED1A87;
 }
 
@@ -398,7 +403,7 @@ label {
 label:after {
 	content: ":";
 }
-#popup input[type="text"], #popup select, #popup textarea {
+.popup input[type="text"], .popup select, .popup textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
