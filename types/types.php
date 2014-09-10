@@ -14,8 +14,8 @@
 	//define types
 	//verifyData explanation
 		//required: 0 = no, 1 = yes
-		//type: int = integer, id = object id, str = string, dec = decimal, opt = option
-		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt)
+		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, disp = display only
+		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), empty string (disp)
 	$TYPES = [
 		'employee' => [
 			'pluralName' => 'employees',
@@ -113,7 +113,7 @@
 			'idName' => 'orderID',
 			'formData' => [
 				'Basic Information' => [
-					['customerID'],
+					['customerID', 'amountDue'],
 					['employeeID']
 				]
 			],
@@ -129,6 +129,10 @@
 				'employeeID' => [
 					'formalName' => 'Employee',
 					'verifyData' => [1, 'id', 'employee']
+				],
+				'amountDue' => [
+					'formalName' => 'Amount Due',
+					'verifyData' => [0, 'disp', '']
 				]
 			]
 		],

@@ -178,6 +178,18 @@
 			return 'Order #'.$id;
 		}
 		
+		public function parseValue($type, $field, $value) {
+			switch ($field) {
+				case 'amountDue':
+					$parsed = formatCurrency($value);
+					break;
+				default:
+					$parsed = $value;
+			}
+			
+			return $parsed;
+		}
+		
 		public function customAjax($id, $data) {
 			global $dbh;
 			global $TYPES;

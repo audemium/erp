@@ -116,6 +116,9 @@
 						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
 						$return['html'] .= '</select></li>';
 					}
+					elseif ($attributes[1] == 'disp') {
+						$return['html'] .= '<li>&nbsp;</li>';
+					}
 				}
 				$return['html'] .= '</ul>';
 			}
@@ -241,6 +244,9 @@
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
 						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], $empty, $item[$field]) : generateFieldOptions($_POST['type'], $field, $empty, $item[$field]);
 						$return['html'] .= '</select></li>';
+					}
+					elseif ($attributes[1] == 'disp') {
+						$return['html'] .= '<li>&nbsp;</li>';
 					}
 				}
 				$return['html'] .= '</ul>';
