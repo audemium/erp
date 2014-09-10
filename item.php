@@ -60,7 +60,7 @@
 			if (active == 1) {
 				$('#topControlCenter .controlEdit').addClass('editEnabled').removeClass('editDisabled');
 				$('#topControlCenter .controlDelete').addClass('deleteEnabled').removeClass('deleteDisabled');
-				$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').qtip('disable');
+				$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').removeAttr('title');
 			}
 		});
 	</script>
