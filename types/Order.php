@@ -204,10 +204,12 @@
 				if ($data['itemType'] == 'preDiscount') {
 					//list all products and services on the order, plus an order line
 					$sth = $dbh->prepare(
-						'SELECT CONCAT("P", products.productID), name FROM orders_products, products
+						'SELECT CONCAT("P", products.productID), name
+						FROM orders_products, products
 						WHERE orderID = :orderID AND orders_products.productID = products.productID
 						UNION
-						SELECT CONCAT("S", services.serviceID), name FROM orders_services, services
+						SELECT CONCAT("S", services.serviceID), name
+						FROM orders_services, services
 						WHERE orderID = :orderID AND orders_services.serviceID = services.serviceID');
 					$sth->execute([':orderID' => $id]);
 					$return['options'][] = ['value' => 'O', 'text' => 'Order'];	
@@ -218,7 +220,8 @@
 						//get the list of discounts applied to the item already so we don't apply the same discount twice to the same item
 						$temp = [substr($data['itemID'], 0, 1), substr($data['itemID'], 1)];
 						$sth = $dbh->prepare(
-							'SELECT discountID FROM orders_discounts
+							'SELECT discountID
+							FROM orders_discounts
 							WHERE orderID = :orderID AND appliesToType = :appliesToType AND appliesToID = :appliesToID');
 						$sth->execute([':orderID' => $id, ':appliesToType' => $temp[0], ':appliesToID' => $temp[1]]);
 						while ($row = $sth->fetch()) {
@@ -226,7 +229,8 @@
 						}
 					}
 					$sth = $dbh->prepare(
-						'SELECT '.$TYPES[$data['itemType']]['idName'].', name FROM '.$TYPES[$data['itemType']]['pluralName'].'
+						'SELECT '.$TYPES[$data['itemType']]['idName'].', name
+						FROM '.$TYPES[$data['itemType']]['pluralName'].'
 						WHERE active = 1');
 					$sth->execute();
 				}
@@ -295,7 +299,8 @@
 					}
 					elseif ($subType == 'product' || $subType == 'service') {
 						$sth = $dbh->prepare(
-							'SELECT quantity FROM orders_'.$TYPES[$subType]['pluralName'].'
+							'SELECT quantity
+							FROM orders_'.$TYPES[$subType]['pluralName'].'
 							WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :itemID');
 						$sth->execute([':orderID' => $id, ':itemID' => $data['itemID']]);
 						$result = $sth->fetchAll();
@@ -311,7 +316,8 @@
 						else {
 							//get defaultPrice
 							$sth = $dbh->prepare(
-								'SELECT defaultPrice FROM '.$TYPES[$subType]['pluralName'].'
+								'SELECT defaultPrice
+								FROM '.$TYPES[$subType]['pluralName'].'
 								WHERE '.$TYPES[$subType]['idName'].' = :itemID');
 							$sth->execute([':itemID' => $data['itemID']]);
 							$row = $sth->fetch();
@@ -323,13 +329,23 @@
 						}
 					}
 					elseif ($subType == 'discount') {
+						//get discountType and discountAmount
 						$sth = $dbh->prepare(
-							'INSERT INTO orders_discounts (orderID, discountID, appliesToType, appliesToID)
-							VALUES(:orderID, :discountID, :appliesToType, :appliesToID)');
-						$sth->execute([':orderID' => $id, ':discountID' => $data['discountID'], ':appliesToType' => $itemType, ':appliesToID' => $data['itemID']]);
-						$changeData = ['type' => 'discount', 'id' => $data['discountID'], 'appliesToType' => $itemType, 'appliesToID' => $data['itemID'], 'discountNote' => 'add'];
+							'SELECT discountType, discountAmount FROM discounts
+							WHERE discountID = :discountID');
+						$sth->execute([':discountID' => $data['discountID']]);
+						$row = $sth->fetch();
+						$discountType = $row['discountType'];
+						$discountAmount = $row['discountAmount'];
+						
+						$sth = $dbh->prepare(
+							'INSERT INTO orders_discounts (orderID, discountID, appliesToType, appliesToID, discountType, discountAmount)
+							VALUES(:orderID, :discountID, :appliesToType, :appliesToID, :discountType, :discountAmount)');
+						$sth->execute([':orderID' => $id, ':discountID' => $data['discountID'], ':appliesToType' => $itemType, ':appliesToID' => $data['itemID'], ':discountType' => $discountType, ':discountAmount' => $discountAmount]);
+						$changeData = ['type' => 'discount', 'id' => $data['discountID'], 'appliesToType' => $itemType, 'appliesToID' => $data['itemID'], 'discountType' => $discountType, 'discountAmount' => $discountAmount];
 					}
 					
+					self::updateAmountDue($id);
 					addChange('order', $id, $_SESSION['employeeID'], json_encode($changeData));
 				}
 			}
@@ -359,6 +375,7 @@
 						WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID');
 					$sth->execute([':quantity' => $data['quantity'], ':orderID' => $id, ':subID' => $data['subID']]);
 					
+					self::updateAmountDue($id);
 					addChange('order', $id, $_SESSION['employeeID'], json_encode(['type' => $subType, 'id' => $data['subID'], 'quantity' => $data['quantity']]));
 				}
 			}
@@ -388,9 +405,10 @@
 						'DELETE FROM orders_discounts
 						WHERE orderID = :orderID AND discountID = :discountID AND appliesToType = :appliesToType AND appliesToID = :appliesToID');
 					$sth->execute([':orderID' => $id, ':discountID' => $data['subID'], ':appliesToType' => $data['appliesToType'], ':appliesToID' => $data['appliesToID']]);
-					$changeData = ['type' => 'discount', 'id' => $data['subID'], 'appliesToType' => $data['appliesToType'], 'appliesToID' => $data['appliesToID'], 'discountNote' => 'delete'];
+					$changeData = ['type' => 'discount', 'id' => $data['subID'], 'appliesToType' => $data['appliesToType'], 'appliesToID' => $data['appliesToID']];
 				}
 				
+				self::updateAmountDue($id);
 				addChange('order', $id, $_SESSION['employeeID'], json_encode($changeData));
 			}
 			
@@ -481,6 +499,93 @@
 				</div>
 			</div>';
 			return $return;
+		}
+		
+		/* Local Helper Functions */
+		
+		private static function updateAmountDue($id) {
+			global $dbh;
+			$subTotal = 0;
+
+			//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
+			$discounts = ['S' => [], 'P' => [], 'O' => []];
+			$sth = $dbh->prepare(
+				'SELECT discounts.discountID, name, orders_discounts.discountType, orders_discounts.discountAmount, appliesToType, appliesToID
+				FROM discounts, orders_discounts
+				WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID
+				ORDER BY orders_discounts.discountType');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				if ($row['appliesToType'] == 'O') {
+					$discounts['O'][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+				}
+				else {
+					$discounts[$row['appliesToType']][$row['appliesToID']][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+				}
+			}
+			
+			//get services
+			$sth = $dbh->prepare(
+				'SELECT services.serviceID, name, quantity, unitPrice
+				FROM services, orders_services
+				WHERE orderID = :orderID AND services.serviceID = orders_services.serviceID');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$subTotal += $lineAmount;
+				
+				//apply any discounts to this item
+				if (count($discounts['S']) > 0) {
+					foreach ($discounts['S'][$row['serviceID']] as $discount) {
+						$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+						$lineAmount -= $discountAmount;
+						$subTotal -= $discountAmount;
+					}
+				}
+			}
+			
+			//get products
+			$sth = $dbh->prepare(
+				'SELECT products.productID, name, quantity, unitPrice
+				FROM products, orders_products
+				WHERE orderID = :orderID AND products.productID = orders_products.productID');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$subTotal += $lineAmount;
+				
+				//apply any discounts to this item
+				if (count($discounts['P']) > 0) {
+					foreach ($discounts['P'][$row['productID']] as $discount) {
+						$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+						$lineAmount -= $discountAmount;
+						$subTotal -= $discountAmount;
+					}
+				}
+			}
+			
+			//apply order discounts
+			if (count($discounts['O']) > 0) {
+				foreach ($discounts['O'] as $discount) {
+					$discountAmount = ($discount[2] == 'P') ? ($subTotal) * ($discount[3] / 100) : $discount[3];
+					$subTotal -= $discountAmount;
+				}
+			}
+			
+			//get payments
+			$sth = $dbh->prepare(
+				'SELECT SUM(paymentAmount) As paymentAmount
+				FROM payments
+				WHERE orderID = :orderID');
+			$sth->execute([':orderID' => $id]);
+			$row = $sth->fetch();
+			
+			$amountDue = $subTotal - $row['paymentAmount'];
+			$sth = $dbh->prepare(
+				'UPDATE orders
+				SET amountDue = :amountDue
+				WHERE orderID = :orderID');
+			$sth->execute([':amountDue' => $amountDue, ':orderID' => $id]);
 		}
 	}
 ?>
