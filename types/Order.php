@@ -34,12 +34,13 @@
 							</tr>
 						</thead>
 						<tbody>';
-							//get discounts
+							//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
 							$discounts = ['S' => [], 'P' => [], 'O' => []];
 							$sth = $dbh->prepare(
-								'SELECT discounts.discountID, name, discountType, discountAmount, appliesToType, appliesToID
+								'SELECT discounts.discountID, name, orders_discounts.discountType, orders_discounts.discountAmount, appliesToType, appliesToID
 								FROM discounts, orders_discounts
-								WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID');
+								WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID
+								ORDER BY orders_discounts.discountType');
 							$sth->execute([':orderID' => $id]);
 							while ($row = $sth->fetch()) {
 								if ($row['appliesToType'] == 'O') {
@@ -71,6 +72,7 @@
 									foreach ($discounts['S'][$row['serviceID']] as $discount) {
 										$return .= '<tr><td style="padding-left: 50px;">Discount: <a href="item.php?type=discount&id='.$discount[0].'">'.$discount[1].'</a></td><td></td><td></td>';
 										$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+										$lineAmount -= $discountAmount;
 										$subTotal -= $discountAmount;
 										$return .= '<td class="textRight">-'.formatCurrency($discountAmount).'</td>';
 										$return .= '<td></td>';
@@ -100,6 +102,7 @@
 									foreach ($discounts['P'][$row['productID']] as $discount) {
 										$return .= '<tr><td style="padding-left: 50px;">Discount: <a href="item.php?type=discount&id='.$discount[0].'">'.$discount[1].'</a></td><td></td><td></td>';
 										$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+										$lineAmount -= $discountAmount;
 										$subTotal -= $discountAmount;
 										$return .= '<td class="textRight">-'.formatCurrency($discountAmount).'</td>';
 										$return .= '<td></td>';
@@ -263,10 +266,9 @@
 					$data['itemID'] = substr($data['itemID'], 1);
 					if ($itemType == 'O') {
 						$fields = [
+							'itemID' => ['verifyData' => [0, 'int', 0]],
 							'discountID' => ['verifyData' => [1, 'id', 'discount']]
 						];
-						//remove itemID for orders as it messes up verifyData
-						unset($data['itemID']);
 					}
 					elseif ($itemType == 'P') {
 						$fields = [
@@ -282,10 +284,6 @@
 					}
 				}
 				$return = verifyData(null, $data, $fields);
-				//add itemID back for orders
-				if ($subType == 'discount' && $itemType == 'O') {
-					$data['itemID'] = 0;
-				}
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
