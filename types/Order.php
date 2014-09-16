@@ -398,7 +398,7 @@
 						'DELETE FROM orders_discounts
 						WHERE orderID = :orderID AND appliesToType = :appliesToType AND appliesToID = :appliesToID');
 					$sth->execute([':orderID' => $id, ':appliesToType' => $appliesToType, ':appliesToID' => $data['subID']]);
-					$changeData = ['type' => 'payment', 'id' => $data['subID']];
+					$changeData = ['type' => $data['subType'], 'id' => $data['subID']];
 				}
 				elseif ($data['subType'] == 'discount') {
 					$sth = $dbh->prepare(
