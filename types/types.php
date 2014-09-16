@@ -25,11 +25,11 @@
 			'formData' => [
 				'Basic Information' => [
 					['firstName', 'lastName', 'payType', 'payAmount'],
-					['locationID', 'positionID', 'managerID']
+					['locationID', 'positionID', 'managerID', 'vacationTotal']
 				],
 				'Personal Information' => [
-					['address'],
-					[]
+					['address', 'city'],
+					['state', 'zip']
 				]
 			],
 			'fields' => [
@@ -65,9 +65,25 @@
 					'formalName' => 'Manager',
 					'verifyData' => [1, 'id', 'employee']
 				],
+				'vacationTotal' => [
+					'formalName' => 'Total Vacation (hours)',
+					'verifyData' => [1, 'int', 4294967295]
+				],
 				'address' => [
 					'formalName' => 'Address',
-					'verifyData' => [0, 'str', 200]
+					'verifyData' => [1, 'str', 200]
+				],
+				'city' => [
+					'formalName' => 'City',
+					'verifyData' => [1, 'str', 200]
+				],
+				'state' => [
+					'formalName' => 'State',
+					'verifyData' => [1, 'str', 2]
+				],
+				'zip' => [
+					'formalName' => 'Zip Code',
+					'verifyData' => [1, 'str', 10]
 				]
 			]
 		],
@@ -102,8 +118,7 @@
 				'zip' => [
 					'formalName' => 'Zip Code',
 					'verifyData' => [1, 'str', 10]
-				],
-				
+				]
 			]
 		],
 		'order' => [
