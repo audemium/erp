@@ -45,8 +45,37 @@
 								else {
 									$data = json_decode($row['data'], true);
 									if (isset($data['type'])) {
-										//TODO: implement subtypes in history
-										$dataStr .= 'TODO: stuff will go here';
+										//TODO: fix this subtype stuff, it prints out basic stuff, but don't parse things, and added/removed is sometimes wrong
+										if ($data['type'] == 'payment') {
+											if (count($data) == 2) {
+												$dataStr .= 'Removed Payment #'.$data['id'].'. ';
+											}
+											else {
+												$dataStr .= 'Added Payment #'.$data['id'].'. ';
+												$type = $data['type'];
+												unset($data['type']);
+												unset($data['id']);
+												foreach ($data as $key => $value) {
+													//$value = parseValue($type, $key, $value);
+													$dataStr .= '<b>'.$key.':</b> '.$value.' ';
+												}
+											}
+										}
+										else {
+											if (count($data) == 2) {
+												$dataStr .= 'Removed '.getLinkedName($data['type'], $data['id']).'. ';
+											}
+											else {
+												$dataStr .= 'Added '.getLinkedName($data['type'], $data['id']).'. ';
+												$type = $data['type'];
+												unset($data['type']);
+												unset($data['id']);
+												foreach ($data as $key => $value) {
+													//$value = parseValue($type, $key, $value);
+													$dataStr .= '<b>'.$key.':</b> '.$value.' ';
+												}
+											}
+										}
 									}
 									else {
 										foreach ($data as $key => $value) {
