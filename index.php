@@ -62,6 +62,9 @@
 				Summary would go here?
 			</div>
 		</div>
+		<?php
+			require('footer.php');
+		?>
 	</div>
 </body>
 </html>

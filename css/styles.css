@@ -6,6 +6,25 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
+html {
+	min-height: 100%;
+	position: relative;
+}
+body {
+	margin: 0 0 100px;
+}
+footer {
+	bottom: 0;
+	height: 100px;
+	left: 0;
+	line-height: 100px;
+	color: #595959;
+	font-size: 0.8em;
+	overflow: hidden;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
 h1, h2, h3, h4, h5, h6 {
 	padding: 0;
 	margin: 0;

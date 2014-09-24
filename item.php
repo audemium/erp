@@ -180,6 +180,9 @@
 				</div>
 			</section>
 		</div>
+		<?php
+			require('footer.php');
+		?>
 	</div>
 	<div class="popup" id="defaultPopup">
 		<div>

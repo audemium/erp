@@ -126,5 +126,8 @@
 			<button type="submit" id="loginBtn">Submit</button>
 		</form>
 	</div>
+	<?php
+		require('footer.php');
+	?>
 </body>
 </html>
