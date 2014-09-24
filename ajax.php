@@ -336,8 +336,7 @@
 					$idArrSafe[] = $dbh->quote($id);
 					$tempData = [];
 					foreach ($changeData as $key => $value) {
-						//TODO: fix the if test below to not add managerID when editing the CEO
-						if ($row[$key] != $value) {
+						if (($key != 'managerID' && $row[$key] != $value) || ($key == 'managerID' && $value != '' && $row[$key] != $value)) {
 							$tempData[$key] = $value;
 						}
 					}
