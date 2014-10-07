@@ -9,7 +9,9 @@
 	$SETTINGS['timeZone'] = 'America/New_York';
 	
 	//Default time format (see http://php.net/manual/en/function.date.php for options)
-	$SETTINGS['timeFormat'] = 'd-M-Y H:i';
+	$SETTINGS['dateTimeFormat'] = 'd-M-Y H:i';
+	$SETTINGS['dateFormat'] = 'd-M-Y';
+	$SETTINGS['timeFormat'] = 'H:i';
 	
 	//Default columns
 	$SETTINGS['columns']['employee'] = ['name', 'positionID', 'locationID', 'payType', 'payAmount'];

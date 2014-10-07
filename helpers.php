@@ -21,7 +21,7 @@
 	function formatDateTime($unixTS) {
 		global $SETTINGS;
 		
-		return date($SETTINGS['timeFormat'], $unixTS);
+		return date($SETTINGS['dateTimeFormat'], $unixTS);
 	}
 	
 	/* getName */
