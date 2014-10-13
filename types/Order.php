@@ -488,7 +488,8 @@
 								<ul>
 									<li>
 										<label for="quantity">Quantity</label>
-										<input type="text" name="quantity" autocomplete="off" value=""></li>
+										<input type="text" name="quantity" autocomplete="off" value="">
+									</li>
 								</ul>
 							</div>
 						</section>
