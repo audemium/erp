@@ -216,7 +216,7 @@ nav img {
 }
 
 /* Datatables */
-thead {
+table.dataTable thead, table.customTable thead {
 	background-color: #FFFFFF;
 	box-shadow: 0 8px 6px -2px #BBBBBB;
 	z-index: 11;
@@ -224,6 +224,14 @@ thead {
 table.dataTable thead th, table.dataTable thead td {
 	border-bottom: 0;
 	border-top: 1px solid #000000;
+}
+
+/* Timepicker */
+#ui-datepicker-div {
+	font-size: 0.9em;
+}
+.ui-datepicker-prev, .ui-datepicker-next {
+	cursor: pointer;
 }
 
 /* List View */
@@ -328,22 +336,22 @@ section {
 	content: "";
 	display: block;
 }
-dl {
+.sectionData > dl {
 	float: left;
 	width: 50%;
 	margin: 0;
 }
-dt {
+.sectionData > dl > dt {
 	float: left;
 	clear: both;
 	width: 200px;
 	font-weight: bold;
 	padding: 2px 0;
 }
-dt:after {
+.sectionData > dl > dt:after {
 	content: ":";
 }
-dd {
+.sectionData > dl > dd {
 	float: left;
 }
 table.customTable {
