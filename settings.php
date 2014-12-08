@@ -8,10 +8,14 @@
 	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';
 	
-	//Default time format (see http://php.net/manual/en/function.date.php for options)
-	$SETTINGS['dateTimeFormat'] = 'd-M-Y H:i';
+	//Default date/time formats (see http://php.net/manual/en/function.date.php for options)
+	$SETTINGS['dateTimeFormat'] = 'd-M-Y g:i A';
 	$SETTINGS['dateFormat'] = 'd-M-Y';
-	$SETTINGS['timeFormat'] = 'H:i';
+	$SETTINGS['timeFormat'] = 'g:i A';
+	
+	//Default date/time formats in Javascript (see http://trentrichardson.com/examples/timepicker/ for options)
+	$SETTINGS['dateFormatJS'] = 'dd-M-yy';
+	$SETTINGS['timeFormatJS'] = 'h:mm TT';
 	
 	//Default columns
 	$SETTINGS['columns']['employee'] = ['name', 'positionID', 'locationID', 'payType', 'payAmount'];

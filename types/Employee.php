@@ -15,8 +15,83 @@
 		public function printItemBody($id) {
 			global $dbh;
 			global $TYPES;
-		
+			global $SETTINGS;
+			
+			$requestTimeOff = ($id == $_SESSION['employeeID']) ? 'addEnabled' : 'addDisabled';
+			
+			$sth = $dbh->prepare(
+				'SELECT SUM(endTime - startTime) AS used
+				FROM vacationRequests
+				WHERE employeeID = :employeeID AND status = "A"');
+			$sth->execute([':employeeID' => $id]);
+			$row = $sth->fetch();
+			$hoursUsed = $row['used'] / 3600;
+			
+			$sth = $dbh->prepare(
+				'SELECT vacationTotal
+				FROM employees
+				WHERE employeeID = :employeeID');
+			$sth->execute([':employeeID' => $id]);
+			$row = $sth->fetch();
+			$hoursAvailable = $row['vacationTotal'] - $hoursUsed;
+			
 			$return = '<section>
+				<h2>Time Tracking</h2>
+				<div class="sectionData">
+					<dl>
+						<dt>Hours Used</dt>
+						<dd>'.$hoursUsed.'</dd>
+					</dl>
+					<dl>
+						<dt>Hours Available</dt>
+						<dd>'.$hoursAvailable.'</dd>
+					</dl>
+					<br><br>
+					<div class="customAddLink" id="customAdd1"><a class="controlAdd '.$requestTimeOff.'" href="#">Request Time Off</a></div>
+					<table class="customTable dataTable" style="width:100%;">
+						<thead style="font-weight:bold;">
+							<tr>
+								<th>Date</th>
+								<th>Start Time</th>
+								<th>End Time</th>
+								<th>Submitted</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>';
+							$sth = $dbh->prepare(
+								'SELECT *
+								FROM vacationRequests
+								WHERE employeeID = :employeeID');
+							$sth->execute([':employeeID' => $id]);
+							while ($row = $sth->fetch()) {
+								switch ($row['status']) {
+									case 'P':
+										$status = 'Pending';
+										break;
+									case 'A':
+										$status = 'Approved';
+										break;
+									case 'D':
+										$status = 'Denied';
+										break;
+								}
+								$return .= '<tr><td data-sort="'.$row['startTime'].'">'.date($SETTINGS['dateFormat'], $row['startTime']).'</td>';
+								$return .= '<td>'.date($SETTINGS['timeFormat'], $row['startTime']).'</td>';
+								$return .= '<td>'.date($SETTINGS['timeFormat'], $row['endTime']).'</td>';
+								$return .= '<td>'.date($SETTINGS['dateTimeFormat'], $row['submitTime']).'</td>';
+								$return .= '<td>'.$status.'</td></tr>';
+							}
+						$return .= '</tbody>
+					</table>
+				</div>
+			</section>
+			<section>
+				<h2>Paystubs</h2>
+				<div class="sectionData">
+				</div>
+			</section>
+			<section>
 				<h2>Changes Made</h2>
 				<div class="sectionData">
 					<table class="dataTable stripe row-border"> 
@@ -135,6 +210,88 @@
 				$return[] = [$row['employeeID'], $row['firstName'].' '.$row['lastName'].' ('.$row['username'].')'];
 			}
 			
+			return $return;
+		}
+		
+		public function customAjax($id, $data) {
+			global $dbh;
+			$return = ['status' => 'success'];
+			
+			if ($data['subAction'] == 'add') {
+				//add subAction
+				if ($data['date'] == '') {
+					$return['status'] = 'fail';
+					$return['date'] = 'Required';
+				}
+				if ($data['startTime'] == '') {
+					$return['status'] = 'fail';
+					$return['startTime'] = 'Required';
+				}
+				if ($data['endTime'] == '') {
+					$return['status'] = 'fail';
+					$return['endTime'] = 'Required';
+				}
+				$start = strtotime($data['date'].' '.$data['startTime']);
+				$end = strtotime($data['date'].' '.$data['endTime']);
+				
+				if ($return['status'] != 'fail') {
+					if ($start === false || $end === false) {
+						$return['status'] = 'fail';
+						$return['date'] = 'Unrecognized date/time format.  Please change settings.';
+					}
+					else {
+						if ($end < $start) {
+							$return['status'] = 'fail';
+							$return['endTime'] = 'End Time must be after Start Time.';
+						}
+						
+						if ($return['status'] != 'fail') {
+							$sth = $dbh->prepare(
+								'INSERT INTO vacationRequests (vacationRequestID, employeeID, submitTime, startTime, endTime, status)
+								VALUES(null, :employeeID, UNIX_TIMESTAMP(), :startTime, :endTime, "P")');
+							$sth->execute([':employeeID' => $id, ':startTime' => $start, ':endTime' => $end]);
+						}
+					}
+				}
+			}
+			
+			return $return;
+		}
+		
+		public function printPopups() {
+			$return = 
+			'<div class="popup" id="customPopup1">
+				<div>
+					<a class="close" title="Close">X</a>
+					<div>
+						<h1>Request Time Off</h1>
+						<section>
+							<h2></h2>
+							<div class="sectionData">
+								<ul>
+									<li>
+										<label for="startTime">Start Time</label>
+										<input type="text" autocomplete="off" name="startTime">
+									</li>
+									<li>
+										<label for="date">Date</label>
+										<input type="text" autocomplete="off" name="date">
+									</li>
+								</ul>
+								<ul>
+									<li>
+										<label for="endTime">End Time</label>
+										<input type="text" autocomplete="off" name="endTime">
+									</li>
+								</ul>
+							</div>
+						</section>
+						<div id="btnSpacer">
+							<button id="customBtn1">Request</button>
+						</div>
+					</div>
+				</div>
+			</div>';
 			return $return;
 		}
 	}

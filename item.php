@@ -34,6 +34,9 @@
 		var type = '<?php echo $_GET['type']; ?>';
 		var id = <?php echo $_GET['id']; ?>;
 		var active = <?php echo $item['active']; ?>;
+		//echo date/time formats
+		var dateFormatJS = '<?php echo $SETTINGS['dateFormatJS'] ?>';
+		var timeFormatJS = '<?php echo $SETTINGS['timeFormatJS'] ?>';
 	
 		$(document).ready(function() {
 			//set up dataTables
@@ -43,7 +46,7 @@
 				'order': [0, 'desc'],
 				'autoWidth': false,
 				'columnDefs': [
-					{'width': '125px', 'targets': 'dateTimeHeader'}
+					{'width': '150px', 'targets': 'dateTimeHeader'}
 				]
 			});
 			
