@@ -16,6 +16,7 @@ function debounce(fn, delay) {
 }
 
 $(document).ready(function() {
+	//when receiving the http code that indicates the user is logged out, redirect to the login page
 	$(document).ajaxError(function(event, jqxhr, settings, exception) {
 		if (jqxhr.status === 401) {
 			window.location.href = 'login.php';
