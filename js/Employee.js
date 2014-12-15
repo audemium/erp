@@ -54,4 +54,58 @@ $(document).ready(function() {
 		});
 		event.preventDefault();
 	});
+	
+	//get initial changes made datatable, set up view all click
+	$.ajax({
+		url: 'ajax.php',
+		type: 'POST',
+		data: {
+			'action': 'customAjax',
+			'subAction': 'history',
+			'type': type,
+			'id': id,
+			'limit': 5
+		}
+	}).done(function(data) {
+		var temp = $('#changesMadeTable').DataTable();
+		temp.destroy();
+		$('#changesMadeTable tbody').html(data.html);
+		$('#changesMadeTable').DataTable({
+			'paging': false,
+			'dom': 't',
+			'order': [0, 'desc'],
+			'autoWidth': false,
+			'columnDefs': [
+				{'width': '150px', 'targets': 'dateTimeHeader'}
+			]
+		});
+	});
+	$('#changesMadeTable .tableFooter a').click(function(event) {
+		$.ajax({
+			url: 'ajax.php',
+			type: 'POST',
+			data: {
+				'action': 'customAjax',
+				'subAction': 'history',
+				'type': type,
+				'id': id,
+				'limit': -1
+			}
+		}).done(function(data) {
+			var temp = $('#changesMadeTable').DataTable();
+			temp.destroy();
+			$('#changesMadeTable tbody').html(data.html);
+			$('#changesMadeTable').DataTable({
+				'paging': false,
+				'dom': 't',
+				'order': [0, 'desc'],
+				'autoWidth': false,
+				'columnDefs': [
+					{'width': '150px', 'targets': 'dateTimeHeader'}
+				]
+			});
+			$('#changesMadeTable .tableFooter a').remove();
+		});
+		event.preventDefault();
+	});
 });

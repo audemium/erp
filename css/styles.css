@@ -225,6 +225,28 @@ table.dataTable thead th, table.dataTable thead td {
 	border-bottom: 0;
 	border-top: 1px solid #000000;
 }
+.tableFooter {
+	text-align: center;
+}
+.tableFooter a:before, .tableFooter a:after {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -64px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	vertical-align: text-top;
+	width: 16px;
+}
+.tableFooter a:before {
+	margin-right: 20px;
+}
+.tableFooter a:after {
+	margin-left: 20px;
+}
+.tableFooter a:hover:before, .tableFooter a:hover:after {
+	background-position: -64px -16px;
+}
 
 /* Timepicker */
 #ui-datepicker-div {

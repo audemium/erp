@@ -40,7 +40,7 @@
 	
 		$(document).ready(function() {
 			//set up dataTables
-			var table = $('.dataTable').DataTable({
+			$('.dataTable').not('#historyTable').DataTable({
 				'paging': false,
 				'dom': 't',
 				'order': [0, 'desc'],
@@ -48,6 +48,56 @@
 				'columnDefs': [
 					{'width': '150px', 'targets': 'dateTimeHeader'}
 				]
+			});
+			
+			//get initial history datatable, set up view all click
+			$.ajax({
+				url: 'ajax.php',
+				type: 'POST',
+				data: {
+					'action': 'history',
+					'type': type,
+					'id': id,
+					'limit': 5
+				}
+			}).done(function(data) {
+				$('#historyTable tbody').html(data.html);
+				$('#historyTable').DataTable({
+					'paging': false,
+					'dom': 't',
+					'order': [0, 'desc'],
+					'autoWidth': false,
+					'columnDefs': [
+						{'width': '150px', 'targets': 'dateTimeHeader'}
+					]
+				});
+			});
+			$('#historyTable .tableFooter a').click(function(event) {
+				$.ajax({
+					url: 'ajax.php',
+					type: 'POST',
+					data: {
+						'action': 'history',
+						'type': type,
+						'id': id,
+						'limit': -1
+					}
+				}).done(function(data) {
+					var temp = $('#historyTable').DataTable();
+					temp.destroy();
+					$('#historyTable tbody').html(data.html);
+					$('#historyTable').DataTable({
+						'paging': false,
+						'dom': 't',
+						'order': [0, 'desc'],
+						'autoWidth': false,
+						'columnDefs': [
+							{'width': '150px', 'targets': 'dateTimeHeader'}
+						]
+					});
+					$('#historyTable .tableFooter a').remove();
+				});
+				event.preventDefault();
 			});
 			
 			//qtip
@@ -111,7 +161,7 @@
 			<section>
 				<h2>History</h2>
 				<div class="sectionData">
-					<table class="dataTable stripe row-border"> 
+					<table class="dataTable stripe row-border" id="historyTable"> 
 						<thead>
 							<tr>
 								<th class="dateTimeHeader">Time</th>
@@ -120,65 +170,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							<?php
-								$sth = $dbh->prepare(
-									'SELECT *
-									FROM changes
-									WHERE type = :type AND id = :id');
-								$sth->execute([':type' => $_GET['type'], ':id' => $_GET['id']]);
-								while ($row = $sth->fetch()) {
-									echo '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
-									echo '<td>'.getLinkedName('employee', $row['employeeID']).'</td>';
-									$dataStr = '';
-									if ($row['data'] == '') {
-										$dataStr = 'Item deleted.';
-									}
-									else {
-										$data = json_decode($row['data'], true);
-										if (isset($data['type'])) {
-											//TODO: fix this subtype stuff, it prints out basic stuff, but don't parse things, and added/removed is sometimes wrong
-											if ($data['type'] == 'payment') {
-												if (count($data) == 2) {
-													$dataStr .= 'Removed Payment #'.$data['id'].'. ';
-												}
-												else {
-													$dataStr .= 'Added Payment #'.$data['id'].'. ';
-													$type = $data['type'];
-													unset($data['type']);
-													unset($data['id']);
-													foreach ($data as $key => $value) {
-														//$value = parseValue($type, $key, $value);
-														$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-													}
-												}
-											}
-											else {
-												if (count($data) == 2) {
-													$dataStr .= 'Removed '.getLinkedName($data['type'], $data['id']).'. ';
-												}
-												else {
-													$dataStr .= 'Added '.getLinkedName($data['type'], $data['id']).'. ';
-													$type = $data['type'];
-													unset($data['type']);
-													unset($data['id']);
-													foreach ($data as $key => $value) {
-														//$value = parseValue($type, $key, $value);
-														$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-													}
-												}
-											}
-										}
-										else {
-											foreach ($data as $key => $value) {
-												$value = parseValue($row['type'], $key, $value);
-												$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
-											}
-										}
-									}
-									echo '<td>'.$dataStr.'</td></tr>';
-								}
-							?>
 						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="3" class="tableFooter">
+									<a href="#">View All</a>
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			</section>
