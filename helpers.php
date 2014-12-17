@@ -140,6 +140,12 @@
 							$return[$key] = 'Invalid value';
 						}
 					}
+					if ($attributes[1] == 'email') {
+						if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+							$return['status'] = 'fail';
+							$return[$key] = 'Must be an email address';
+						}
+					}
 				}
 			}
 		}

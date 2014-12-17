@@ -107,7 +107,7 @@
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
 					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
-					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec' || $attributes[1] == 'email') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off"></li>';
 					}
@@ -235,7 +235,7 @@
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
 					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
-					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec' || $attributes[1] == 'email') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" value="'.$item[$field].'"></li>';
 					}

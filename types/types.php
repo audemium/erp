@@ -14,8 +14,8 @@
 	//define types
 	//verifyData explanation
 		//required: 0 = no, 1 = yes
-		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, disp = display only
-		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), empty string (disp)
+		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, disp = display only, email = email address
+		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), not used (disp, email)
 	$TYPES = [
 		'employee' => [
 			'pluralName' => 'employees',
@@ -28,7 +28,7 @@
 					['locationID', 'positionID', 'managerID', 'vacationTotal']
 				],
 				'Personal Information' => [
-					['address', 'city'],
+					['address', 'city', 'personalEmail'],
 					['state', 'zip']
 				]
 			],
@@ -84,6 +84,10 @@
 				'zip' => [
 					'formalName' => 'Zip Code',
 					'verifyData' => [1, 'str', 10]
+				],
+				'personalEmail' => [
+					'formalName' => 'Email',
+					'verifyData' => [1, 'email']
 				]
 			]
 		],
@@ -147,7 +151,7 @@
 				],
 				'amountDue' => [
 					'formalName' => 'Amount Due',
-					'verifyData' => [0, 'disp', '']
+					'verifyData' => [0, 'disp']
 				]
 			]
 		],
@@ -227,7 +231,8 @@
 			'idName' => 'customerID',
 			'formData' => [
 				'Basic Information' => [
-					['firstName', 'lastName']
+					['firstName', 'lastName'],
+					['email']
 				]
 			],
 			'fields' => [
@@ -238,6 +243,10 @@
 				'lastName' => [
 					'formalName' => 'Last Name',
 					'verifyData' => [1, 'str', 200]
+				],
+				'email' => [
+					'formalName' => 'Email',
+					'verifyData' => [1, 'email']
 				]
 			]
 		],
