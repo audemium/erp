@@ -235,7 +235,7 @@ table.dataTable thead th, table.dataTable thead td {
 	content: "";
 	display: inline-block;
 	height: 16px;
-	vertical-align: text-top;
+	vertical-align: -10%;
 	width: 16px;
 }
 .tableFooter a:before {
@@ -289,7 +289,7 @@ table.dataTable thead th, table.dataTable thead td {
 	display: inline-block;
 	height: 16px;
 	margin-right: 5px;
-	vertical-align: text-top;
+	vertical-align: -10%;
 	width: 16px;
 }
 
@@ -461,4 +461,34 @@ label:after {
     box-shadow: 0 0 3px #CCCCCC;
     padding: 2px;
     width: 125px;
+}
+
+/* Icons */
+.controlEmail:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -80px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: -10%;
+	width: 16px;
+}
+.controlEmail:hover:before {
+	background-position: -80px -16px;
+}
+.controlPDF:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -96px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: -10%;
+	width: 16px;
+}
+.controlPDF:hover:before {
+	background-position: -96px -16px;
 }

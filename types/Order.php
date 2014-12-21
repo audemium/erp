@@ -174,6 +174,15 @@
 				</div>
 			</section>';
 			
+			//Invoice section
+			$return .= '<section>
+				<h2>Invoice</h2>
+				<div class="sectionData" style="text-align: center;">
+					<a href="#" class="controlEmail" style="margin-right: 25%;">Email Invoice</a>
+					<a href="#" class="controlPDF">Generate PDF Invoice</a>
+				</div>
+			</section>';
+			
 			return $return;
 		}
 		
