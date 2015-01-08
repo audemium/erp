@@ -17,7 +17,6 @@
 			global $TYPES;
 			
 			//Line Items section
-			$subTotal = 0;
 			$return = '<section>
 				<h2>Line Items</h2>
 				<div class="sectionData">
@@ -34,97 +33,26 @@
 							</tr>
 						</thead>
 						<tbody>';
-							//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
-							$discounts = ['S' => [], 'P' => [], 'O' => []];
-							$sth = $dbh->prepare(
-								'SELECT discounts.discountID, name, orders_discounts.discountType, orders_discounts.discountAmount, appliesToType, appliesToID
-								FROM discounts, orders_discounts
-								WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID
-								ORDER BY orders_discounts.discountType');
-							$sth->execute([':orderID' => $id]);
-							while ($row = $sth->fetch()) {
-								if ($row['appliesToType'] == 'O') {
-									$discounts['O'][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+							$lineItemTable = self::getLineItemTable($id);
+							
+							foreach ($lineItemTable[0] as $line) {
+								if ($line[0] == 'service' || $line[0] == 'product') {
+									$return .= '<tr><td><a href="item.php?type='.$line[0].'&id='.$line[1].'">'.$line[2].'</a></td>';
+									$return .= '<td class="textCenter">'.$line[3].'</td>';
+									$return .= '<td class="textCenter">'.formatCurrency($line[4]).'</td>';
+									$return .= '<td class="textRight">'.formatCurrency($line[5]).'</td>';
+									$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="'.$line[0].'" data-id="'.$line[1].'" data-quantity="'.$line[3].'"></a></td>';
+									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="'.$line[0].'" data-id="'.$line[1].'"></a></td></tr>';
 								}
-								else {
-									$discounts[$row['appliesToType']][$row['appliesToID']][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+								elseif ($line[0] == 'discount') {
+									$padding = ($line[3] == 'S' || $line[3] == 'P') ? '<td style="padding-left: 50px;">' : '<td>';
+									$return .= '<tr>'.$padding.'Discount: <a href="item.php?type=discount&id='.$line[1].'">'.$line[2].'</a></td><td></td><td></td>';
+									$return .= '<td class="textRight">-'.formatCurrency($line[5]).'</td><td></td>';
+									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="discount" data-id="'.$line[1].'" data-appliestotype="'.$line[3].'" data-appliestoid="'.$line[4].'"></a></td></tr>';
 								}
 							}
 							
-							//get services
-							$sth = $dbh->prepare(
-								'SELECT services.serviceID, name, quantity, unitPrice
-								FROM services, orders_services
-								WHERE orderID = :orderID AND services.serviceID = orders_services.serviceID');
-							$sth->execute([':orderID' => $id]);
-							while ($row = $sth->fetch()) {
-								$return .= '<tr><td><a href="item.php?type=service&id='.$row['serviceID'].'">'.$row['name'].'</a></td>';
-								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>'; //remove extra zeros and decimals
-								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
-								$lineAmount = $row['quantity'] * $row['unitPrice'];
-								$subTotal += $lineAmount;
-								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-								$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="service" data-id="'.$row['serviceID'].'" data-quantity="'.($row['quantity'] + 0).'"></a></td>';
-								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="service" data-id="'.$row['serviceID'].'"></a></td></tr>';
-								
-								//apply any discounts to this item
-								if (count($discounts['S']) > 0) {
-									foreach ($discounts['S'][$row['serviceID']] as $discount) {
-										$return .= '<tr><td style="padding-left: 50px;">Discount: <a href="item.php?type=discount&id='.$discount[0].'">'.$discount[1].'</a></td><td></td><td></td>';
-										$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
-										$lineAmount -= $discountAmount;
-										$subTotal -= $discountAmount;
-										$return .= '<td class="textRight">-'.formatCurrency($discountAmount).'</td>';
-										$return .= '<td></td>';
-										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="discount" data-id="'.$discount[0].'" data-appliestotype="S" data-appliestoid="'.$row['serviceID'].'"></a></td></tr>';
-									}
-								}
-							}
-							
-							//get products
-							$sth = $dbh->prepare(
-								'SELECT products.productID, name, quantity, unitPrice
-								FROM products, orders_products
-								WHERE orderID = :orderID AND products.productID = orders_products.productID');
-							$sth->execute([':orderID' => $id]);
-							while ($row = $sth->fetch()) {
-								$return .= '<tr><td><a href="item.php?type=product&id='.$row['productID'].'">'.$row['name'].'</a></td>';
-								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>'; //remove extra zeros and decimals
-								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
-								$lineAmount = $row['quantity'] * $row['unitPrice'];
-								$subTotal += $lineAmount;
-								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-								$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row['productID'].'" data-quantity="'.($row['quantity'] + 0).'"></a></td>';
-								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row['productID'].'"></a></td></tr>';
-								
-								//apply any discounts to this item
-								if (count($discounts['P']) > 0) {
-									foreach ($discounts['P'][$row['productID']] as $discount) {
-										$return .= '<tr><td style="padding-left: 50px;">Discount: <a href="item.php?type=discount&id='.$discount[0].'">'.$discount[1].'</a></td><td></td><td></td>';
-										$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
-										$lineAmount -= $discountAmount;
-										$subTotal -= $discountAmount;
-										$return .= '<td class="textRight">-'.formatCurrency($discountAmount).'</td>';
-										$return .= '<td></td>';
-										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="discount" data-id="'.$discount[0].'" data-appliestotype="P" data-appliestoid="'.$row['productID'].'"></a></td></tr>';
-									}
-								}
-							}
-							
-							//apply order discounts
-							if (count($discounts['O']) > 0) {
-								foreach ($discounts['O'] as $discount) {
-									$return .= '<tr><td>Discount: <a href="item.php?type=discount&id='.$discount[0].'">'.$discount[1].'</a></td><td></td><td></td>';
-									$discountAmount = ($discount[2] == 'P') ? ($subTotal) * ($discount[3] / 100) : $discount[3];
-									$subTotal -= $discountAmount;
-									$return .= '<td class="textRight">-'.formatCurrency($discountAmount).'</td>';
-									$return .= '<td></td>';
-									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="discount" data-id="'.$discount[0].'" data-appliestotype="O" data-appliestoid="0"></a></td></tr>';
-								}
-							}
-							
-							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td><td></td></tr>';
-						
+							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td></td><td class="textRight">'.formatCurrency($lineItemTable[1]).'</td><td></td><td></td></tr>';
 						$return .= '</tbody>
 					</table>
 				</div>
@@ -179,7 +107,7 @@
 				<h2>Invoice</h2>
 				<div class="sectionData" style="text-align: center;">
 					<a href="#" class="controlEmail" style="margin-right: 25%;">Email Invoice</a>
-					<a href="#" class="controlPDF">Generate PDF Invoice</a>
+					<a href="pdf.php?type=order&id='.$id.'&pdfID=1" class="controlPDF">Generate PDF Invoice</a>
 				</div>
 			</section>';
 			
@@ -511,6 +439,83 @@
 			return $return;
 		}
 		
+		public function generatePDF($id, $pdfID) {
+			global $dbh;
+			global $SETTINGS;
+			$filename = 'Default';
+			$html = '';
+		
+			if ($pdfID == 1) {
+				$filename = 'Invoice';
+				$html = '<html>
+					<head>
+						<title>Invoice</title>
+					</head>
+					
+					<body style="font-family: arial;">
+						<div style="width:640px; margin:0 auto;">
+						<span style="font-weight:bold; font-size:1.5em;">'.$SETTINGS['companyName'].'</span>
+						<div style="border-bottom: 2px solid #E5E5E5; margin:5px 0;">&nbsp;</div><br>
+						Thank you for your order.  Your invoice is below.<br><br>';
+						//get order info
+						$sth = $dbh->prepare(
+							'SELECT MIN(changeTime)
+							FROM changes
+							WHERE type = "order" AND id = :id');
+						$sth->execute([':id' => $id]);
+						$row = $sth->fetch();
+						$html .= 
+							'<b>Order ID:</b> '.$id.'<br>
+							<b>Order Time:</b> '.formatDateTime($row['MIN(changeTime)']).'<br><br>
+							<table style="width:100%;">
+								<thead style="font-weight:bold;">
+									<tr>
+										<th>Item</th>
+										<th style="text-align:center;">Quantity</th>
+										<th style="text-align:center;">Unit Price</th>
+										<th style="text-align:right;">Item Total</th>
+									</tr>
+								</thead>
+								<tbody>';
+									//get line items
+									$lineItemTable = self::getLineItemTable($id);
+									foreach ($lineItemTable[0] as $line) {
+										if ($line[0] == 'service' || $line[0] == 'product') {
+											$html .= '<tr><td>'.$line[2].'</td>';
+											$html .= '<td style="text-align:center;">'.$line[3].'</td>';
+											$html .= '<td style="text-align:center;">'.formatCurrency($line[4]).'</td>';
+											$html .= '<td style="text-align:right;">'.formatCurrency($line[5]).'</td></tr>';
+										}
+										elseif ($line[0] == 'discount') {
+											$padding = ($line[3] == 'S' || $line[3] == 'P') ? '<td style="padding-left: 50px;">' : '<td>';
+											$html .= '<tr>'.$padding.'Discount: '.$line[2].'</td><td></td><td></td>';
+											$html .= '<td style="text-align:right;">-'.formatCurrency($line[5]).'</td></tr>';
+										}
+									}
+								$html .= '</tbody>
+							</table>';
+							//find amount paid
+							$sth = $dbh->prepare(
+								'SELECT SUM(paymentAmount)
+								FROM payments
+								WHERE orderID = :orderID');
+							$sth->execute([':orderID' => $id]);
+							$row = $sth->fetch();
+							$paidAmount = $row['SUM(paymentAmount)'];
+							//print totals
+							$html .= '<table style="width:100%; text-align:right;"><tbody>';
+							$html .= '<tr><td>Total:</td><td>'.formatCurrency($lineItemTable[1]).'</td></tr>';
+							$html .= '<tr><td>Amount Paid:</td><td>'.formatCurrency($paidAmount).'</td></tr>';
+							$html .= '<tr style="font-weight: bold;"><td>Amount Due:</td><td>'.formatCurrency($lineItemTable[1] - $paidAmount).'</td></tr>';
+							$html .= '</tbody></table>
+						</div>
+					</body>
+				</html>';
+			}
+			
+			return [$filename, $html];
+		}
+		
 		/* Local Helper Functions */
 		
 		private static function updateAmountDue($id) {
@@ -596,6 +601,83 @@
 				SET amountDue = :amountDue
 				WHERE orderID = :orderID');
 			$sth->execute([':amountDue' => $amountDue, ':orderID' => $id]);
+		}
+		
+		private function getLineItemTable($id) {
+			//returns: [[type (product, service, discount), id, name, quantity OR appliesToType (P, S, O), unitPrice OR appliesToID, lineTotal], subTotal]
+			global $dbh;
+			$subTotal = 0;
+			$lines = [];
+		
+			//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
+			$discounts = ['S' => [], 'P' => [], 'O' => []];
+			$sth = $dbh->prepare(
+				'SELECT discounts.discountID, name, orders_discounts.discountType, orders_discounts.discountAmount, appliesToType, appliesToID
+				FROM discounts, orders_discounts
+				WHERE orderID = :orderID AND discounts.discountID = orders_discounts.discountID
+				ORDER BY orders_discounts.discountType');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				if ($row['appliesToType'] == 'O') {
+					$discounts['O'][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+				}
+				else {
+					$discounts[$row['appliesToType']][$row['appliesToID']][] = [$row['discountID'], $row['name'], $row['discountType'], $row['discountAmount']];
+				}
+			}
+			
+			//get services
+			$sth = $dbh->prepare(
+				'SELECT services.serviceID, name, quantity, unitPrice
+				FROM services, orders_services
+				WHERE orderID = :orderID AND services.serviceID = orders_services.serviceID');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$subTotal += $lineAmount;
+				$lines[] = ['service', $row['serviceID'], $row['name'], ($row['quantity'] + 0), $row['unitPrice'], $lineAmount];
+				
+				//apply any discounts to this item
+				if (count($discounts['S']) > 0) {
+					foreach ($discounts['S'][$row['serviceID']] as $discount) {
+						$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+						$subTotal -= $discountAmount;
+						$lines[] = ['discount', $discount[0], $discount[1], 'S', $row['serviceID'], $discountAmount];
+					}
+				}
+			}
+			
+			//get products
+			$sth = $dbh->prepare(
+				'SELECT products.productID, name, quantity, unitPrice
+				FROM products, orders_products
+				WHERE orderID = :orderID AND products.productID = orders_products.productID');
+			$sth->execute([':orderID' => $id]);
+			while ($row = $sth->fetch()) {
+				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$subTotal += $lineAmount;
+				$lines[] = ['product', $row['productID'], $row['name'], ($row['quantity'] + 0), $row['unitPrice'], $lineAmount];
+				
+				//apply any discounts to this item
+				if (count($discounts['P']) > 0) {
+					foreach ($discounts['P'][$row['productID']] as $discount) {
+						$discountAmount = ($discount[2] == 'P') ? $lineAmount * ($discount[3] / 100) : $row['quantity'] * $discount[3];
+						$subTotal -= $discountAmount;
+						$lines[] = ['discount', $discount[0], $discount[1], 'P', $row['productID'], $discountAmount];
+					}
+				}
+			}
+			
+			//apply order discounts
+			if (count($discounts['O']) > 0) {
+				foreach ($discounts['O'] as $discount) {
+					$discountAmount = ($discount[2] == 'P') ? ($subTotal) * ($discount[3] / 100) : $discount[3];
+					$subTotal -= $discountAmount;
+					$lines[] = ['discount', $discount[0], $discount[1], 'O', 0, $discountAmount];
+				}
+			}
+			
+			return [$lines, $subTotal];
 		}
 	}
 ?>

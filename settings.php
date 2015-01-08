@@ -5,6 +5,9 @@
 	$SETTINGS['dbUser'] = 'root';
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
+	//Company information
+	$SETTINGS['companyName'] = 'Galaxy Think';
+	
 	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';
 	
@@ -17,7 +20,7 @@
 	$SETTINGS['dateFormatJS'] = 'dd-M-yy';
 	$SETTINGS['timeFormatJS'] = 'h:mm TT';
 	
-	//Default columns
+	//Default columns for list views
 	$SETTINGS['columns']['employee'] = ['name', 'positionID', 'locationID', 'payType', 'payAmount'];
 	$SETTINGS['columns']['order'] = ['orderID', 'customerID', 'employeeID'];
 	$SETTINGS['columns']['location'] = ['name', 'address', 'city', 'state', 'zip'];
