@@ -103,10 +103,11 @@
 			</section>';
 			
 			//Invoice section
+			//TODO: figure out how email is going to work
 			$return .= '<section>
 				<h2>Invoice</h2>
 				<div class="sectionData" style="text-align: center;">
-					<a href="#" class="controlEmail" style="margin-right: 25%;">Email Invoice</a>
+					<a href="#" class="controlEmail" style="margin-right: 25%;">Email Invoice (currently disabled)</a>
 					<a href="pdf.php?type=order&id='.$id.'&pdfID=1" class="controlPDF">Generate PDF Invoice</a>
 				</div>
 			</section>';
@@ -446,6 +447,7 @@
 			$html = '';
 		
 			if ($pdfID == 1) {
+				//TODO: make this look a bit nicer
 				$filename = 'Invoice';
 				$html = '<html>
 					<head>
