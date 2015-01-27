@@ -6,7 +6,7 @@
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
 	//Company information
-	$SETTINGS['companyName'] = 'Galaxy Think';
+	$SETTINGS['companyName'] = 'Audemium';
 	
 	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';
