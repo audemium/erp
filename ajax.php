@@ -58,13 +58,14 @@
 	if ($_POST['action'] == 'search') {
 		$sql = [];
 		$results = [];
+		$termSafe = $dbh->quote('%'.$_POST['term'].'%');
 		
 		foreach ($TYPES as $key => $type) {
 			if (isset($type['fields']['firstName']) && isset($type['fields']['lastName'])) {
-				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, firstName AS name1, lastName AS name2 FROM '.$type['pluralName'].' WHERE firstName LIKE :term1 OR lastName LIKE :term1 OR CONCAT(firstName, " ", lastName) LIKE :term1';
+				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, firstName AS name1, lastName AS name2 FROM '.$type['pluralName'].' WHERE firstName LIKE '.$termSafe.' OR lastName LIKE '.$termSafe.' OR CONCAT(firstName, " ", lastName) LIKE '.$termSafe;
 			}
 			elseif (isset($type['fields']['name'])) {
-				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, name AS name1, "" AS name2 FROM '.$type['pluralName'].' WHERE name LIKE :term1';
+				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, name AS name1, "" AS name2 FROM '.$type['pluralName'].' WHERE name LIKE '.$termSafe;
 			}
 			else {
 				$sql[] = 'SELECT "'.$key.'" AS type, '.$type['idName'].' AS id, "" AS name1, "" AS name2 FROM '.$type['pluralName'].' WHERE '.$type['idName'].' = :term2';
@@ -73,7 +74,7 @@
 		$sqlStr = implode(' UNION ', $sql);
 		
 		$sth = $dbh->prepare($sqlStr);
-		$sth->execute([':term1' => '%'.$_POST['term'].'%', ':term2' => $_POST['term']]);
+		$sth->execute([':term2' => $_POST['term']]);
 		while ($row = $sth->fetch()) {
 			if ($row['name1'] != '' && $row['name2'] != '') {
 				$name = $row['name1'].' '.$row['name2'];
