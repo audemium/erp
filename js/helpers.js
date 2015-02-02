@@ -55,8 +55,12 @@ $(document).ready(function() {
 				}).done(function(data) {
 					$('#defaultPopup .invalid').removeClass('invalid');
 					if (data.status == 'success') {
-						//TODO: do something if it doesn't get sent html
-						$('#defaultPopup > div > div').html(data.html);
+						if ('html' in data) {
+							$('#defaultPopup > div > div').html(data.html);
+						}
+						else {
+							location.reload();
+						}
 					}
 					else {
 						$.each(data, function(key, value) {
