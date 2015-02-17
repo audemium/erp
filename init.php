@@ -44,8 +44,7 @@
 		$SETTINGS['dbUser'],
 		$SETTINGS['dbPassword'],
 		[
-			PDO::ATTR_PERSISTENT => true,
-			PDO::ATTR_EMULATE_PREPARES => false		//enables placeholders for LIMIT clauses
+			PDO::ATTR_PERSISTENT => true
 		]
 	);
 	

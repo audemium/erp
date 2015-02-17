@@ -446,14 +446,14 @@
 	if ($_POST['action'] == 'history') {
 		$return = ['status' => 'success', 'html' => ''];
 		
-		$limit = ($_POST['limit'] == -1) ? 100000 : $_POST['limit'];
+		$limit = ((int)$_POST['limit'] == -1) ? 100000 : (int)$_POST['limit'];  //cast as int because we can't use a placeholder for LIMIT
 		$sth = $dbh->prepare(
 			'SELECT *
 			FROM changes
 			WHERE type = :type AND id = :id
 			ORDER BY changeTime DESC
-			LIMIT :limit');
-		$sth->execute([':type' => $_POST['type'], ':id' => $_POST['id'], ':limit' => $limit]);
+			LIMIT '.$limit);
+		$sth->execute([':type' => $_POST['type'], ':id' => $_POST['id']]);
 		while ($row = $sth->fetch()) {
 			$return['html'] .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
 			$return['html'] .= '<td>'.getLinkedName('employee', $row['employeeID']).'</td>';
