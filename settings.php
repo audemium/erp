@@ -29,4 +29,6 @@
 	$SETTINGS['columns']['service'] = ['name', 'defaultPrice'];
 	$SETTINGS['columns']['customer'] = ['name'];
 	$SETTINGS['columns']['discount'] = ['name', 'discountType', 'discountAmount'];
+	$SETTINGS['columns']['expense'] = ['expenseID', 'supplierID', 'employeeID'];
+	$SETTINGS['columns']['supplier'] = ['name'];
 ?>

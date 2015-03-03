@@ -55,7 +55,7 @@
 				],
 				'locationID' => [
 					'formalName' => 'Location',
-					'verifyData' => [1, 'id', 'location']
+					'verifyData' => [0, 'id', 'location']
 				],
 				'positionID' => [
 					'formalName' => 'Position',
@@ -273,6 +273,54 @@
 				'discountAmount' => [
 					'formalName' => 'Amount',
 					'verifyData' => [1, 'dec', [12, 2]]
+				]
+			]
+		],
+		'expense' => [
+			'pluralName' => 'expenses',
+			'formalName' => 'Expense',
+			'formalPluralName' => 'Expenses',
+			'idName' => 'expenseID',
+			'formData' => [
+				'Basic Information' => [
+					['supplierID', 'amountDue'],
+					['employeeID']
+				]
+			],
+			'fields' => [
+				'expenseID' => [
+					'formalName' => 'Expense Number',
+					'verifyData' => [1, 'int', 4294967295]
+				],
+				'supplierID' => [
+					'formalName' => 'Supplier',
+					'verifyData' => [0, 'id', 'supplier']
+				],
+				'employeeID' => [
+					'formalName' => 'Employee',
+					'verifyData' => [1, 'id', 'employee']
+				],
+				'amountDue' => [
+					'formalName' => 'Amount Due',
+					'verifyData' => [0, 'disp']
+				]
+			]
+		],
+		'supplier' => [
+			'pluralName' => 'suppliers',
+			'formalName' => 'Supplier',
+			'formalPluralName' => 'Suppliers',
+			'idName' => 'supplierID',
+			'formData' => [
+				'Basic Information' => [
+					['name'],
+					[]
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Company',
+					'verifyData' => [1, 'str', 200]
 				]
 			]
 		]

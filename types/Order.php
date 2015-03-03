@@ -76,7 +76,7 @@
 						<tbody>';
 							$sth = $dbh->prepare(
 								'SELECT *
-								FROM payments
+								FROM orderPayments
 								WHERE orderID = :orderID');
 							$sth->execute([':orderID' => $id]);
 							while ($row = $sth->fetch()) {
@@ -90,11 +90,11 @@
 								elseif ($row['paymentType'] == 'CR') {
 									$paymentType = 'Credit Card';
 								}
+								$subTotal += $row['paymentAmount'];
 								$return .= '<tr><td>'.$row['paymentID'].'</td>';
 								$return .= '<td class="textCenter">'.$paymentType.'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($row['paymentAmount']).'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="payment" data-id="'.$row['paymentID'].'"></a></td></tr>';
-								$subTotal += $row['paymentAmount'];
 							}
 							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td></tr>';
 						$return .= '</tbody>
@@ -103,7 +103,7 @@
 			</section>';
 			
 			//Invoice section
-			//TODO: figure out how email is going to work
+			//TODO: figure out how email is going to work (maybe a popup that gives you HTML to copy into the email?
 			$return .= '<section>
 				<h2>Invoice</h2>
 				<div class="sectionData" style="text-align: center;">
@@ -230,7 +230,7 @@
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
 						$sth = $dbh->prepare(
-							'INSERT INTO payments (paymentID, orderID, paymentType, paymentAmount)
+							'INSERT INTO orderPayments (paymentID, orderID, paymentType, paymentAmount)
 							VALUES(null, :orderID, :paymentType, :paymentAmount)');
 						$sth->execute([':orderID' => $id, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
 						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
@@ -321,7 +321,7 @@
 				//delete subAction
 				if ($data['subType'] == 'payment') {
 					$sth = $dbh->prepare(
-						'DELETE FROM payments
+						'DELETE FROM orderPayments
 						WHERE paymentID = :paymentID');
 					$sth->execute([':paymentID' => $data['subID']]);
 					$changeData = ['type' => 'payment', 'id' => $data['subID']];
@@ -499,7 +499,7 @@
 							//find amount paid
 							$sth = $dbh->prepare(
 								'SELECT SUM(paymentAmount)
-								FROM payments
+								FROM orderPayments
 								WHERE orderID = :orderID');
 							$sth->execute([':orderID' => $id]);
 							$row = $sth->fetch();
@@ -543,7 +543,7 @@
 			
 			//get services
 			$sth = $dbh->prepare(
-				'SELECT services.serviceID, name, quantity, unitPrice
+				'SELECT services.serviceID, quantity, unitPrice
 				FROM services, orders_services
 				WHERE orderID = :orderID AND services.serviceID = orders_services.serviceID');
 			$sth->execute([':orderID' => $id]);
@@ -563,7 +563,7 @@
 			
 			//get products
 			$sth = $dbh->prepare(
-				'SELECT products.productID, name, quantity, unitPrice
+				'SELECT products.productID, quantity, unitPrice
 				FROM products, orders_products
 				WHERE orderID = :orderID AND products.productID = orders_products.productID');
 			$sth->execute([':orderID' => $id]);
@@ -591,8 +591,8 @@
 			
 			//get payments
 			$sth = $dbh->prepare(
-				'SELECT SUM(paymentAmount) As paymentAmount
-				FROM payments
+				'SELECT SUM(paymentAmount) AS paymentAmount
+				FROM orderPayments
 				WHERE orderID = :orderID');
 			$sth->execute([':orderID' => $id]);
 			$row = $sth->fetch();
