@@ -3,7 +3,7 @@
 	$SETTINGS['dbServer'] = 'localhost';
 	$SETTINGS['dbName'] = 'erp';
 	$SETTINGS['dbUser'] = 'root';
-	$SETTINGS['dbPassword'] = 'dbPasswordHere';
+	$SETTINGS['dbPassword'] = 'dbPasswordHere'; //TODO: take this out when posting code
 	
 	//Company information
 	$SETTINGS['companyName'] = 'Audemium';
