@@ -13,7 +13,7 @@
 ?>
 
 <meta charset="UTF-8">
-<link rel="shortcut icon" href="images/favicon.ico">
+<link rel="shortcut icon" href="images/favicon-16x16.png">
 
 <link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
 <link type="text/css" rel="stylesheet" href="css/jquery.qtip.min.css">
