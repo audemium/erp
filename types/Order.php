@@ -448,71 +448,67 @@
 		
 			if ($pdfID == 1) {
 				//TODO: make this look a bit nicer
+				//TODO: padding doesn't work in tables in tcpdf, another option might be dompdf (https://github.com/dompdf/dompdf)
 				$filename = 'Invoice';
-				$html = '<html>
-					<head>
-						<title>Invoice</title>
-					</head>
-					
-					<body style="font-family: arial;">
-						<div style="width:640px; margin:0 auto;">
-						<span style="font-weight:bold; font-size:1.5em;">'.$SETTINGS['companyName'].'</span>
-						<div style="border-bottom: 2px solid #E5E5E5; margin:5px 0;">&nbsp;</div><br>
-						Thank you for your order.  Your invoice is below.<br><br>';
-						//get order info
-						$sth = $dbh->prepare(
-							'SELECT MIN(changeTime)
-							FROM changes
-							WHERE type = "order" AND id = :id');
-						$sth->execute([':id' => $id]);
-						$row = $sth->fetch();
-						$html .= 
-							'<b>Order ID:</b> '.$id.'<br>
-							<b>Order Time:</b> '.formatDateTime($row['MIN(changeTime)']).'<br><br>
-							<table style="width:100%;">
-								<thead style="font-weight:bold;">
-									<tr>
-										<th>Item</th>
-										<th style="text-align:center;">Quantity</th>
-										<th style="text-align:center;">Unit Price</th>
-										<th style="text-align:right;">Item Total</th>
-									</tr>
-								</thead>
-								<tbody>';
-									//get line items
-									$lineItemTable = self::getLineItemTable($id);
-									foreach ($lineItemTable[0] as $line) {
-										if ($line[0] == 'service' || $line[0] == 'product') {
-											$html .= '<tr><td>'.$line[2].'</td>';
-											$html .= '<td style="text-align:center;">'.$line[3].'</td>';
-											$html .= '<td style="text-align:center;">'.formatCurrency($line[4]).'</td>';
-											$html .= '<td style="text-align:right;">'.formatCurrency($line[5]).'</td></tr>';
-										}
-										elseif ($line[0] == 'discount') {
-											$padding = ($line[3] == 'S' || $line[3] == 'P') ? '<td style="padding-left: 50px;">' : '<td>';
-											$html .= '<tr>'.$padding.'Discount: '.$line[2].'</td><td></td><td></td>';
-											$html .= '<td style="text-align:right;">-'.formatCurrency($line[5]).'</td></tr>';
-										}
+				$html = '<body style="font-size:1em;">
+					<div style="width:640px; margin:0 auto;">
+					<span style="font-weight:bold; font-size:1.5em;">'.$SETTINGS['companyName'].'</span>
+					<div style="border-bottom: 2px solid #E5E5E5; margin:5px 0;">&nbsp;</div><br>
+					Thank you for your order.  Your invoice is below.<br><br>';
+					//get order info
+					$sth = $dbh->prepare(
+						'SELECT MIN(changeTime)
+						FROM changes
+						WHERE type = "order" AND id = :id');
+					$sth->execute([':id' => $id]);
+					$row = $sth->fetch();
+					$html .= 
+						'<b>Order ID:</b> '.$id.'<br>
+						<b>Order Time:</b> '.formatDateTime($row['MIN(changeTime)']).'<br><br>
+						<table style="width:100%;">
+							<thead>
+								<tr style="font-weight:bold;">
+									<th style="width:40%;">Item</th>
+									<th style="text-align:center; width:20%;">Quantity</th>
+									<th style="text-align:center; width:20%;">Unit Price</th>
+									<th style="text-align:right; width:20%;">Item Total</th>
+								</tr>
+							</thead>
+							<tbody>';
+								//get line items
+								$lineItemTable = self::getLineItemTable($id);
+								foreach ($lineItemTable[0] as $line) {
+									if ($line[0] == 'service' || $line[0] == 'product') {
+										$html .= '<tr><td style="width:40%;">'.$line[2].'</td>';
+										$html .= '<td style="text-align:center; width:20%;">'.$line[3].'</td>';
+										$html .= '<td style="text-align:center; width:20%;">'.formatCurrency($line[4]).'</td>';
+										$html .= '<td style="text-align:right; width:20%;">'.formatCurrency($line[5]).'</td></tr>';
 									}
-								$html .= '</tbody>
-							</table>';
-							//find amount paid
-							$sth = $dbh->prepare(
-								'SELECT SUM(paymentAmount)
-								FROM orderPayments
-								WHERE orderID = :orderID');
-							$sth->execute([':orderID' => $id]);
-							$row = $sth->fetch();
-							$paidAmount = $row['SUM(paymentAmount)'];
-							//print totals
-							$html .= '<table style="width:100%; text-align:right;"><tbody>';
-							$html .= '<tr><td>Total:</td><td>'.formatCurrency($lineItemTable[1]).'</td></tr>';
-							$html .= '<tr><td>Amount Paid:</td><td>'.formatCurrency($paidAmount).'</td></tr>';
-							$html .= '<tr style="font-weight: bold;"><td>Amount Due:</td><td>'.formatCurrency($lineItemTable[1] - $paidAmount).'</td></tr>';
-							$html .= '</tbody></table>
-						</div>
-					</body>
-				</html>';
+									elseif ($line[0] == 'discount') {
+										$padding = ($line[3] == 'S' || $line[3] == 'P') ? '<td style="padding-left: 50px;">' : '<td>';
+										$html .= '<tr>'.$padding.'Discount: '.$line[2].'</td><td></td><td></td>';
+										$html .= '<td style="text-align:right;">-'.formatCurrency($line[5]).'</td></tr>';
+									}
+								}
+							$html .= '</tbody>
+						</table>';
+						//find amount paid
+						$sth = $dbh->prepare(
+							'SELECT SUM(paymentAmount)
+							FROM orderPayments
+							WHERE orderID = :orderID');
+						$sth->execute([':orderID' => $id]);
+						$row = $sth->fetch();
+						$paidAmount = $row['SUM(paymentAmount)'];
+						//print totals
+						$html .= '<table style="width:100%; text-align:right;"><tbody>';
+						$html .= '<tr><td>Total:</td><td>'.formatCurrency($lineItemTable[1]).'</td></tr>';
+						$html .= '<tr><td>Amount Paid:</td><td>'.formatCurrency($paidAmount).'</td></tr>';
+						$html .= '<tr style="font-weight: bold;"><td>Amount Due:</td><td>'.formatCurrency($lineItemTable[1] - $paidAmount).'</td></tr>';
+						$html .= '</tbody></table>
+					</div>
+				</body>
+				';
 			}
 			
 			return [$filename, $html];

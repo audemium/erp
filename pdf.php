@@ -12,13 +12,26 @@
 	*/
 	
 	require_once('init.php');
-	require('mpdf/mpdf.php');
+	require_once('tcpdf/tcpdf.php');
 	
 	$factoryItem = Factory::createItem($_GET['type']);
 	$return = $factoryItem->generatePDF($_GET['id'], $_GET['pdfID']);
 	
-	$mpdf = new mPDF('c');
-	$mpdf->WriteHTML($return[1]);
-	$mpdf->Output($return[0].'.pdf', 'I');
+	// create new PDF document
+	$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+	$pdf->SetTitle($return[0]);
+	// remove default header/footer
+	$pdf->setPrintHeader(false);
+	$pdf->setPrintFooter(false);
+	//$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+	$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+	//$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+	
+	//$pdf->SetFont('times', 'BI', 20);
+	$pdf->AddPage();
+	$pdf->writeHTML($return[1], true, false, true, false, '');
+	
+	$pdf->Output($return[0].'.pdf', 'I');
 	exit();
 ?>
