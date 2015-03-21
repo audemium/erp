@@ -13,5 +13,5 @@
 ?>
 
 <footer>
-	Powered by <a href="http://www.ERPxyz.com">ERPxyz</a>.
+	Powered by <a href="https://www.audemium.com">ERPxyz</a>.
 </footer>
