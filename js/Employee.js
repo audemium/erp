@@ -61,7 +61,7 @@ $(document).ready(function() {
 		type: 'POST',
 		data: {
 			'action': 'customAjax',
-			'subAction': 'history',
+			'subAction': 'changesMadeHistory',
 			'type': type,
 			'id': id,
 			'limit': 5
@@ -86,7 +86,7 @@ $(document).ready(function() {
 			type: 'POST',
 			data: {
 				'action': 'customAjax',
-				'subAction': 'history',
+				'subAction': 'changesMadeHistory',
 				'type': type,
 				'id': id,
 				'limit': -1

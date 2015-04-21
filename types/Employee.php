@@ -206,7 +206,7 @@
 					}
 				}
 			}
-			elseif ($data['subAction'] == 'history') {
+			elseif ($data['subAction'] == 'changesMadeHistory') {
 				$return['html'] = '';
 				$limit = ($_POST['limit'] == -1) ? 100000 : $_POST['limit'];
 				
