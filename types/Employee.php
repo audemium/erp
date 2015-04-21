@@ -188,7 +188,7 @@
 				if ($return['status'] != 'fail') {
 					if ($start === false || $end === false) {
 						$return['status'] = 'fail';
-						$return['date'] = 'Unrecognized date/time format.  Please change settings.';
+						$return['date'] = 'Unrecognized date/time format.';
 					}
 					else {
 						if ($end < $start) {

@@ -14,8 +14,8 @@
 	//define types
 	//verifyData explanation
 		//required: 0 = no, 1 = yes
-		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, disp = display only, email = email address
-		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), not used (disp, email)
+		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, dateTime = date or date + time (time only does not work), disp = display only, email = email address
+		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' to mark which dateTime comes first (dateTime), not used (disp, email)
 	$TYPES = [
 		'employee' => [
 			'pluralName' => 'employees',
