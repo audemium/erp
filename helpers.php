@@ -17,6 +17,13 @@
 		return '$'.number_format($amount, 2);
 	}
 	
+	/* formatDate */
+	function formatDate($unixTS) {
+		global $SETTINGS;
+		
+		return date($SETTINGS['dateFormat'], $unixTS);
+	}
+	
 	/* formatDateTime */
 	function formatDateTime($unixTS) {
 		global $SETTINGS;
@@ -50,7 +57,7 @@
 		global $TYPES;
 		
 		if ($TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
-			$parsed = getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value);
+			$parsed = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
 		}
 		else {
 			$factoryItem = Factory::createItem($type);

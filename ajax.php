@@ -151,7 +151,7 @@
 			foreach ($data as $key => $value) {
 				$keyArr[] = $key;
 				$placeholderArr[] = '?';
-				$valArr[] = $value;
+				$valArr[] = (empty($value)) ? null : $value;
 				$changeData[$key] = $value;
 			}
 			$tableName = $TYPES[$_POST['type']]['pluralName'];
