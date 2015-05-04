@@ -45,6 +45,7 @@
 		$SETTINGS['dbPassword'],
 		[
 			PDO::ATTR_PERSISTENT => true
+			//default for emulate prepares is true, which allows things like using the same parameter multiple times
 		]
 	);
 	
