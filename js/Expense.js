@@ -1,4 +1,8 @@
 $(document).ready(function() {
+	$('#customPopup2 [name=startDate], #customPopup2 [name=endDate]').datepicker({
+		dateFormat: dateFormatJS
+	});
+	
 	//add
 	$('#customAdd1').click(function(event) {
 		$('#customPopup1').show();
@@ -50,9 +54,10 @@ $(document).ready(function() {
 	$('#customAdd2').click(function(event) {
 		$('#customPopup2').show();
 		$('#customPopup2 [name=itemType]').val('');
-		$('#customPopup2 ul').children(':not(:first)').remove();
+		$('#customPopup2 ul').eq(0).children(':not(:first)').remove();
 		$('#customPopup2 .invalid').qtip('destroy', true);
 		$('#customPopup2 .invalid').removeClass('invalid');
+		resetRecurringOptions('2');
 		
 		$('#customPopup2 [name=itemType]').change(function() {
 			var $select = $(this);
@@ -60,6 +65,7 @@ $(document).ready(function() {
 			var itemType = $select.val();
 			if (itemType == '') {
 				$ul.children(':not(:first)').remove();
+				$('#customPopup2 ul').eq(1).hide();
 			}
 			else if (itemType == 'product') {
 				$.ajax({
@@ -83,24 +89,37 @@ $(document).ready(function() {
 						html += '<option value="' + value.value + '">' + value.text + '</option>';
 					});
 					html += '</select></li>';
+					html += '<li><label for="unitPrice">Unit Price</label><input type="text" name="unitPrice" autocomplete="off"></li>';
+					html += '<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>';
+					html += '<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>';
 					if ($ul.children().length > 1) {
 						$ul.children(':not(:first)').remove();
+						resetRecurringOptions('2');
 					}
 					//TODO: find out why these inputs don't line up with the first one
 					$ul.append(html);
-					$ul.append('<li><label for="unitPrice">Unit Price</label><input type="text" name="unitPrice" autocomplete="off"></li>');
-					$ul.append('<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>');
 				});
 			}
 			else {
 				var html = '<li><label for="name">Name</label><input type="text" name="name" autocomplete="off"></li>';
 				html += '<li><label for="unitPrice">Unit Price</label><input type="text" name="unitPrice" autocomplete="off"></li>';
 				html += '<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>';
+				html += '<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>';
 				if ($ul.children().length > 1) {
 					$ul.children(':not(:first)').remove();
+					resetRecurringOptions('2');
 				}
 				//TODO: find out why these inputs don't line up with the first one
 				$ul.append(html);
+			}
+		});
+		
+		$('#customPopup2').on('change', '[name=recurring]', function() {
+			if ($(this).val() == 'yes') {
+				$('#customPopup2 ul').eq(1).show();
+			}
+			else {
+				resetRecurringOptions('2');
 			}
 		});
 		
@@ -199,3 +218,10 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 });
+
+/* Local Helper Functions */
+
+function resetRecurringOptions(popupID) {
+	$('#customPopup' + popupID + ' [name=interval], #customPopup' + popupID + ' [name=dayOfMonth], #customPopup' + popupID + ' [name=startDate], #customPopup' + popupID + ' [name=endDate]').val('');
+	$('#customPopup' + popupID + ' ul').eq(1).hide();
+}

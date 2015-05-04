@@ -15,6 +15,7 @@
 		public function printItemBody($id) {
 			global $dbh;
 			global $TYPES;
+			global $SETTINGS;
 			
 			//Line Items section
 			$subTotal = 0;
@@ -55,20 +56,48 @@
 							
 							//get other expenses
 							$sth = $dbh->prepare(
-								'SELECT expenseOtherID, name, quantity, unitPrice
+								'SELECT expenseOtherID, name, quantity, unitPrice, recurringID, parentRecurringID, dayOfMonth, startDate, endDate
 								FROM expenseOthers
-								WHERE expenseID = :expenseID');
+								WHERE expenseID = :expenseID AND parentRecurringID IS NULL');
 							$sth->execute([':expenseID' => $id]);
 							while ($row = $sth->fetch()) {
-								$lineAmount = $row['quantity'] * $row['unitPrice'];
-								$subTotal += $lineAmount;
-								$return .= '<tr><td>'.$row['name'].'</td>';
+								if (!is_null($row['recurringID'])) {
+									$recurringStr = ' (occurs monthly on day '.$row['dayOfMonth'].' from '.formatDate($row['startDate']).' to '.formatDate($row['endDate']).')';
+									$editStr = '';
+									$lineAmount = '';
+								}
+								else {
+									$recurringStr = '';
+									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a>';
+									$lineAmount = $row['quantity'] * $row['unitPrice'];
+									$subTotal += $lineAmount;
+								}
+								$return .= '<tr><td>'.$row['name'].$recurringStr.'</td>';
 								$return .= '<td></td>';
 								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>';
 								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-								$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a></td>';
+								$return .= '<td class="textCenter">'.$editStr.'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'"></a></td></tr>';
+								
+								//get child recurring rows if this is a parent recurring row
+								$sth2 = $dbh->prepare(
+									'SELECT expenseOtherID, name, date, quantity, unitPrice
+									FROM expenseOthers
+									WHERE expenseID = :expenseID AND parentRecurringID = :recurringID
+									ORDER BY date');
+								$sth2->execute([':expenseID' => $id, ':recurringID' => $row['recurringID']]);
+								while ($row2 = $sth2->fetch()) {
+									$lineAmount = $row2['quantity'] * $row2['unitPrice'];
+									$subTotal += $lineAmount;
+									$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - '.$row2['name'].'</td>';
+									$return .= '<td></td>';
+									$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
+									$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
+									$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
+									$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
+									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'"></a></td></tr>';
+								}
 							}
 							
 							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td></td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td><td></td></tr>';
@@ -189,10 +218,16 @@
 					];
 				}
 				elseif ($subType == 'other') {
+					$required = ($data['recurring'] == 'yes') ? 1 : 0;
 					$fields = [
 						'name' => ['verifyData' => [1, 'str', 200]],
 						'unitPrice' => ['verifyData' => [1, 'dec', [12, 2]]],
-						'quantity' => ['verifyData' => [1, 'dec', [12, 2]]]
+						'quantity' => ['verifyData' => [1, 'dec', [12, 2]]],
+						'recurring' => ['verifyData' => [1, 'opt', ['yes', 'no']]],
+						'interval' => ['verifyData' => [$required, 'opt', ['monthly']]],
+						'dayOfMonth' => ['verifyData' => [$required, 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]]],
+						'startDate' => ['verifyData' => [$required, 'dateTime', 'start']],
+						'endDate' => ['verifyData' => [$required, 'dateTime', 'end']]
 					];
 				}
 				$return = verifyData(null, $data, $fields);
@@ -200,8 +235,8 @@
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
 						$sth = $dbh->prepare(
-							'INSERT INTO expensePayments (paymentID, expenseID, paymentType, paymentAmount)
-							VALUES(null, :expenseID, :paymentType, :paymentAmount)');
+							'INSERT INTO expensePayments (expenseID, paymentType, paymentAmount)
+							VALUES(:expenseID, :paymentType, :paymentAmount)');
 						$sth->execute([':expenseID' => $id, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
 						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
@@ -236,8 +271,8 @@
 							WHERE expenseID = :expenseID AND name = :name AND unitPrice = :unitPrice');
 						$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice']]);
 						$result = $sth->fetchAll();
-						if (count($result) == 1) {
-							//if the item is already present in the expense, add the quantity to the existing row
+						if (count($result) == 1 && $data['recurring'] == 'no') {
+							//if the item is already present in the expense AND we aren't doing a recurring item, add the quantity to the existing row
 							$sth = $dbh->prepare(
 								'UPDATE expenseOthers
 								SET quantity = :quantity
@@ -246,11 +281,46 @@
 							$changeData = ['type' => 'other', 'name' => $data['name'], 'quantity' => $data['quantity'] + $result[0]['quantity']];
 						}
 						else {
-							$sth = $dbh->prepare(
-								'INSERT INTO expenseOthers (expenseOtherID, expenseID, name, unitPrice, quantity)
-								VALUES(null, :expenseID, :name, :unitPrice, :quantity)');
-							$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
-							$changeData = ['type' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
+							if ($data['recurring'] == 'yes') {
+								$startDate = strtotime($data['startDate']);
+								$endDate = strtotime($data['endDate']);
+								//add the recurring item
+								$sth = $dbh->prepare(
+									'SELECT MAX(recurringID) AS recurringID
+									FROM expenseOthers');
+								$sth->execute();
+								$result = $sth->fetchAll();
+								$recurringID = $result[0]['recurringID'] + 1;
+								$sth = $dbh->prepare(
+									'INSERT INTO expenseOthers (expenseID, name, unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
+									VALUES(:expenseID, :name, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
+								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								
+								//add occasions from start date to now
+								$temp = new DateTime();
+								$temp->setTimestamp($startDate);
+								$patternStart = new DateTime($data['dayOfMonth'].'-'.$temp->format('M').'-'.$temp->format('Y'));
+								$interval = new DateInterval('P1M');
+								$now = new DateTime();
+								$period = new DatePeriod($patternStart, $interval, $now);
+								foreach ($period as $date) {
+									$timestamp = $date->getTimestamp();
+									if ($timestamp >= $startDate && $timestamp <= $endDate) {
+										$sth = $dbh->prepare(
+											'INSERT INTO expenseOthers (expenseID, name, date, unitPrice, quantity, parentRecurringID)
+											VALUES(:expenseID, :name, :date, :unitPrice, :quantity, :parentRecurringID)');
+										$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
+									}
+								}
+								$changeData = ['type' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+							}
+							else {
+								$sth = $dbh->prepare(
+									'INSERT INTO expenseOthers (expenseID, name, unitPrice, quantity)
+									VALUES(:expenseID, :name, :unitPrice, :quantity)');
+								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
+								$changeData = ['type' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
+							}
 						}
 					}
 					
@@ -325,9 +395,15 @@
 				}
 				elseif ($data['subType'] == 'other') {
 					$sth = $dbh->prepare(
-						'DELETE FROM expenseOthers
+						'SELECT recurringID 
+						FROM expenseOthers 
 						WHERE expenseOtherID = :expenseOtherID');
 					$sth->execute([':expenseOtherID' => $data['subID']]);
+					$result = $sth->fetchAll();
+					$sth = $dbh->prepare(
+						'DELETE FROM expenseOthers
+						WHERE expenseOtherID = :expenseOtherID OR parentRecurringID = :recurringID');
+					$sth->execute([':expenseOtherID' => $data['subID'], ':recurringID' => $result[0]['recurringID']]);
 					//TODO: fix changeData when I figure out a format
 					$changeData = ['type' => 'other', 'id' => $data['subID']];
 				}
@@ -392,6 +468,57 @@
 										</select>
 									</li>
 								</ul>
+								<ul>
+									<li>
+										<label for="interval">Interval</label>
+										<select name="interval">
+											<option value=""></option>
+											<option value="monthly">Monthly</option>
+										</select>
+									</li>
+									<li>
+										<label for="dayOfMonth">Day of Month</label>
+										<select name="dayOfMonth">
+											<option value=""></option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+											<option value="6">6</option>
+											<option value="7">7</option>
+											<option value="8">8</option>
+											<option value="9">9</option>
+											<option value="10">10</option>
+											<option value="11">11</option>
+											<option value="12">12</option>
+											<option value="13">13</option>
+											<option value="14">14</option>
+											<option value="15">15</option>
+											<option value="16">16</option>
+											<option value="17">17</option>
+											<option value="18">18</option>
+											<option value="19">19</option>
+											<option value="20>20</option>
+											<option value="21">21</option>
+											<option value="22">22</option>
+											<option value="23">23</option>
+											<option value="24">24</option>
+											<option value="25">25</option>
+											<option value="26">26</option>
+											<option value="27">27</option>
+											<option value="28">28</option>
+										</select>
+									</li>
+									<li>
+										<label for="startDate">Start Date</label>
+										<input type="text" autocomplete="off" name="startDate">
+									</li>
+									<li>
+										<label for="endDate">End Date</label>
+										<input type="text" autocomplete="off" name="endDate">
+									</li>
+								</ul>
 							</div>
 						</section>
 						<div id="btnSpacer">
@@ -450,7 +577,7 @@
 			$sth = $dbh->prepare(
 				'SELECT quantity, unitPrice
 				FROM expenseOthers
-				WHERE expenseID = :expenseID');
+				WHERE expenseID = :expenseID AND recurringID IS NULL');
 			$sth->execute([':expenseID' => $id]);
 			while ($row = $sth->fetch()) {
 				$lineAmount = $row['quantity'] * $row['unitPrice'];
