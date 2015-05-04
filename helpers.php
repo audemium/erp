@@ -14,7 +14,7 @@
 	/* formatCurrency */
 	function formatCurrency($amount) {
 		//TODO: format negative numbers
-		return '$'.number_format($amount, 2);
+		return (!empty($amount)) ? '$'.number_format($amount, 2) : '';
 	}
 	
 	/* formatDate */
