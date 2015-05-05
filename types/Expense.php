@@ -81,22 +81,24 @@
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'"></a></td></tr>';
 								
 								//get child recurring rows if this is a parent recurring row
-								$sth2 = $dbh->prepare(
-									'SELECT expenseOtherID, name, date, quantity, unitPrice
-									FROM expenseOthers
-									WHERE expenseID = :expenseID AND parentRecurringID = :recurringID
-									ORDER BY date');
-								$sth2->execute([':expenseID' => $id, ':recurringID' => $row['recurringID']]);
-								while ($row2 = $sth2->fetch()) {
-									$lineAmount = $row2['quantity'] * $row2['unitPrice'];
-									$subTotal += $lineAmount;
-									$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - '.$row2['name'].'</td>';
-									$return .= '<td></td>';
-									$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
-									$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
-									$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-									$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
-									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'"></a></td></tr>';
+								if (!is_null($row['recurringID'])) {
+									$sth2 = $dbh->prepare(
+										'SELECT expenseOtherID, name, date, quantity, unitPrice
+										FROM expenseOthers
+										WHERE expenseID = :expenseID AND parentRecurringID = :recurringID
+										ORDER BY date');
+									$sth2->execute([':expenseID' => $id, ':recurringID' => $row['recurringID']]);
+									while ($row2 = $sth2->fetch()) {
+										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
+										$subTotal += $lineAmount;
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - '.$row2['name'].'</td>';
+										$return .= '<td></td>';
+										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
+										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
+										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
+										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
+										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'"></a></td></tr>';
+									}
 								}
 							}
 							
