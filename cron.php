@@ -11,7 +11,25 @@
     You should have received a copy of the GNU Affero General Public License along with ERPxyz.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 	
-	require_once('init.php');
+	require('settings.php');
+	$dbh = new PDO(
+		'mysql:host='.$SETTINGS['dbServer'].';dbname='.$SETTINGS['dbName'],
+		$SETTINGS['dbUser'],
+		$SETTINGS['dbPassword'],
+		[
+			PDO::ATTR_PERSISTENT => true
+			//default for emulate prepares is true, which allows things like using the same parameter multiple times
+		]
+	);
+	date_default_timezone_set('UTC');
+	//if a default is set in settings.php, use that
+	if (isset($SETTINGS['timeZone']) && $SETTINGS['timeZone'] != '') {
+		date_default_timezone_set($SETTINGS['timeZone']);
+	}
+	//if user sets a time zone, use that
+	if (isset($_SESSION['timeZone']) && $_SESSION['timeZone'] != '') {
+		date_default_timezone_set($_SESSION['timeZone']);
+	}
 	
 	$today = strtotime('today');
 	
