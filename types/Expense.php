@@ -38,20 +38,50 @@
 						<tbody>';							
 							//get product expenses
 							$sth = $dbh->prepare(
-								'SELECT products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, quantity, unitPrice
+								'SELECT products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, quantity, unitPrice, recurringID, parentRecurringID, dayOfMonth, startDate, endDate
 								FROM products, locations, expenses_products
-								WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID');
+								WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID AND parentRecurringID IS NULL');
 							$sth->execute([':expenseID' => $id]);
 							while ($row = $sth->fetch()) {
-								$lineAmount = $row['quantity'] * $row['unitPrice'];
-								$subTotal += $lineAmount;
-								$return .= '<tr><td><a href="item.php?type=product&id='.$row['productID'].'">'.$row['productName'].'</a></td>';
+								if (!is_null($row['recurringID'])) {
+									$recurringStr = ' (occurs monthly on day '.$row['dayOfMonth'].' from '.formatDate($row['startDate']).' to '.formatDate($row['endDate']).')';
+									$editStr = '';
+									$lineAmount = '';
+								}
+								else {
+									$recurringStr = '';
+									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row['productID'].'-'.$row['locationID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a>';
+									$lineAmount = $row['quantity'] * $row['unitPrice'];
+									$subTotal += $lineAmount;
+								}
+								$return .= '<tr><td><a href="item.php?type=product&id='.$row['productID'].'">'.$row['productName'].'</a>'.$recurringStr.'</td>';
 								$return .= '<td><a href="item.php?type=location&id='.$row['locationID'].'">'.$row['locationName'].'</a></td>';
 								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>';
 								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-								$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row['productID'].'-'.$row['locationID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a></td>';
+								$return .= '<td class="textCenter">'.$editStr.'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row['productID'].'-'.$row['locationID'].'"></a></td></tr>';
+								
+								//get child recurring rows if this is a parent recurring row
+								if (!is_null($row['recurringID'])) {
+									$sth2 = $dbh->prepare(
+										'SELECT products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, date, quantity, unitPrice
+										FROM products, locations, expenses_products
+										WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID AND parentRecurringID = :recurringID
+										ORDER BY date');
+									$sth2->execute([':expenseID' => $id, ':recurringID' => $row['recurringID']]);
+									while ($row2 = $sth2->fetch()) {
+										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
+										$subTotal += $lineAmount;
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - <a href="item.php?type=product&id='.$row2['productID'].'">'.$row2['productName'].'</a>'.$recurringStr.'</td>';
+										$return .= '<td><a href="item.php?type=location&id='.$row2['locationID'].'">'.$row2['locationName'].'</a></td>';
+										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
+										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
+										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
+										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row2['productID'].'-'.$row2['locationID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
+										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row2['productID'].'-'.$row2['locationID'].'"></a></td></tr>';
+									}
+								}
 							}
 							
 							//get other expenses
@@ -212,11 +242,17 @@
 					];
 				}
 				elseif ($subType == 'product') {
+					$required = ($data['recurring'] == 'yes') ? 1 : 0;
 					$fields = [
 						'productID' => ['verifyData' => [1, 'id', 'product']],
 						'locationID' => ['verifyData' => [1, 'id', 'location']],
 						'unitPrice' => ['verifyData' => [1, 'dec', [12, 2]]],
-						'quantity' => ['verifyData' => [1, 'int', 4294967295]]
+						'quantity' => ['verifyData' => [1, 'int', 4294967295]],
+						'recurring' => ['verifyData' => [1, 'opt', ['yes', 'no']]],
+						'interval' => ['verifyData' => [$required, 'opt', ['monthly']]],
+						'dayOfMonth' => ['verifyData' => [$required, 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]]],
+						'startDate' => ['verifyData' => [$required, 'dateTime', 'start']],
+						'endDate' => ['verifyData' => [$required, 'dateTime', 'end']]
 					];
 				}
 				elseif ($subType == 'other') {
@@ -249,8 +285,8 @@
 							WHERE expenseID = :expenseID AND productID = :productID AND locationID = :locationID AND unitPrice = :unitPrice');
 						$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice']]);
 						$result = $sth->fetchAll();
-						if (count($result) == 1) {
-							//if the product is already present in the expense, add the quantity to the existing row
+						if (count($result) == 1 && $data['recurring'] == 'no') {
+							//if the product is already present in the expense AND we aren't doing a recurring item, add the quantity to the existing row
 							$sth = $dbh->prepare(
 								'UPDATE expenses_products
 								SET quantity = :quantity
@@ -259,11 +295,47 @@
 							$changeData = ['type' => 'product', 'id' => $data['productID'], 'quantity' => $data['quantity'] + $result[0]['quantity']];
 						}
 						else {
-							$sth = $dbh->prepare(
-								'INSERT INTO expenses_products (expenseID, productID, locationID, unitPrice, quantity)
-								VALUES(:expenseID, :productID, :locationID, :unitPrice, :quantity)');
-							$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
-							$changeData = ['type' => 'product', 'id' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
+							if ($data['recurring'] == 'yes') {
+								$startDate = strtotime($data['startDate']);
+								$endDate = strtotime($data['endDate']);
+								//add the recurring item
+								$sth = $dbh->prepare(
+									'SELECT MAX(recurringID) AS recurringID
+									FROM expenses_products');
+								$sth->execute();
+								$result = $sth->fetchAll();
+								$recurringID = $result[0]['recurringID'] + 1;
+								$sth = $dbh->prepare(
+									'INSERT INTO expenses_products (expenseID, productID, locationID, unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
+									VALUES(:expenseID, :productID, :locationID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
+								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								
+								//add occasions from start date to now
+								$temp = new DateTime();
+								$temp->setTimestamp($startDate);
+								$patternStart = new DateTime($data['dayOfMonth'].'-'.$temp->format('M').'-'.$temp->format('Y'));
+								$interval = new DateInterval('P1M');
+								$now = new DateTime();
+								$period = new DatePeriod($patternStart, $interval, $now);
+								foreach ($period as $date) {
+									$timestamp = $date->getTimestamp();
+									if ($timestamp >= $startDate && $timestamp <= $endDate) {
+										$return['temp'] = $id.' '.$data['productID'].' '.$data['locationID'].' '.$timestamp.' '.$data['unitPrice'].' '.$data['quantity'].' '.$recurringID;
+										$sth = $dbh->prepare(
+											'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
+											VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
+										$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
+									}
+								}
+								$changeData = ['type' => 'product', 'id' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+							}
+							else {
+								$sth = $dbh->prepare(
+									'INSERT INTO expenses_products (expenseID, productID, locationID, unitPrice, quantity)
+									VALUES(:expenseID, :productID, :locationID, :unitPrice, :quantity)');
+								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
+								$changeData = ['type' => 'product', 'id' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
+							}
 						}
 					}
 					elseif ($subType == 'other') {
@@ -389,9 +461,15 @@
 				elseif ($data['subType'] == 'product') {
 					$ids = explode('-', $data['subID']);
 					$sth = $dbh->prepare(
-						'DELETE FROM expenses_products
+						'SELECT recurringID 
+						FROM expenses_products 
 						WHERE expenseID = :expenseID AND productID = :productID AND locationID = :locationID');
 					$sth->execute([':expenseID' => $id, ':productID' => $ids[0], ':locationID' => $ids[1]]);
+					$result = $sth->fetchAll();
+					$sth = $dbh->prepare(
+						'DELETE FROM expenses_products
+						WHERE (expenseID = :expenseID AND productID = :productID AND locationID = :locationID) OR parentRecurringID = :recurringID');
+					$sth->execute([':expenseID' => $id, ':productID' => $ids[0], ':locationID' => $ids[1], ':recurringID' => $result[0]['recurringID']]);
 					//TODO: fix changeData when I figure out a format
 					$changeData = ['type' => 'product', 'id' => $data['subID']];
 				}
@@ -568,7 +646,7 @@
 			$sth = $dbh->prepare(
 				'SELECT quantity, unitPrice
 				FROM expenses_products
-				WHERE expenseID = :expenseID');
+				WHERE expenseID = :expenseID AND recurringID IS NULL');
 			$sth->execute([':expenseID' => $id]);
 			while ($row = $sth->fetch()) {
 				$lineAmount = $row['quantity'] * $row['unitPrice'];
