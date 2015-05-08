@@ -198,8 +198,8 @@
 						
 						if ($return['status'] != 'fail') {
 							$sth = $dbh->prepare(
-								'INSERT INTO vacationRequests (vacationRequestID, employeeID, submitTime, startTime, endTime, status)
-								VALUES(null, :employeeID, UNIX_TIMESTAMP(), :startTime, :endTime, "P")');
+								'INSERT INTO vacationRequests (employeeID, submitTime, startTime, endTime, status)
+								VALUES(:employeeID, UNIX_TIMESTAMP(), :startTime, :endTime, "P")');
 							$sth->execute([':employeeID' => $id, ':startTime' => $start, ':endTime' => $end]);
 							//TODO: should a call to addChange be here? or is it already logged enough?
 						}

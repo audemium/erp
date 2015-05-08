@@ -47,8 +47,8 @@
 		global $dbh;
 	
 		$sth = $dbh->prepare(
-			'INSERT INTO changes (changeID, type, id, employeeID, changeTime, data)
-			VALUES(null, :type, :id, :employeeID, UNIX_TIMESTAMP(), :data)');
+			'INSERT INTO changes (type, id, employeeID, changeTime, data)
+			VALUES(:type, :id, :employeeID, UNIX_TIMESTAMP(), :data)');
 		$sth->execute([':type' => $type, ':id' => $id, ':employeeID' => $employeeID, ':data' => $data]);
 	}
 	

@@ -230,8 +230,8 @@
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
 						$sth = $dbh->prepare(
-							'INSERT INTO orderPayments (paymentID, orderID, paymentType, paymentAmount)
-							VALUES(null, :orderID, :paymentType, :paymentAmount)');
+							'INSERT INTO orderPayments (orderID, paymentType, paymentAmount)
+							VALUES(:orderID, :paymentType, :paymentAmount)');
 						$sth->execute([':orderID' => $id, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
 						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
