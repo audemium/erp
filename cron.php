@@ -33,6 +33,22 @@
 	
 	$today = strtotime('today');
 	
+	//recurring expenses_products
+	$sth = $dbh->prepare(
+		'SELECT expenseID, productID, locationID, unitPrice, quantity, recurringID, dayOfMonth 
+		FROM expenses_products 
+		WHERE recurringID IS NOT NULL AND startDate <= :today AND endDate >= :today');
+	$sth->execute([':today' => $today]);
+	while ($row = $sth->fetch()) {
+		$day = date('j', $today);
+		if ($day == $row['dayOfMonth']) {
+			$sth = $dbh->prepare(
+				'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
+				VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
+			$sth->execute([':expenseID' => $row['expenseID'], ':productID' => $row['productID'], ':locationID' => $row['locationID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+		}
+	}
+	
 	//recurring expenseOthers
 	$sth = $dbh->prepare(
 		'SELECT expenseID, name, unitPrice, quantity, recurringID, dayOfMonth 
