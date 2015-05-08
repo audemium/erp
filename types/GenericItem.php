@@ -53,7 +53,7 @@
 		}
 		
 		public function customAjax($id, $data) {
-			return $return = ['status' => 'success'];;
+			return $return = ['status' => 'success'];
 		}
 		
 		public function printPopups() {
