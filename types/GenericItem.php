@@ -16,6 +16,55 @@
 			return '';
 		}
 		
+		public function printAttachments($type, $id) {
+			global $dbh;
+			global $SETTINGS;
+			$return = '';
+			$allowsAttachments = in_array($type, $SETTINGS['attachments']);
+			
+			//anything that has an attachment, show it with a delete option
+			$sth = $dbh->prepare(
+				'SELECT attachmentID, employeeID, uploadTime, name, extension
+				FROM attachments
+				WHERE type = :type AND id = :id');
+			$sth->execute([':type' => $type, ':id' => $id]);
+			$result = $sth->fetchAll();
+			$hasAttachments = (count($result) > 0) ? true : false;
+			
+			//if type currently allows attachments OR already has attachments, build the section
+			if ($allowsAttachments || $hasAttachments) {
+				$addStr = ($allowsAttachments == true) ? 'class="controlAdd addEnabled" href="#"' : 'class="controlAdd addDisabled" href="#" title="This item type is not currently configured to allow attachments."';
+				$return = '<section>
+					<h2>Attachments</h2>
+					<div class="sectionData">
+						<div class="customAddLink" id="addAttachment"><a '.$addStr.'>Add Attachment</a></div>
+						<table class="attachmentTable" style="width:100%;">
+							<thead style="font-weight:bold;">
+								<tr>
+									<th>Attachment</th>
+									<th>Added By</th>
+									<th>Uploaded</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>';
+								if ($hasAttachments) {
+									foreach ($result as $row) {
+										$return .= '<tr><td><a href="attachment.php?id='.$row['attachmentID'].'">'.$row['name'].'.'.$row['extension'].'</a></td>';
+										$return .= '<td>'.getLinkedName('employee', $row['employeeID']).'</td>';
+										$return .= '<td>'.formatDateTime($row['uploadTime']).'</td>';
+										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-id="'.$row['attachmentID'].'"></a></td></tr>';
+									}
+								}
+							$return .= '</tbody>
+						</table>
+					</div>
+				</section>';
+			}
+			
+			return $return;
+		}
+		
 		public function getName($type, $id) {
 			global $dbh;
 			global $TYPES;

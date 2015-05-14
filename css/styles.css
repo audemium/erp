@@ -29,9 +29,6 @@ h1, h2, h3, h4, h5, h6 {
 	padding: 0;
 	margin: 0;
 }
-button {
-	cursor: pointer;
-}
 a, a:visited {
 	color: #1A87ED;
 	text-decoration: none;
@@ -69,6 +66,7 @@ h2 {
 	padding-top: 20px;
 }
 button {
+	cursor: pointer;
 	color: #FFFFFF;
 	font-weight: bold;
 	border-radius: 4px;
@@ -79,12 +77,18 @@ button {
 button:hover {
 	box-shadow: 1px 1px 2px 2px #999999;
 }
+.buttonDisabled {
+	background: #888888 ;
+	border: 1px solid #888888;
+	cursor: default;
+	box-shadow: none !important;
+}
 .valid {
 	border-color: #28921F;
 	box-shadow: 0 0 5px #5CD053;
 }
 .invalid {
-	border-color: #E52D2D !important;
+	border: 1px solid #e52d2d !important;
 	box-shadow: 0 0 5px #D45252 !important;
 }
 .textCenter {
@@ -216,7 +220,7 @@ nav img {
 }
 
 /* Datatables */
-table.dataTable thead, table.customTable thead {
+table.dataTable thead, table.customTable thead, table.attachmentTable thead {
 	background-color: #FFFFFF;
 	box-shadow: 0 8px 6px -2px #BBBBBB;
 	z-index: 11;
@@ -376,19 +380,19 @@ section {
 .sectionData > dl > dd {
 	float: left;
 }
-table.customTable {
+table.customTable, table.attachmentTable {
 	border-spacing: 0;
 	border-bottom: 1px solid #111111;
 }
-table.customTable thead th, table.customTable thead td {
+table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
 	padding: 10px 18px;
 	border-top: 1px solid #000000;
 }
-table.customTable tbody th, table.customTable tbody td {
+table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
     padding: 8px 10px;
 	border-top: 1px solid #DDDDDD;
 }
-table.customTable tbody tr:nth-child(odd) {
+table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-child(odd) {
 	background-color: #F9F9F9;
 }
 .customAddLink {
@@ -461,6 +465,21 @@ label:after {
     box-shadow: 0 0 3px #CCCCCC;
     padding: 2px;
     width: 125px;
+}
+
+.meter {
+	border: 1px solid #999999;
+	border-radius: 16px;
+	height: 16px;
+	margin: 20px auto 0;
+	width: 50%;
+}
+.meter > span {
+	background-color: #1a87ed;
+	border-radius: 16px 0 0 16px;
+	box-shadow: 0 2px 9px rgba(255, 255, 255, 0.3) inset, 0 -2px 6px rgba(0, 0, 0, 0.4) inset;
+	display: block;
+	height: 100%;
 }
 
 /* Icons */

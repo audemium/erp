@@ -3,10 +3,13 @@
 	$SETTINGS['dbServer'] = 'localhost';
 	$SETTINGS['dbName'] = 'erp';
 	$SETTINGS['dbUser'] = 'root';
-	$SETTINGS['dbPassword'] = 'dbPasswordHere'; //TODO: take this out when posting code
+	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
 	//Company information
 	$SETTINGS['companyName'] = 'Audemium';
+	
+	//Default types that allow you to add attachments (if you remove a type, existing attachments will be preserved)
+	$SETTINGS['attachments'] = ['employee', 'order', 'expense'];
 	
 	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';

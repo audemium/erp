@@ -510,6 +510,70 @@
 	}
 	
 	/*
+		Function: addAttachment
+		Inputs: 
+		Outputs: 
+	*/
+	if ($_POST['action'] == 'addAttachment') {
+		$return = ['status' => 'fail'];
+		
+		if ($_FILES['uploadFile']['error'] == 0) {
+			$pos = strrpos($_FILES['uploadFile']['name'], '.');
+			$name = ($pos !== false) ? substr($_FILES['uploadFile']['name'], 0, $pos) : $_FILES['uploadFile']['name'];
+			$extension = ($pos !== false) ? substr($_FILES['uploadFile']['name'], $pos + 1) : '';
+			$file = finfo_open(FILEINFO_MIME_TYPE);
+			$mime = finfo_file($file, $_FILES['uploadFile']['tmp_name']);
+			
+			$sth = $dbh->prepare(
+				'INSERT INTO attachments (type, id, employeeID, uploadTime, name, extension, mime)
+				VALUES(:type, :id, :employeeID, UNIX_TIMESTAMP(), :name, :extension, :mime)');
+			$sth->execute([':type' => $_POST['type'], ':id' => $_POST['id'], ':employeeID' => $_SESSION['employeeID'], ':name' => $name, ':extension' => $extension, ':mime' => $mime]);
+			$attachmentID = $dbh->lastInsertId();
+			
+			if (move_uploaded_file($_FILES['uploadFile']['tmp_name'], 'attachments/'.$attachmentID)) {
+				$return = ['status' => 'success'];
+				//TODO: add change line
+			}
+			else {
+				$sth = $dbh->prepare(
+					'DELETE FROM attachments
+					WHERE attachmentID = :attachmentID');
+				$sth->execute([':attachmentID' => $attachmentID]);
+				$return['uploadFile'] = 'Server error';
+			}
+		}
+		else {
+			$error = 'Server error';
+			if ($_FILES['uploadFile']['error'] == 1) {
+				$error = 'File exceeds max size ('.ini_get('upload_max_filesize').')';
+			}
+			$return['uploadFile'] = $error;
+		}
+		
+		echo json_encode($return);
+	}
+	
+	/*
+		Function: deleteAttachment
+		Inputs: 
+		Outputs: 
+	*/
+	if ($_POST['action'] == 'deleteAttachment') {
+		$return = ['status' => 'fail'];
+		
+		if (unlink('attachments/'.$_POST['subID'])) {
+			$sth = $dbh->prepare(
+				'DELETE FROM attachments
+				WHERE attachmentID = :attachmentID');
+			$sth->execute([':attachmentID' => $_POST['subID']]);
+			$return = ['status' => 'success'];
+			//TODO: add change line
+		}
+		
+		echo json_encode($return);
+	}
+	
+	/*
 		Function: customAjax
 		Inputs: 
 		Outputs: 
