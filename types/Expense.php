@@ -320,7 +320,6 @@
 								foreach ($period as $date) {
 									$timestamp = $date->getTimestamp();
 									if ($timestamp >= $startDate && $timestamp <= $endDate) {
-										$return['temp'] = $id.' '.$data['productID'].' '.$data['locationID'].' '.$timestamp.' '.$data['unitPrice'].' '.$data['quantity'].' '.$recurringID;
 										$sth = $dbh->prepare(
 											'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
 											VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
