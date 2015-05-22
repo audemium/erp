@@ -73,7 +73,7 @@
 									while ($row2 = $sth2->fetch()) {
 										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
 										$subTotal += $lineAmount;
-										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - <a href="item.php?type=product&id='.$row2['productID'].'">'.$row2['productName'].'</a></td>';
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': <a href="item.php?type=product&id='.$row2['productID'].'">'.$row2['productName'].'</a></td>';
 										$return .= '<td><a href="item.php?type=location&id='.$row2['locationID'].'">'.$row2['locationName'].'</a></td>';
 										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
 										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
@@ -121,7 +121,7 @@
 									while ($row2 = $sth2->fetch()) {
 										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
 										$subTotal += $lineAmount;
-										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).' - '.$row2['name'].'</td>';
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.$row2['name'].'</td>';
 										$return .= '<td></td>';
 										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
 										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
