@@ -38,7 +38,7 @@
 						<tbody>';							
 							//get product expenses
 							$sth = $dbh->prepare(
-								'SELECT expenseProductID, products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, quantity, unitPrice, recurringID, parentRecurringID, dayOfMonth, startDate, endDate
+								'SELECT expenseProductID, products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, quantity, unitPrice, recurringID, dayOfMonth, startDate, endDate
 								FROM products, locations, expenses_products
 								WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID AND parentRecurringID IS NULL');
 							$sth->execute([':expenseID' => $id]);
@@ -86,7 +86,7 @@
 							
 							//get other expenses
 							$sth = $dbh->prepare(
-								'SELECT expenseOtherID, name, quantity, unitPrice, recurringID, parentRecurringID, dayOfMonth, startDate, endDate
+								'SELECT expenseOtherID, name, quantity, unitPrice, recurringID, dayOfMonth, startDate, endDate
 								FROM expenseOthers
 								WHERE expenseID = :expenseID AND parentRecurringID IS NULL');
 							$sth->execute([':expenseID' => $id]);
