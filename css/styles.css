@@ -383,6 +383,7 @@ section {
 table.customTable, table.attachmentTable {
 	border-spacing: 0;
 	border-bottom: 1px solid #111111;
+	clear: both;
 }
 table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
 	padding: 10px 18px;
@@ -397,8 +398,7 @@ table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-ch
 }
 .customAddLink {
 	margin-bottom: 10px;
-	text-align: right;
-	width: 100%;
+	float: right;
 }
 
 /* Popups */
