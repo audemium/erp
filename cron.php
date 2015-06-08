@@ -35,33 +35,93 @@
 	
 	//recurring expenses_products
 	$sth = $dbh->prepare(
-		'SELECT expenseID, productID, locationID, unitPrice, quantity, recurringID, dayOfMonth 
-		FROM expenses_products 
+		'SELECT expenseID, productID, locationID, unitPrice, quantity, recurringID, dayOfMonth
+		FROM expenses_products
 		WHERE recurringID IS NOT NULL AND startDate <= :today AND endDate >= :today');
 	$sth->execute([':today' => $today]);
 	while ($row = $sth->fetch()) {
 		$day = date('j', $today);
 		if ($day == $row['dayOfMonth']) {
-			$sth = $dbh->prepare(
+			$sth2 = $dbh->prepare(
 				'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
 				VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
-			$sth->execute([':expenseID' => $row['expenseID'], ':productID' => $row['productID'], ':locationID' => $row['locationID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+			$sth2->execute([':expenseID' => $row['expenseID'], ':productID' => $row['productID'], ':locationID' => $row['locationID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
 		}
 	}
 	
 	//recurring expenseOthers
 	$sth = $dbh->prepare(
-		'SELECT expenseID, name, unitPrice, quantity, recurringID, dayOfMonth 
-		FROM expenseOthers 
+		'SELECT expenseID, name, unitPrice, quantity, recurringID, dayOfMonth
+		FROM expenseOthers
 		WHERE recurringID IS NOT NULL AND startDate <= :today AND endDate >= :today');
 	$sth->execute([':today' => $today]);
 	while ($row = $sth->fetch()) {
 		$day = date('j', $today);
 		if ($day == $row['dayOfMonth']) {
-			$sth = $dbh->prepare(
+			$sth2 = $dbh->prepare(
 				'INSERT INTO expenseOthers (expenseID, name, date, unitPrice, quantity, parentRecurringID)
 				VALUES(:expenseID, :name, :date, :unitPrice, :quantity, :parentRecurringID)');
-			$sth->execute([':expenseID' => $row['expenseID'], ':name' => $row['name'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+			$sth2->execute([':expenseID' => $row['expenseID'], ':name' => $row['name'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+		}
+	}
+	
+	//recurring orders_products
+	$sth = $dbh->prepare(
+		'SELECT orderProductID, orderID, productID, unitPrice, quantity, recurringID, dayOfMonth
+		FROM orders_products
+		WHERE recurringID IS NOT NULL AND startDate <= :today AND endDate >= :today');
+	$sth->execute([':today' => $today]);
+	while ($row = $sth->fetch()) {
+		$day = date('j', $today);
+		if ($day == $row['dayOfMonth']) {
+			$sth2 = $dbh->prepare(
+				'INSERT INTO orders_products (orderID, productID, date, unitPrice, quantity, parentRecurringID)
+				VALUES(:orderID, :productID, :date, :unitPrice, :quantity, :parentRecurringID)');
+			$sth2->execute([':orderID' => $row['orderID'], ':productID' => $row['productID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+			$id = $dbh->lastInsertId();
+			
+			//check for discounts on the item
+			$sth2 = $dbh->prepare(
+				'SELECT discountID, discountType, discountAmount
+				FROM orders_discounts
+				WHERE appliesToType = "P" AND appliesToID = :appliesToID');
+			$sth2->execute([':appliesToID' => $row['orderProductID']]);
+			while ($row2 = $sth2->fetch()) {
+				$sth3 = $dbh->prepare(
+					'INSERT INTO orders_discounts (orderID, discountID, appliesToType, appliesToID, discountType, discountAmount)
+					VALUES(:orderID, :discountID, "P", :appliesToID, :discountType, :discountAmount)');
+				$sth3->execute([':orderID' => $row['orderID'], ':discountID' => $row2['discountID'], ':appliesToID' => $id, ':discountType' => $row2['discountType'], ':discountAmount' => $row2['discountAmount']]);
+			}
+		}
+	}
+	
+	//recurring orders_services
+	$sth = $dbh->prepare(
+		'SELECT orderServiceID, orderID, serviceID, unitPrice, quantity, recurringID, dayOfMonth
+		FROM orders_services
+		WHERE recurringID IS NOT NULL AND startDate <= :today AND endDate >= :today');
+	$sth->execute([':today' => $today]);
+	while ($row = $sth->fetch()) {
+		$day = date('j', $today);
+		if ($day == $row['dayOfMonth']) {
+			$sth2 = $dbh->prepare(
+				'INSERT INTO orders_services (orderID, serviceID, date, unitPrice, quantity, parentRecurringID)
+				VALUES(:orderID, :serviceID, :date, :unitPrice, :quantity, :parentRecurringID)');
+			$sth2->execute([':orderID' => $row['orderID'], ':serviceID' => $row['serviceID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+			$id = $dbh->lastInsertId();
+			
+			//check for discounts on the item
+			$sth2 = $dbh->prepare(
+				'SELECT discountID, discountType, discountAmount
+				FROM orders_discounts
+				WHERE appliesToType = "S" AND appliesToID = :appliesToID');
+			$sth2->execute([':appliesToID' => $row['orderServiceID']]);
+			while ($row2 = $sth2->fetch()) {
+				$sth3 = $dbh->prepare(
+					'INSERT INTO orders_discounts (orderID, discountID, appliesToType, appliesToID, discountType, discountAmount)
+					VALUES(:orderID, :discountID, "S", :appliesToID, :discountType, :discountAmount)');
+				$sth3->execute([':orderID' => $row['orderID'], ':discountID' => $row2['discountID'], ':appliesToID' => $id, ':discountType' => $row2['discountType'], ':discountAmount' => $row2['discountAmount']]);
+			}
 		}
 	}
 ?>

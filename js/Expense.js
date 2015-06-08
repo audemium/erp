@@ -57,7 +57,7 @@ $(document).ready(function() {
 		$('#customPopup2 ul').eq(0).children(':not(:first)').remove();
 		$('#customPopup2 .invalid').qtip('destroy', true);
 		$('#customPopup2 .invalid').removeClass('invalid');
-		resetRecurringOptions('2');
+		resetRecurringOptions('#customPopup2');
 		
 		$('#customPopup2 [name=itemType]').change(function() {
 			var $select = $(this);
@@ -94,7 +94,7 @@ $(document).ready(function() {
 					html += '<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>';
 					if ($ul.children().length > 1) {
 						$ul.children(':not(:first)').remove();
-						resetRecurringOptions('2');
+						resetRecurringOptions('#customPopup2');
 					}
 					//TODO: find out why these inputs don't line up with the first one
 					$ul.append(html);
@@ -107,7 +107,7 @@ $(document).ready(function() {
 				html += '<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>';
 				if ($ul.children().length > 1) {
 					$ul.children(':not(:first)').remove();
-					resetRecurringOptions('2');
+					resetRecurringOptions('#customPopup2');
 				}
 				//TODO: find out why these inputs don't line up with the first one
 				$ul.append(html);
@@ -119,7 +119,7 @@ $(document).ready(function() {
 				$('#customPopup2 ul').eq(1).show();
 			}
 			else {
-				resetRecurringOptions('2');
+				resetRecurringOptions('#customPopup2');
 			}
 		});
 		
@@ -218,10 +218,3 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 });
-
-/* Local Helper Functions */
-
-function resetRecurringOptions(popupID) {
-	$('#customPopup' + popupID + ' [name=interval], #customPopup' + popupID + ' [name=dayOfMonth], #customPopup' + popupID + ' [name=startDate], #customPopup' + popupID + ' [name=endDate]').val('');
-	$('#customPopup' + popupID + ' ul').eq(1).hide();
-}

@@ -1,4 +1,8 @@
 $(document).ready(function() {
+	$('#customPopup2 [name=startDate], #customPopup2 [name=endDate]').datepicker({
+		dateFormat: dateFormatJS
+	});
+	
 	//add
 	$('#customAdd1').click(function(event) {
 		$('#customPopup1').show();
@@ -50,9 +54,10 @@ $(document).ready(function() {
 	$('#customAdd2').click(function(event) {
 		$('#customPopup2').show();
 		$('#customPopup2 [name=itemType]').val('');
-		$('#customPopup2 ul').children(':not(:first)').remove();
+		$('#customPopup2 ul').eq(0).children(':not(:first)').remove();
 		$('#customPopup2 .invalid').qtip('destroy', true);
 		$('#customPopup2 .invalid').removeClass('invalid');
+		resetRecurringOptions('#customPopup2');
 		
 		$('#customPopup2 [name=itemType]').change(function() {
 			var $select = $(this);
@@ -60,6 +65,7 @@ $(document).ready(function() {
 			var itemType = $select.val();
 			if (itemType == '') {
 				$ul.children(':not(:first)').remove();
+				$('#customPopup2 ul').eq(1).hide();
 			}
 			else {
 				$.ajax({
@@ -80,6 +86,7 @@ $(document).ready(function() {
 					html += '</select></li>';
 					if ($ul.children().length > 1) {
 						$ul.children(':not(:first)').remove();
+						resetRecurringOptions('#customPopup2');
 					}
 					//TODO: find out why these inputs don't line up with the first one
 					$ul.append(html);
@@ -104,6 +111,7 @@ $(document).ready(function() {
 								html += '</select></li>';
 								if ($ul.children().length > 2) {
 									$ul.children().eq(2).remove();
+									resetRecurringOptions('#customPopup2');
 								}
 								$ul.append(html);
 							});
@@ -111,15 +119,32 @@ $(document).ready(function() {
 					}
 					else {
 						$ul.append('<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>');
+						$ul.append('<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>');
 					}
 				});
+			}
+		});
+		
+		$('#customPopup2').on('change', '[name=recurring]', function() {
+			if ($(this).val() == 'yes') {
+				$('#customPopup2 ul').eq(1).show();
+			}
+			else {
+				resetRecurringOptions('#customPopup2');
 			}
 		});
 		
 		$('#customBtn2').click(function() {
 			var ajaxData = $('#customPopup2 input[type!="checkbox"], #customPopup2 select[name!=itemType]').serializeArray();
 			var itemType = $('#customPopup2 [name=itemType]').val();
-			itemType = (itemType == 'preDiscount') ? 'discount' : itemType;
+			if (itemType == 'preDiscount') {
+				itemType = 'discount';
+				$.each(ajaxData, function(index, item) {
+					if (item.name == 'dayOfMonth' || item.name == 'interval' || item.name == 'startDate' || item.name == 'endDate') {
+						delete ajaxData[index];      
+					}
+				});
+			}
 			ajaxData.push(
 				{'name': 'action', 'value': 'customAjax'},
 				{'name': 'type', 'value': type},

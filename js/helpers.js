@@ -15,6 +15,11 @@ function debounce(fn, delay) {
 	};
 }
 
+function resetRecurringOptions(popupID) {
+	$(popupID + ' [name=interval], ' + popupID + ' [name=dayOfMonth], ' + popupID + ' [name=startDate], ' + popupID + ' [name=endDate]').val('');
+	$(popupID + ' ul').eq(1).hide();
+}
+
 $(document).ready(function() {
 	//when receiving the http code that indicates the user is logged out, redirect to the login page
 	$(document).ajaxError(function(event, jqxhr, settings, exception) {
