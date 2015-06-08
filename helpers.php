@@ -13,8 +13,22 @@
 
 	/* formatCurrency */
 	function formatCurrency($amount) {
-		//TODO: format negative numbers
-		return (!empty($amount)) ? '$'.number_format($amount, 2) : '';
+		global $SETTINGS;
+		
+		if (empty($amount)) {
+			return '';
+		}
+		elseif ($amount < 0) {
+			if ($SETTINGS['negativeCurrencyFormat'] == 0) {
+				return '-$'.number_format(abs($amount), 2);
+			}
+			else {
+				return '($'.number_format(abs($amount), 2).')';
+			}
+		}
+		else {
+			return '$'.number_format($amount, 2);
+		}
 	}
 	
 	/* formatDate */
