@@ -79,16 +79,8 @@ $(document).ready(function() {
 						'itemType': itemType
 					}
 				}).done(function(data) {
-					var html = '<li><label for="productID">Product</label><select name="productID"><option value=""></option>';
-					$.each(data.products, function(index, value) {
-						html += '<option value="' + value.value + '">' + value.text + '</option>';
-					});
-					html += '</select></li>';
-					html += '<li><label for="locationID">Location</label><select name="locationID"><option value=""></option>';
-					$.each(data.locations, function(index, value) {
-						html += '<option value="' + value.value + '">' + value.text + '</option>';
-					});
-					html += '</select></li>';
+					var html = '<li><label for="productID">Product</label><select name="productID">' + data.products + '</select></li>';
+					html += '<li><label for="locationID">Location</label><select name="locationID">' + data.locations + '</select></li>';
 					html += '<li><label for="unitPrice">Unit Price</label><input type="text" name="unitPrice" autocomplete="off"></li>';
 					html += '<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>';
 					html += '<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>';

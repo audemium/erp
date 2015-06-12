@@ -48,7 +48,7 @@
 	/* getName */
 	function getName($type, $id) {
 		$factoryItem = Factory::createItem($type);
-		return $factoryItem->getName($type, $id);
+		return htmlspecialchars($factoryItem->getName($type, $id));
 	}
 	
 	/* getLinkedName */
@@ -75,7 +75,7 @@
 		}
 		else {
 			$factoryItem = Factory::createItem($type);
-			$parsed = $factoryItem->parseValue($type, $field, $value);
+			$parsed = htmlspecialchars($factoryItem->parseValue($type, $field, $value));
 		}
 		
 		return $parsed;
@@ -201,7 +201,7 @@
 		$optArr = $factoryItem->generateTypeOptions($type);
 		foreach ($optArr as $opt) {
 			$selected = ($opt[0] == $value) ? ' selected' : '';
-			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.$opt[1].'</option>';
+			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.htmlspecialchars($opt[1]).'</option>';
 		}
 		
 		return $return;

@@ -85,7 +85,7 @@
 			else {
 				$name = $TYPES[$row['type']]['formalName'].' #'.$row['id'];
 			}
-			$results[] = ['type' => $row['type'], 'id' => $row['id'], 'name' => $name];
+			$results[] = ['type' => $row['type'], 'id' => $row['id'], 'name' => htmlspecialchars($name)];
 		}
 		
 		$return = ['status' => 'success', 'results' => $results];

@@ -38,9 +38,9 @@
 						<tbody>';							
 							//get product expenses
 							$sth = $dbh->prepare(
-								'SELECT expenseProductID, products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, quantity, unitPrice, recurringID, dayOfMonth, startDate, endDate
-								FROM products, locations, expenses_products
-								WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID AND parentRecurringID IS NULL');
+								'SELECT expenseProductID, productID, locationID, quantity, unitPrice, recurringID, dayOfMonth, startDate, endDate
+								FROM expenses_products
+								WHERE expenseID = :expenseID AND parentRecurringID IS NULL');
 							$sth->execute([':expenseID' => $id]);
 							while ($row = $sth->fetch()) {
 								if (!is_null($row['recurringID'])) {
@@ -54,8 +54,8 @@
 									$lineAmount = $row['quantity'] * $row['unitPrice'];
 									$subTotal += $lineAmount;
 								}
-								$return .= '<tr><td><a href="item.php?type=product&id='.$row['productID'].'">'.$row['productName'].'</a>'.$recurringStr.'</td>';
-								$return .= '<td><a href="item.php?type=location&id='.$row['locationID'].'">'.$row['locationName'].'</a></td>';
+								$return .= '<tr><td>'.getLinkedName('product', $row['productID']).$recurringStr.'</td>';
+								$return .= '<td>'.getLinkedName('location', $row['locationID']).'</td>';
 								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>';
 								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
@@ -65,16 +65,16 @@
 								//get child recurring rows if this is a parent recurring row
 								if (!is_null($row['recurringID'])) {
 									$sth2 = $dbh->prepare(
-										'SELECT expenseProductID, products.productID, products.name AS productName, locations.locationID, locations.name AS locationName, date, quantity, unitPrice
-										FROM products, locations, expenses_products
-										WHERE expenseID = :expenseID AND products.productID = expenses_products.productID AND locations.locationID = expenses_products.locationID AND parentRecurringID = :recurringID
+										'SELECT expenseProductID, productID, locationID, date, quantity, unitPrice
+										FROM expenses_products
+										WHERE expenseID = :expenseID AND parentRecurringID = :recurringID
 										ORDER BY date');
 									$sth2->execute([':expenseID' => $id, ':recurringID' => $row['recurringID']]);
 									while ($row2 = $sth2->fetch()) {
 										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
 										$subTotal += $lineAmount;
-										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': <a href="item.php?type=product&id='.$row2['productID'].'">'.$row2['productName'].'</a></td>';
-										$return .= '<td><a href="item.php?type=location&id='.$row2['locationID'].'">'.$row2['locationName'].'</a></td>';
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.getLinkedName('product', $row2['productID']).'</td>';
+										$return .= '<td>'.getLinkedName('location', $row2['locationID']).'</td>';
 										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
 										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
 										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
@@ -102,7 +102,7 @@
 									$lineAmount = $row['quantity'] * $row['unitPrice'];
 									$subTotal += $lineAmount;
 								}
-								$return .= '<tr><td>'.$row['name'].$recurringStr.'</td>';
+								$return .= '<tr><td>'.htmlspecialchars($row['name']).$recurringStr.'</td>';
 								$return .= '<td></td>';
 								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>';
 								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
@@ -121,7 +121,7 @@
 									while ($row2 = $sth2->fetch()) {
 										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
 										$subTotal += $lineAmount;
-										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.$row2['name'].'</td>';
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.htmlspecialchars($row2['name']).'</td>';
 										$return .= '<td></td>';
 										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
 										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
@@ -208,26 +208,8 @@
 			
 			if ($data['subAction'] == 'list') {
 				//list subAction
-				$return['products'] = [];
-				$return['locations'] = [];
-
-				$sth = $dbh->prepare(
-					'SELECT productID, name
-					FROM products
-					WHERE active = 1');
-				$sth->execute();
-				while ($row = $sth->fetch()) {
-					$return['products'][] = ['value' => $row[0], 'text' => $row[1]];
-				}
-				
-				$sth = $dbh->prepare(
-					'SELECT locationID, name
-					FROM locations
-					WHERE active = 1');
-				$sth->execute();
-				while ($row = $sth->fetch()) {
-					$return['locations'][] = ['value' => $row[0], 'text' => $row[1]];
-				}
+				$return['products'] = generateTypeOptions('product', true);
+				$return['locations'] = generateTypeOptions('location', true);
 			}
 			elseif ($data['subAction'] == 'add') {
 				//add subAction
