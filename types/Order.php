@@ -36,7 +36,7 @@
 							$lineItemTable = self::getLineItemTable($id);
 							
 							foreach ($lineItemTable[0] as $line) {
-								$padding = 50 * $line['indent'];
+								$padding = 8 + (50 * $line['indent']);
 								if ($line['type'] == 'service' || $line['type'] == 'product') {
 									if (!is_null($line['recurring'])) {
 										$recurringStr = ' (occurs monthly on day '.$line['recurring'][0].' from '.formatDate($line['recurring'][1]).' to '.formatDate($line['recurring'][2]).')';
