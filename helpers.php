@@ -48,7 +48,7 @@
 	/* getName */
 	function getName($type, $id) {
 		$factoryItem = Factory::createItem($type);
-		return htmlspecialchars($factoryItem->getName($type, $id));
+		return htmlspecialchars($factoryItem->getName($type, $id), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 	}
 	
 	/* getLinkedName */
@@ -74,7 +74,7 @@
 			$parsed = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
 		}
 		else {
-			$factoryItem = Factory::createItem($type);
+			$factoryItem = Factory::createItem($type, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 			$parsed = htmlspecialchars($factoryItem->parseValue($type, $field, $value));
 		}
 		
@@ -201,7 +201,7 @@
 		$optArr = $factoryItem->generateTypeOptions($type);
 		foreach ($optArr as $opt) {
 			$selected = ($opt[0] == $value) ? ' selected' : '';
-			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.htmlspecialchars($opt[1]).'</option>';
+			$return .= '<option value="'.$opt[0].'"'.$selected.'>'.htmlspecialchars($opt[1], ENT_QUOTES | ENT_HTML5, 'UTF-8').'</option>';
 		}
 		
 		return $return;

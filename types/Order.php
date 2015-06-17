@@ -172,7 +172,7 @@
 						else {
 							$text = $row[1];
 						}
-						$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($text)];
+						$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8')];
 					}
 				}
 				else {
@@ -196,7 +196,7 @@
 					$sth->execute();
 					while ($row = $sth->fetch()) {
 						if ($data['itemType'] != 'discount' || !in_array($row[0], $discounts)) {
-							$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($row[1])];
+							$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($row[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')];
 						}
 					}
 				}
@@ -811,10 +811,10 @@
 			$sth->execute([':orderID' => $id]);
 			while ($row = $sth->fetch()) {
 				if ($row['appliesToType'] == 'O') {
-					$discounts['O'][] = [$row['orderDiscountID'], $row['discountID'], htmlspecialchars($row['name']), $row['discountType'], $row['discountAmount']];
+					$discounts['O'][] = [$row['orderDiscountID'], $row['discountID'], htmlspecialchars($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), $row['discountType'], $row['discountAmount']];
 				}
 				else {
-					$discounts[$row['appliesToType'].$row['appliesToID']][] = [$row['orderDiscountID'], $row['discountID'], htmlspecialchars($row['name']), $row['discountType'], $row['discountAmount']];
+					$discounts[$row['appliesToType'].$row['appliesToID']][] = [$row['orderDiscountID'], $row['discountID'], htmlspecialchars($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), $row['discountType'], $row['discountAmount']];
 				}
 			}
 			
@@ -842,7 +842,7 @@
 					WHERE orderID = :orderID AND '.$table.'.'.$idName.' = '.$table2.'.'.$idName.' AND parentRecurringID IS NOT NULL');
 				$sth->execute([':orderID' => $id]);
 				while ($row = $sth->fetch()) {
-					$children[$shortType.$row['parentRecurringID']][] = [$row['uniqueID'], $row['id'], htmlspecialchars($row['name']), $row['date'], $row['unitPrice'], $row['quantity']];
+					$children[$shortType.$row['parentRecurringID']][] = [$row['uniqueID'], $row['id'], htmlspecialchars($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), $row['date'], $row['unitPrice'], $row['quantity']];
 				}
 				
 				//get items
@@ -866,7 +866,7 @@
 						'type' => $type,
 						'uniqueID' => $row['uniqueID'],
 						'id' => $row['id'],
-						'name' => htmlspecialchars($row['name']),
+						'name' => htmlspecialchars($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
 						'unitPrice' => $row['unitPrice'],
 						'quantity' => ($row['quantity'] + 0),
 						'lineAmount' => $lineAmount,

@@ -102,7 +102,7 @@
 									$lineAmount = $row['quantity'] * $row['unitPrice'];
 									$subTotal += $lineAmount;
 								}
-								$return .= '<tr><td>'.htmlspecialchars($row['name']).$recurringStr.'</td>';
+								$return .= '<tr><td>'.htmlspecialchars($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8').$recurringStr.'</td>';
 								$return .= '<td></td>';
 								$return .= '<td class="textCenter">'.($row['quantity'] + 0).'</td>';
 								$return .= '<td class="textCenter">'.formatCurrency($row['unitPrice']).'</td>';
@@ -121,7 +121,7 @@
 									while ($row2 = $sth2->fetch()) {
 										$lineAmount = $row2['quantity'] * $row2['unitPrice'];
 										$subTotal += $lineAmount;
-										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.htmlspecialchars($row2['name']).'</td>';
+										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.htmlspecialchars($row2['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8').'</td>';
 										$return .= '<td></td>';
 										$return .= '<td class="textCenter">'.($row2['quantity'] + 0).'</td>';
 										$return .= '<td class="textCenter">'.formatCurrency($row2['unitPrice']).'</td>';
