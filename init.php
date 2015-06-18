@@ -53,7 +53,6 @@
 	session_set_cookie_params(0, '/', $_SERVER['SERVER_NAME'], isset($_SERVER['HTTPS']), true);
 	//set sessions to use the db functions, register session shutdown, then start the session
 	session_set_save_handler('dbSessionOpen', 'dbSessionClose', 'dbSessionRead', 'dbSessionWrite', 'dbSessionDestroy', 'dbSessionGc');
-	session_register_shutdown();
 	session_start();
 	
 	//set up time zones
