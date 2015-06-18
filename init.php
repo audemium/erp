@@ -49,9 +49,8 @@
 		]
 	);
 	
-	//change cookies to HttpOnly
-	$cookieParams = session_get_cookie_params();
-	session_set_cookie_params($cookieParams['lifetime'], $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], true);
+	//change cookies to HttpOnly and secure (if we're using HTTPS)
+	session_set_cookie_params(0, '/', $_SERVER['SERVER_NAME'], isset($_SERVER['HTTPS']), true);
 	//set sessions to use the db functions, register session shutdown, then start the session
 	session_set_save_handler('dbSessionOpen', 'dbSessionClose', 'dbSessionRead', 'dbSessionWrite', 'dbSessionDestroy', 'dbSessionGc');
 	session_register_shutdown();
