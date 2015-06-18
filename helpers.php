@@ -250,7 +250,7 @@
 	}
 	
 	///////////////     SESSION FUNCTIONS     ///////////////
-	function dbSessionOpen($savePath, $sessionName) {
+	function dbSessionOpen() {
 		return true;
 	}
 	
@@ -280,11 +280,7 @@
 		
 		$creationTime = time();
 		$sth = $dbh->prepare(
-			'DELETE FROM sessions
-			WHERE sessionID = :sessionID');
-		$sth->execute([':sessionID' => $sessionID]);
-		$sth = $dbh->prepare(
-			'INSERT INTO sessions (sessionID, creationTime, sessionData)
+			'REPLACE INTO sessions (sessionID, creationTime, sessionData)
 			VALUES(:sessionID, :creationTime, :sessionData)');
 		$sth->execute([':sessionID' => $sessionID, ':creationTime' => $creationTime, ':sessionData' => $sessionData]);
 		return true;
@@ -303,10 +299,11 @@
 	function dbSessionGc($maxlifetime) {
 		global $dbh;
 		
+		$deletionTime = time() - $maxlifetime;
 		$sth = $dbh->prepare(
 			'DELETE FROM sessions
-			WHERE creationTime < UNIX_TIMESTAMP() - :maxlifetime');
-		$sth->execute([':maxlifetime' => $maxlifetime]);
+			WHERE creationTime < :deletionTime');
+		$sth->execute([':deletionTime' => $deletionTime]);
 		return true;
 	}
 ?>
