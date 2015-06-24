@@ -39,7 +39,7 @@
 					<div class="sectionData">
 						<div class="customAddLink" id="addAttachment"><a '.$addStr.'>Add Attachment</a></div>
 						<table class="attachmentTable" style="width:100%;">
-							<thead style="font-weight:bold;">
+							<thead>
 								<tr>
 									<th>Attachment</th>
 									<th>Added By</th>

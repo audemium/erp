@@ -48,8 +48,8 @@
 					</dl>
 					<br><br>
 					<div class="customAddLink" id="customAdd1"><a class="controlAdd '.$requestTimeOff.'" href="#">Request Time Off</a></div>
-					<table class="customTable dataTable" style="width:100%;">
-						<thead style="font-weight:bold;">
+					<table class="dataTable  stripe row-border" style="width:100%;">
+						<thead>
 							<tr>
 								<th>Date</th>
 								<th>Start Time</th>

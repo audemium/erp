@@ -22,7 +22,7 @@
 				<div class="sectionData">
 					<div class="customAddLink" id="customAdd2"><a class="controlAdd addEnabled" href="#">Add Line Item</a></div>
 					<table class="customTable" style="width:100%;">
-						<thead style="font-weight:bold;">
+						<thead>
 							<tr>
 								<th>Item</th>
 								<th class="textCenter">Quantity</th>
@@ -76,7 +76,7 @@
 				<div class="sectionData">
 					<div class="customAddLink" id="customAdd1"><a class="controlAdd addEnabled" href="#">Add Payment</a></div>
 					<table class="customTable" style="width:100%;">
-						<thead style="font-weight:bold;">
+						<thead>
 							<tr>
 								<th>Payment Number</th>
 								<th class="textCenter">Type</th>
