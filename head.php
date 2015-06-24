@@ -15,7 +15,7 @@
 <meta charset="UTF-8">
 <link rel="shortcut icon" href="images/favicon-16x16.png">
 
-<link type="text/css" rel="stylesheet" href="css/jquery.dataTables.min.css">
+<link type="text/css" rel="stylesheet" href="vendor/dataTables/css/jquery.dataTables.min.css">
 <link type="text/css" rel="stylesheet" href="css/jquery.qtip.min.css">
 <link type="text/css" rel="stylesheet" href="css/jquery-ui.min.css">
 <link type="text/css" rel="stylesheet" href="css/jquery-ui.timepicker-addon.css">
@@ -27,4 +27,4 @@
 <script type="text/javascript" src="js/jquery-ui.timepicker-addon.js"></script>
 <script type="text/javascript" src="js/helpers.js"></script>
 <script type="text/javascript" src="js/menu.js"></script>
-<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="vendor/dataTables/js/jquery.dataTables.min.js"></script>
