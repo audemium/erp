@@ -12,7 +12,7 @@
 	*/
 	
 	require_once('init.php');
-	require_once('tcpdf/tcpdf.php');
+	require_once('vendor/tcpdf/tcpdf.php');
 	
 	$factoryItem = Factory::createItem($_GET['type']);
 	$return = $factoryItem->generatePDF($_GET['id'], $_GET['pdfID']);
