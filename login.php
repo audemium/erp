@@ -18,10 +18,10 @@
 <html>
 <head>
 	<title>Sign in</title>
-	<meta charset="UTF-8">
-	<link rel="shortcut icon" href="images/favicon.ico">
+	<?php
+		require('head.php');
+	?>
 
-	<link type="text/css" rel="stylesheet" href="css/styles.css">
 	<style type="text/css">
 		#loginBox {
 			box-shadow: 1px 3px 8px #BBBBBB;
@@ -56,7 +56,6 @@
 		}
 	</style>
 	
-	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('input').focusout(function() {

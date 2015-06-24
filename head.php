@@ -21,7 +21,7 @@
 <link type="text/css" rel="stylesheet" href="css/jquery-ui.timepicker-addon.css">
 <link type="text/css" rel="stylesheet" href="css/styles.css">
 
-<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="js/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui.timepicker-addon.js"></script>
