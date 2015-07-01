@@ -287,17 +287,17 @@
 								<ul>
 									<li>
 										<label for="startTime">Start Time</label>
-										<input type="text" autocomplete="off" name="startTime">
+										<input type="text" class="timeInput" autocomplete="off" name="startTime">
 									</li>
 									<li>
 										<label for="date">Date</label>
-										<input type="text" autocomplete="off" name="date">
+										<input type="text" class="dateInput" autocomplete="off" name="date">
 									</li>
 								</ul>
 								<ul>
 									<li>
 										<label for="endTime">End Time</label>
-										<input type="text" autocomplete="off" name="endTime">
+										<input type="text" class="timeInput" autocomplete="off" name="endTime">
 									</li>
 								</ul>
 							</div>

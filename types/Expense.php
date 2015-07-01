@@ -147,7 +147,7 @@
 					<table class="customTable" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Payment Number</th>
+								<th>Date</th>
 								<th class="textCenter">Type</th>
 								<th class="textRight">Amount</th>
 								<th></th>
@@ -171,7 +171,7 @@
 									$paymentType = 'Credit Card';
 								}
 								$subTotal += $row['paymentAmount'];
-								$return .= '<tr><td>'.$row['paymentID'].'</td>';
+								$return .= '<tr><td>'.formatDate($row['date']).'</td>';
 								$return .= '<td class="textCenter">'.$paymentType.'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($row['paymentAmount']).'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="payment" data-id="'.$row['paymentID'].'"></a></td></tr>';
@@ -219,6 +219,7 @@
 				unset($data['subType']);
 				if ($subType == 'payment') {
 					$fields = [
+						'date' => ['verifyData' => [1, 'dateTime', '']],
 						'paymentType' => ['verifyData' => [1, 'opt', ['CA', 'CH', 'CR']]],
 						'paymentAmount' => ['verifyData' => [1, 'dec', [12, 2]]]
 					];
@@ -254,11 +255,12 @@
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
+						$date = strtotime($data['date']);
 						$sth = $dbh->prepare(
-							'INSERT INTO expensePayments (expenseID, paymentType, paymentAmount)
-							VALUES(:expenseID, :paymentType, :paymentAmount)');
-						$sth->execute([':expenseID' => $id, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
-						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
+							'INSERT INTO expensePayments (expenseID, date, paymentType, paymentAmount)
+							VALUES(:expenseID, :date, :paymentType, :paymentAmount)');
+						$sth->execute([':expenseID' => $id, ':date' => $date, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
+						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'date' => $date, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
 					elseif ($subType == 'product') {
 						$sth = $dbh->prepare(
@@ -490,11 +492,15 @@
 											<option value="CR">Credit Card</option>
 										</select>
 									</li>
-								</ul>
-								<ul>
 									<li>
 										<label for="paymentAmount">Amount</label>
 										<input type="text" autocomplete="off" name="paymentAmount">
+									</li>
+								</ul>
+								<ul>
+									<li>
+										<label for="date">Date</label>
+										<input type="text" class="dateInput" autocomplete="off" name="date">
 									</li>
 								</ul>
 							</div>
@@ -567,11 +573,11 @@
 									</li>
 									<li>
 										<label for="startDate">Start Date</label>
-										<input type="text" autocomplete="off" name="startDate">
+										<input type="text" class="dateInput" autocomplete="off" name="startDate">
 									</li>
 									<li>
 										<label for="endDate">End Date</label>
-										<input type="text" autocomplete="off" name="endDate">
+										<input type="text" class="dateInput" autocomplete="off" name="endDate">
 									</li>
 								</ul>
 							</div>

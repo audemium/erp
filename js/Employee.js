@@ -1,12 +1,4 @@
 $(document).ready(function() {
-	$('#customPopup1 [name=startTime], #customPopup1 [name=endTime]').timepicker({
-		timeFormat: timeFormatJS,
-		stepMinute: 15
-	});
-	$('#customPopup1 [name=date]').datepicker({
-		dateFormat: dateFormatJS
-	});
-
 	//add
 	$('#customAdd1').click(function(event) {
 		$('#customPopup1').show();

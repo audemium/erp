@@ -1,8 +1,4 @@
 $(document).ready(function() {
-	$('#customPopup2 [name=startDate], #customPopup2 [name=endDate]').datepicker({
-		dateFormat: dateFormatJS
-	});
-	
 	//add
 	$('#customAdd1').click(function(event) {
 		$('#customPopup1').show();

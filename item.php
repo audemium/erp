@@ -50,6 +50,15 @@
 				]
 			});
 			
+			//set up datetimepicker
+			$('.timeInput').timepicker({
+				timeFormat: timeFormatJS,
+				stepMinute: 15
+			});
+			$('.dateInput').datepicker({
+				dateFormat: dateFormatJS
+			});
+			
 			//get initial history datatable, set up view all click
 			$.ajax({
 				url: 'ajax.php',
