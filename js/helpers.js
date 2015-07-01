@@ -1,9 +1,3 @@
-function formatCurrency(amount) {
-	var temp = amount.toFixed(2);
-	temp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-	return '$' + temp;
-}
-
 function debounce(fn, delay) {
 	var timer = null;
 	return function () {
