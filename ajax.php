@@ -207,6 +207,11 @@
 						<b>Temporary Password: </b>'.$password.'
 					</div>';
 			}
+			else {
+				//add the type and id to redirect to the new item
+				$return['type'] = $_POST['type'];
+				$return['id'] = $id;
+			}
 		}
 		
 		echo json_encode($return);

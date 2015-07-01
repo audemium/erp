@@ -58,7 +58,7 @@ $(document).ready(function() {
 							$('#defaultPopup > div > div').html(data.html);
 						}
 						else {
-							location.reload();
+							location.href = 'item.php?type=' + data.type + '&id=' + data.id;
 						}
 					}
 					else {
