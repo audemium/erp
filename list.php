@@ -162,20 +162,15 @@
 					$sth->execute();
 					while ($row = $sth->fetch()) {
 						$id = $row[$TYPES[$_GET['type']]['idName']];
+						$item = parseValue($_GET['type'], $row);
+						
 						echo '<tr><td class="selectCol"><input type="checkbox" class="selectCheckbox" id="'.$id.'"></td>';
 						foreach ($columns as $column) {
-							if ($column == 'name') {
+							if ($column == 'name' || $column == 'orderID' || $column == 'expenseID') {
 								$temp = getLinkedName($_GET['type'], $id);
 							}
-							//TODO: make orderID and expenseID columns more generic
-							elseif ($column == 'orderID') {
-								$temp = '<a href="item.php?type=order&id='.$id.'">'.$id.'</a>';
-							}
-							elseif ($column == 'expenseID') {
-								$temp = '<a href="item.php?type=expense&id='.$id.'">'.$id.'</a>';
-							}
 							else {
-								$temp = parseValue($_GET['type'], $column, $row[$column]);
+								$temp = $item[$column];
 							}
 							echo '<td>'.$temp.'</td>';
 						}

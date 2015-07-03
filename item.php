@@ -19,6 +19,7 @@
 		WHERE '.$TYPES[$_GET['type']]['idName'].' = :id');
 	$sth->execute([':id' => $_GET['id']]);
 	$item = $sth->fetch();
+	$parsed = parseValue($_GET['type'], $item);
 	$name = getName($_GET['type'], $_GET['id']);
 ?>
 
@@ -255,7 +256,7 @@
 						echo '<dl>';
 						foreach ($column as $field) {
 							echo '<dt>'.$TYPES[$_GET['type']]['fields'][$field]['formalName'].'</dt>';
-							echo '<dd>'.parseValue($_GET['type'], $field, $item[$field]).'</dd>';
+							echo '<dd>'.$parsed[$field].'</dd>';
 						}
 						echo '</dl>';
 					}

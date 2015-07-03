@@ -130,13 +130,15 @@
 			return 'Order #'.$id;
 		}
 		
-		public function parseValue($type, $field, $value) {
-			switch ($field) {
-				case 'amountDue':
-					$parsed = formatCurrency($value);
-					break;
-				default:
-					$parsed = $value;
+		public function parseValue($type, $item) {
+			foreach ($item as $field => $value) {
+				switch ($field) {
+					case 'amountDue':
+						$parsed[$field] = formatCurrency($value);
+						break;
+					default:
+						$parsed[$field] = $value;
+				}
 			}
 			
 			return $parsed;

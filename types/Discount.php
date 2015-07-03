@@ -12,17 +12,18 @@
 	*/
 
 	class Discount extends GenericItem {
-		public function parseValue($type, $field, $value) {
-			switch ($field) {
-				case 'discountType':
-					$parsed = ($value == 'C') ? 'Cash' : 'Percentage';
-					break;
-				case 'discountAmount':
-					//TODO: sometimes this will be a currency and sometimes it's a percentage, no idea how i'll do that
-					$parsed = formatCurrency($value);
-					break;
-				default:
-					$parsed = $value;
+		public function parseValue($type, $item) {
+			foreach ($item as $field => $value) {
+				switch ($field) {
+					case 'discountType':
+						$parsed[$field] = ($value == 'C') ? 'Cash' : 'Percentage';
+						break;
+					case 'discountAmount':
+						$parsed[$field] = ($item['discountType'] == 'C') ? formatCurrency($value) : ($value + 0).'%';
+						break;
+					default:
+						$parsed[$field] = $value;
+				}
 			}
 			
 			return $parsed;

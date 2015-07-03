@@ -132,16 +132,18 @@
 			return $row['firstName'].' '.$row['lastName'];
 		}
 		
-		public function parseValue($type, $field, $value) {
-			switch ($field) {
-				case 'payType':
-					$parsed = ($value == 'S') ? 'Salary' : 'Hourly';
-					break;
-				case 'payAmount':
-					$parsed = formatCurrency($value);
-					break;
-				default:
-					$parsed = $value;
+		public function parseValue($type, $item) {
+			foreach ($item as $field => $value) {
+				switch ($field) {
+					case 'payType':
+						$parsed[$field] = ($value == 'S') ? 'Salary' : 'Hourly';
+						break;
+					case 'payAmount':
+						$parsed[$field] = formatCurrency($value);
+						break;
+					default:
+						$parsed[$field] = $value;
+				}
 			}
 			
 			return $parsed;

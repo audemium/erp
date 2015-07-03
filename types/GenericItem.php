@@ -79,8 +79,8 @@
 			return $row['name'];
 		}
 		
-		public function parseValue($type, $field, $value) {
-			return $value;
+		public function parseValue($type, $item) {
+			return $item;
 		}
 		
 		public function generateTypeOptions($type) {

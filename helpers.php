@@ -67,15 +67,18 @@
 	}
 	
 	/* parseValue */
-	function parseValue($type, $field, $value) {
+	function parseValue($type, $item) {
 		global $TYPES;
 		
-		if ($TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
-			$parsed = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
-		}
-		else {
-			$factoryItem = Factory::createItem($type, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-			$parsed = htmlspecialchars($factoryItem->parseValue($type, $field, $value));
+		$factoryItem = Factory::createItem($type);
+		$parsed = $factoryItem->parseValue($type, $item);
+		foreach ($parsed as $field => $value) {
+			if (isset($TYPES[$type]['fields'][$field]) && $TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
+				$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
+			}
+			else {
+				$parsed[$field] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+			}
 		}
 		
 		return $parsed;
@@ -215,7 +218,10 @@
 		$options = $TYPES[$type]['fields'][$field]['verifyData'][2];
 		foreach ($options as $option) {
 			$selected = ($option == $value) ? ' selected' : '';
-			$return .= '<option value="'.$option.'"'.$selected.'>'.parseValue($type, $field, $option).'</option>';
+			//slightly risky, as we could send a field that relies on another field to parse, but I'm going to say that's unlikely
+			$item[$field] = $option;
+			$parsed = parseValue($type, $item);
+			$return .= '<option value="'.$option.'"'.$selected.'>'.$parsed[$field].'</option>';
 		}
 		
 		return $return;
