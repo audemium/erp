@@ -46,7 +46,7 @@
 					'verifyData' => [1, 'str', 200]
 				],
 				'payType' => [
-					'formalName' => 'Type',
+					'formalName' => 'Pay Type',
 					'verifyData' => [1, 'opt', ['S', 'H']]
 				],
 				'payAmount' => [
