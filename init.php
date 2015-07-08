@@ -70,7 +70,7 @@
 	}
 	
 	//check if the user is logged in, if not then redirect
-	if (empty($_SESSION['loggedIn']) && $_SERVER['SCRIPT_NAME'] != '/login.php' && $_SERVER['SCRIPT_NAME'] != '/ajax.php') {
+	if (empty($_SESSION['loggedIn']) && $_SERVER['SCRIPT_NAME'] != '/login.php' && $_SERVER['SCRIPT_NAME'] != '/ajax.php' && $_SERVER['SCRIPT_NAME'] != '/module.php') {
 		$_SESSION['loginDestination'] = $_SERVER['REQUEST_URI'];
 		header('Location: login.php');
 		die();

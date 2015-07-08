@@ -60,6 +60,7 @@ h2 {
 	border-bottom: 2px solid #1A87ED;
     font-size: 1em;
 	margin-bottom: 10px;
+	padding-bottom: 5px;
 }
 #btnSpacer {
 	text-align: center;
@@ -202,6 +203,9 @@ nav img {
 	min-height: 200px;
 	padding: 12px;
 }
+.moduleData {
+	padding: 0 2%;
+}
 
 /* Qtip2 - custom version of tipsy style for text and for menu */
 .qtip-tipsy-custom {
@@ -221,6 +225,7 @@ nav img {
 
 /* Datatables */
 table.dataTable thead, table.customTable thead, table.attachmentTable thead {
+	font-weight: bold;
 	background-color: #FFFFFF;
 	box-shadow: 0 8px 6px -2px #BBBBBB;
 	z-index: 11;
@@ -229,7 +234,29 @@ table.dataTable thead th, table.dataTable thead td {
 	border-bottom: 0;
 	border-top: 1px solid #000000;
 }
+
+table.customTable, table.attachmentTable {
+	/* customTable and attachmentTable essentially recreate the dataTable style without creating the dataTable in JS, which is used to remove resorting*/
+	/* if you want sorting, just use class="dataTable stripe row-border" */
+	/* there might be a reason other than sorting that I did this, but I'm not sure what it would be right now */
+	border-spacing: 0;
+	border-bottom: 1px solid #111111;
+	clear: both;
+}
+table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
+	padding: 10px 18px;
+	border-top: 1px solid #000000;
+}
+table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
+    padding: 8px 10px;
+	border-top: 1px solid #DDDDDD;
+}
+table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-child(odd) {
+	background-color: #F9F9F9;
+}
+
 .tableFooter {
+	/* this is specifically for the View All footer */
 	text-align: center;
 }
 .tableFooter a:before, .tableFooter a:after {
@@ -379,22 +406,6 @@ section {
 }
 .sectionData > dl > dd {
 	float: left;
-}
-table.customTable, table.attachmentTable {
-	border-spacing: 0;
-	border-bottom: 1px solid #111111;
-	clear: both;
-}
-table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
-	padding: 10px 18px;
-	border-top: 1px solid #000000;
-}
-table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
-    padding: 8px 10px;
-	border-top: 1px solid #DDDDDD;
-}
-table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-child(odd) {
-	background-color: #F9F9F9;
 }
 .customAddLink {
 	margin-bottom: 10px;

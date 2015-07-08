@@ -27,8 +27,31 @@
 				var colWidth = ($(window).width() - 154 - 50 - 90) / 2;
 				$('#col1, #col2').css('width', colWidth + 'px');
 			});
-			
 			$(window).resize();
+			
+			//trigger AJAX calls for modules
+			$('#col1 .module, #col2 .module').each(function() {
+				var $module = $(this);
+				$.ajax({
+					url: 'module.php',
+					type: 'POST',
+					data: {
+						'module':  $module.attr('id')
+					}
+				}).done(function(data) {
+					$module.find('h2').html(data.title);
+					$module.find('.moduleData').html(data.content);
+					$module.find('.dataTable').DataTable({
+						'paging': false,
+						'dom': 't',
+						'order': [0, 'desc'],
+						'autoWidth': false,
+						'columnDefs': [
+							{'width': '150px', 'targets': 'dateTimeHeader'}
+						]
+					});
+				});
+			});
 		});
 	</script>
 </head>
@@ -38,30 +61,31 @@
 		require('menu.php');
 	?>
 	<div id="content">
+		<?php
+			//TODO: get user's module setup from the db
+			$modules = [['notifications', 'unpaidBills', 'unpaidOrders'], ['recentTransactions', 'income', 'expenses']];
+		?>
 		<div id="col1">
-			<div class="module">
-				<h2>Notifications<a class="settings" href="#"></a></h2>
-				Nothing to notify you of.
-			</div>
-			<div class="module">
-				<h2>Products<a class="settings" href="#"></a></h2>
-				Summary would go here?
-			</div>
-			<div class="module">
-				<h2>Services<a class="settings" href="#"></a></h2>
-				Summary would go here?
-			</div>
+			<?php
+				foreach ($modules[0] as $module) {
+					echo '<div class="module" id="'.$module.'">';
+						echo '<h2></h2>';
+						echo '<div class="moduleData"></div>';
+					echo '</div>';
+				}
+			?>
 		</div>
 		<div id="col2">
-			<div class="module">
-				<h2>Customers<a class="settings" href="#"></a></h2>
-				Summary would go here?
-			</div>
-			<div class="module">
-				<h2>Finances<a class="settings" href="#"></a></h2>
-				Summary would go here?
-			</div>
+			<?php
+				foreach ($modules[1] as $module) {
+					echo '<div class="module" id="'.$module.'">';
+						echo '<h2></h2>';
+						echo '<div class="moduleData"></div>';
+					echo '</div>';
+				}
+			?>
 		</div>
+		<div style="clear:both;"></div>
 		<?php
 			require('footer.php');
 		?>
