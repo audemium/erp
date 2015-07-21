@@ -72,10 +72,10 @@ $(document).ready(function() {
 						'type': type,
 						'id': id,
 						'subAction': 'list',
-						'itemType': itemType
+						'subType': itemType
 					}
 				}).done(function(data) {
-					var html = '<li><label for="itemID">Item</label><select name="itemID"><option value=""></option>';
+					var html = '<li><label for="subID">Item</label><select name="subID"><option value=""></option>';
 					$.each(data.options, function(index, value) {
 						html += '<option value="' + value.value + '">' + value.text + '</option>';
 					});
@@ -87,7 +87,7 @@ $(document).ready(function() {
 					//TODO: find out why these inputs don't line up with the first one
 					$ul.append(html);
 					if (itemType == 'preDiscount') {
-						$('#customPopup2 [name=itemID]').change(function() {
+						$('#customPopup2 [name=subID]').change(function() {
 							$.ajax({
 								url: 'ajax.php',
 								type: 'POST',
@@ -96,8 +96,8 @@ $(document).ready(function() {
 									'type': type,
 									'id': id,
 									'subAction': 'list',
-									'itemType': 'discount',
-									'itemID':  $(this).val()
+									'subType': 'discount',
+									'subID':  $(this).val()
 								}
 							}).done(function(data) {
 								var html = '<li><label for="discountID">Discount</label><select name="discountID"><option value=""></option>';

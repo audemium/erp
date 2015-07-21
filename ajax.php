@@ -140,7 +140,7 @@
 		$data = $_POST;
 		unset($data['action']);
 		unset($data['type']);
-		$return = verifyData($_POST['type'], $data, null);
+		$return = verifyData($_POST['type'], null, $data);
 		//manual check for managerID because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '') {
 			$return['status'] = 'fail';
@@ -192,7 +192,7 @@
 			$id = $dbh->lastInsertId();
 			
 			//add to changes table
-			addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($changeData));
+			addChange($_POST['type'], $id, $_SESSION['employeeID'], 'A', json_encode($changeData));
 			
 			if ($_POST['type'] == 'employee') {
 				//update hierarchy table
@@ -312,7 +312,7 @@
 		unset($data['action']);
 		unset($data['type']);
 		unset($data['id']);
-		$return = verifyData($_POST['type'], $data, null);
+		$return = verifyData($_POST['type'], null, $data);
 		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
 			$return['status'] = 'fail';
@@ -347,7 +347,12 @@
 						}
 					}
 					if (count($tempData) > 0) {
-						addChange($_POST['type'], $id, $_SESSION['employeeID'], json_encode($tempData));
+						if ($_POST['type'] == 'discount' && isset($tempData['discountAmount']) && !isset($tempData['discountType'])) {
+							//special change code for discount because discountAmount formatting relies on discountType
+							$tempData['discountType'] = $row['discountType'];
+							$tempData['hideType'] = 1;
+						}
+						addChange($_POST['type'], $id, $_SESSION['employeeID'], 'E', json_encode($tempData));
 					}
 					//if we're changing an employee's manager, remove the current links and then add the new ones
 					if (isset($tempData['managerID'])) {
@@ -424,7 +429,7 @@
 			$row = $sth->fetch();
 			if ($row['active'] == 1) {
 				$idArrSafe[] = $dbh->quote($id);
-				addChange($_POST['type'], $id, $_SESSION['employeeID'], '');
+				addChange($_POST['type'], $id, $_SESSION['employeeID'], 'D', '');
 				//if we're deleting an employee, remove them from the hierarchy
 				if ($_POST['type'] == 'employee') {
 					updateHierarchy('delete', null, $id);
@@ -459,56 +464,13 @@
 			ORDER BY changeTime DESC
 			LIMIT '.$limit);
 		$sth->execute([':type' => $_POST['type'], ':id' => $_POST['id']]);
-		while ($row = $sth->fetch()) {
+		$result = $sth->fetchAll();
+		$parsed = parseHistory($_POST['type'], $result);
+		
+		foreach ($parsed as $row) {
 			$return['html'] .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
 			$return['html'] .= '<td>'.getLinkedName('employee', $row['employeeID']).'</td>';
-			$dataStr = '';
-			if ($row['data'] == '') {
-				$dataStr = 'Item deleted.';
-			}
-			else {
-				$data = json_decode($row['data'], true);
-				if (isset($data['type'])) {
-					//TODO: fix this subtype stuff, it prints out basic stuff, but don't parse things, and added/removed is sometimes wrong
-					if ($data['type'] == 'payment') {
-						if (count($data) == 2) {
-							$dataStr .= 'Removed Payment #'.$data['id'].'. ';
-						}
-						else {
-							$dataStr .= 'Added Payment #'.$data['id'].'. ';
-							$type = $data['type'];
-							unset($data['type']);
-							unset($data['id']);
-							foreach ($data as $key => $value) {
-								//$value = parseValue($type, $key, $value);
-								$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-							}
-						}
-					}
-					else {
-						if (count($data) == 2) {
-							$dataStr .= 'Removed '.getLinkedName($data['type'], $data['id']).'. ';
-						}
-						else {
-							$dataStr .= 'Added '.getLinkedName($data['type'], $data['id']).'. ';
-							$type = $data['type'];
-							unset($data['type']);
-							unset($data['id']);
-							foreach ($data as $key => $value) {
-								//$value = parseValue($type, $key, $value);
-								$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-							}
-						}
-					}
-				}
-				else {
-					foreach ($data as $key => $value) {
-						$value = parseValue($row['type'], $key, $value);
-						$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
-					}
-				}
-			}
-			$return['html'] .= '<td>'.$dataStr.'</td></tr>';
+			$return['html'] .= '<td>'.$row['data'].'</td></tr>';
 		}
 		
 		echo json_encode($return);

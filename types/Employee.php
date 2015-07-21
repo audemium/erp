@@ -35,6 +35,7 @@
 			$row = $sth->fetch();
 			$hoursAvailable = $row['vacationTotal'] - $hoursUsed;
 			
+			//Time Tracking section
 			$return = '<section>
 				<h2>Time Tracking</h2>
 				<div class="sectionData">
@@ -85,13 +86,17 @@
 						$return .= '</tbody>
 					</table>
 				</div>
-			</section>
-			<section>
+			</section>';
+			
+			//Paystubs section
+			$return .= '<section>
 				<h2>Paystubs</h2>
 				<div class="sectionData">
 				</div>
-			</section>
-			<section>
+			</section>';
+			
+			//Changes Made section
+			$return .= '<section>
 				<h2>Changes Made</h2>
 				<div class="sectionData">
 					<table class="dataTable stripe row-border" id="changesMadeTable"> 
@@ -172,6 +177,7 @@
 			
 			if ($data['subAction'] == 'add') {
 				//add subAction
+				//TODO: this could possibly be a subType, right now it looks like the dateTime verify type is stopping it, but I'll wait to see when I do more here
 				if ($data['date'] == '') {
 					$return['status'] = 'fail';
 					$return['date'] = 'Required';
@@ -210,66 +216,21 @@
 			}
 			elseif ($data['subAction'] == 'changesMadeHistory') {
 				$return['html'] = '';
-				$limit = ($_POST['limit'] == -1) ? 100000 : $_POST['limit'];
+				$limit = ((int)$_POST['limit'] == -1) ? 100000 : (int)$_POST['limit'];  //cast as int because we can't use a placeholder for LIMIT
 				
 				$sth = $dbh->prepare(
 					'SELECT *
 					FROM changes
 					WHERE employeeID = :employeeID
 					ORDER BY changeTime DESC
-					LIMIT :limit');
-				$sth->execute([':employeeID' => $id, ':limit' => $limit]);
+					LIMIT '.$limit);
+					$sth->execute([':employeeID' => $id]);
 				while ($row = $sth->fetch()) {
+					$parsed = parseHistory($row['type'], [$row]);
 					$return['html'] .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
 					$return['html'] .= '<td>'.getLinkedName($row['type'], $row['id']).'</td>';
 					$return['html'] .= '<td>'.$TYPES[$row['type']]['formalName'].'</td>';
-					$dataStr = '';
-					if ($row['data'] == '') {
-						$dataStr = 'Item deleted.';
-					}
-					else {
-						$data = json_decode($row['data'], true);
-						if (isset($data['type'])) {
-							//TODO: fix this subtype stuff, it prints out basic stuff, but don't parse things, and added/removed is sometimes wrong
-							if ($data['type'] == 'payment') {
-								if (count($data) == 2) {
-									$dataStr .= 'Removed Payment #'.$data['id'].'. ';
-								}
-								else {
-									$dataStr .= 'Added Payment #'.$data['id'].'. ';
-									$type = $data['type'];
-									unset($data['type']);
-									unset($data['id']);
-									foreach ($data as $key => $value) {
-										//$value = parseValue($type, $key, $value);
-										$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-									}
-								}
-							}
-							else {
-								if (count($data) == 2) {
-									$dataStr .= 'Removed '.getLinkedName($data['type'], $data['id']).'. ';
-								}
-								else {
-									$dataStr .= 'Added '.getLinkedName($data['type'], $data['id']).'. ';
-									$type = $data['type'];
-									unset($data['type']);
-									unset($data['id']);
-									foreach ($data as $key => $value) {
-										//$value = parseValue($type, $key, $value);
-										$dataStr .= '<b>'.$key.':</b> '.$value.' ';
-									}
-								}
-							}
-						}
-						else {
-							foreach ($data as $key => $value) {
-								$value = parseValue($row['type'], $key, $value);
-								$dataStr .= '<b>'.$TYPES[$row['type']]['fields'][$key]['formalName'].':</b> '.$value.' ';
-							}
-						}
-					}
-					$return['html'] .= '<td>'.$dataStr.'</td></tr>';
+					$return['html'] .= '<td>'.$parsed[0]['data'].'</td></tr>';
 				}
 			}
 			

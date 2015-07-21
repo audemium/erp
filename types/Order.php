@@ -36,6 +36,7 @@
 							$lineItemTable = self::getLineItemTable($id);
 							
 							foreach ($lineItemTable[0] as $line) {
+								//TODO: possibly might want to use self::parseSubTypeValue here, but I'd have to rearrange self::getLineItemTable a bit first
 								$padding = 8 + (50 * $line['indent']);
 								if ($line['type'] == 'service' || $line['type'] == 'product') {
 									if (!is_null($line['recurring'])) {
@@ -91,20 +92,11 @@
 								WHERE orderID = :orderID');
 							$sth->execute([':orderID' => $id]);
 							while ($row = $sth->fetch()) {
-								$paymentType = '';
-								if ($row['paymentType'] == 'CA') {
-									$paymentType = 'Cash';
-								}
-								elseif ($row['paymentType'] == 'CH') {
-									$paymentType = 'Check';
-								}
-								elseif ($row['paymentType'] == 'CR') {
-									$paymentType = 'Credit Card';
-								}
+								$parsed = self::parseSubTypeValue('payment', null, $row, 'arr');
 								$subTotal += $row['paymentAmount'];
-								$return .= '<tr><td>'.formatDate($row['date']).'</td>';
-								$return .= '<td class="textCenter">'.$paymentType.'</td>';
-								$return .= '<td class="textRight">'.formatCurrency($row['paymentAmount']).'</td>';
+								$return .= '<tr><td>'.$parsed['date'].'</td>';
+								$return .= '<td class="textCenter">'.$parsed['paymentType'].'</td>';
+								$return .= '<td class="textRight">'.$parsed['paymentAmount'].'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="payment" data-id="'.$row['paymentID'].'"></a></td></tr>';
 							}
 							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td></tr>';
@@ -144,6 +136,139 @@
 			return $parsed;
 		}
 		
+		public function parseSubTypeValue($subType, $action, $item, $format) {
+			global $TYPES;
+			$dataStr = '';
+			$parsed = [];
+			
+			foreach ($item as $field => $value) {
+				//check to see if it's an id first, then do the switch statement
+				if (isset($TYPES['expense']['subTypes'][$subType]['fields'][$field]) && $TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][1] == 'id') {
+					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][2], $value) : '';
+				}
+				else {
+					if ($subType == 'payment') {
+						switch ($field) {
+							case 'date':
+								$parsed[$field] = formatDate($value);
+								break;
+							case 'paymentType':
+								if ($value == 'CA') {
+									$parsed[$field] = 'Cash';
+								}
+								elseif ($value == 'CH') {
+									$parsed[$field] = 'Check';
+								}
+								elseif ($value == 'CR') {
+									$parsed[$field] = 'Credit Card';
+								}
+								break;
+							case 'paymentAmount':
+								$parsed[$field] = formatCurrency($value);
+								break;
+							default:
+								$parsed[$field] = $value;
+						}
+					}
+					elseif ($subType == 'product') {
+						switch ($field) {
+							case 'unitPrice':
+								$parsed[$field] = formatCurrency($value);
+								break;
+							case 'recurring':
+								if ($value == 'yes') {
+									$parsed[$field] = 'Yes';
+								}
+								elseif ($value == 'no') {
+									$parsed[$field] = 'No';
+								}
+								break;
+							case 'interval':
+								if ($value == 'monthly') {
+									$parsed[$field] = 'Monthly';
+								}
+								break;
+							case 'startDate':
+							case 'endDate':
+								$parsed[$field] = formatDate($value);
+								break;
+							default:
+								$parsed[$field] = $value;
+						}
+					}
+					elseif ($subType == 'service') {
+						switch ($field) {
+							case 'unitPrice':
+								$parsed[$field] = formatCurrency($value);
+								break;
+							case 'recurring':
+								if ($value == 'yes') {
+									$parsed[$field] = 'Yes';
+								}
+								elseif ($value == 'no') {
+									$parsed[$field] = 'No';
+								}
+								break;
+							case 'interval':
+								if ($value == 'monthly') {
+									$parsed[$field] = 'Monthly';
+								}
+								break;
+							case 'startDate':
+							case 'endDate':
+								$parsed[$field] = formatDate($value);
+								break;
+							default:
+								$parsed[$field] = $value;
+						}
+					}
+					else {
+						$parsed[$field] = $value;
+					}
+					$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				}
+			}
+			
+			if ($format == 'str') {
+				//if we want a string format
+				if ($action == 'A') {
+					$dataStr = 'Added ';
+				}
+				elseif ($action == 'E') {
+					$dataStr = 'Edited ';
+				}
+				elseif ($action == 'D') {
+					$dataStr = 'Deleted ';
+				}
+				
+				if ($subType == 'payment') {
+					$dataStr .= 'payment. ';
+				}
+				elseif ($subType == 'product') {
+					$dataStr .= 'product. ';
+				}
+				elseif ($subType == 'service') {
+					$dataStr .= 'service. ';
+				}
+				elseif ($subType == 'discountOrder') {
+					$dataStr .= 'discount to the order. ';
+				}
+				elseif ($subType == 'discountProduct' || $subType == 'discountService') {
+					$dataStr .= 'discount. ';
+				}
+				
+				foreach ($parsed as $key => $value) {
+					$dataStr .= '<b>'. $TYPES['expense']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+				}
+				
+				return $dataStr;
+			}
+			else {
+				//otherwise return the array
+				return $parsed;
+			}
+		}
+		
 		public function customAjax($id, $data) {
 			global $dbh;
 			global $TYPES;
@@ -152,7 +277,7 @@
 			if ($data['subAction'] == 'list') {
 				//list subAction
 				$return['options'] = [];
-				if ($data['itemType'] == 'preDiscount') {
+				if ($data['subType'] == 'preDiscount') {
 					//list all products and services on the order, plus an order line
 					$sth = $dbh->prepare(
 						'SELECT CONCAT("P", orderProductID), name, recurringID, date
@@ -179,9 +304,9 @@
 				}
 				else {
 					$discounts = [];
-					if ($data['itemType'] == 'discount') {
+					if ($data['subType'] == 'discount') {
 						//get the list of discounts applied to the item already so we don't apply the same discount twice to the same item
-						$temp = [substr($data['itemID'], 0, 1), substr($data['itemID'], 1)];
+						$temp = [substr($data['subID'], 0, 1), substr($data['subID'], 1)];
 						$sth = $dbh->prepare(
 							'SELECT discountID
 							FROM orders_discounts
@@ -192,12 +317,12 @@
 						}
 					}
 					$sth = $dbh->prepare(
-						'SELECT '.$TYPES[$data['itemType']]['idName'].', name
-						FROM '.$TYPES[$data['itemType']]['pluralName'].'
+						'SELECT '.$TYPES[$data['subType']]['idName'].', name
+						FROM '.$TYPES[$data['subType']]['pluralName'].'
 						WHERE active = 1');
 					$sth->execute();
 					while ($row = $sth->fetch()) {
-						if ($data['itemType'] != 'discount' || !in_array($row[0], $discounts)) {
+						if ($data['subType'] != 'discount' || !in_array($row[0], $discounts)) {
 							$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($row[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')];
 						}
 					}
@@ -209,83 +334,37 @@
 				$subType = $data['subType'];
 				unset($data['subAction']);
 				unset($data['subType']);
-				if ($subType == 'payment') {
-					$fields = [
-						'date' => ['verifyData' => [1, 'dateTime', '']],
-						'paymentType' => ['verifyData' => [1, 'opt', ['CA', 'CH', 'CR']]],
-						'paymentAmount' => ['verifyData' => [1, 'dec', [12, 2]]]
-					];
-				}
-				elseif ($subType == 'product') {
-					$required = ($data['recurring'] == 'yes') ? 1 : 0;
-					$fields = [
-						'itemID' => ['verifyData' => [1, 'id', 'product']],
-						'quantity' => ['verifyData' => [1, 'int', 4294967295]],
-						'recurring' => ['verifyData' => [1, 'opt', ['yes', 'no']]],
-						'interval' => ['verifyData' => [$required, 'opt', ['monthly']]],
-						'dayOfMonth' => ['verifyData' => [$required, 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]]],
-						'startDate' => ['verifyData' => [$required, 'dateTime', 'start']],
-						'endDate' => ['verifyData' => [$required, 'dateTime', 'end']]
-					];
-				}
-				elseif ($subType == 'service') {
-					$required = ($data['recurring'] == 'yes') ? 1 : 0;
-					$fields = [
-						'itemID' => ['verifyData' => [1, 'id', 'service']],
-						'quantity' => ['verifyData' => [1, 'dec', [12, 2]]],
-						'recurring' => ['verifyData' => [1, 'opt', ['yes', 'no']]],
-						'interval' => ['verifyData' => [$required, 'opt', ['monthly']]],
-						'dayOfMonth' => ['verifyData' => [$required, 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]]],
-						'startDate' => ['verifyData' => [$required, 'dateTime', 'start']],
-						'endDate' => ['verifyData' => [$required, 'dateTime', 'end']]
-					];
-				}
-				elseif ($subType == 'discount') {
-					//for discounts, itemID contains a one letter indication of the type of item (O = order, P = product, S = service), and the unique itemID
-					$itemType = substr($data['itemID'], 0, 1);
-					$uniqueID = substr($data['itemID'], 1);
+				if ($subType == 'discount') {
+					//for discounts, subID contains a one letter indication of the type of item (O = order, P = product, S = service), and the unique subID
+					$itemType = substr($data['subID'], 0, 1);
+					$uniqueID = substr($data['subID'], 1);
 					if ($itemType == 'O') {
 						$itemTypeFull = 'order';
+						$subType = 'discountOrder';
 					}
 					elseif ($itemType == 'P') {
 						$itemTypeFull = 'product';
+						$subType = 'discountProduct';
 					}
 					elseif ($itemType == 'S') {
 						$itemTypeFull = 'service';
+						$subType = 'discountService';
 					}
 					
-					if ($itemType != 'O') {
+					if ($itemType == 'O') {
+						$data['subID'] = $uniqueID;
+					}
+					else {
 						$sth = $dbh->prepare(
 							'SELECT '.$TYPES[$itemTypeFull]['idName'].'
 							FROM orders_'.$TYPES[$itemTypeFull]['pluralName'].'
 							WHERE order'.$TYPES[$itemTypeFull]['formalName'].'ID = :uniqueID');
 						$sth->execute([':uniqueID' => $uniqueID]);
 						$row = $sth->fetch();
-						$data['itemID'] = $row[0];
-					}
-					else {
-						$data['itemID'] = $uniqueID;
-					}
-					if ($itemType == 'O') {
-						$fields = [
-							'itemID' => ['verifyData' => [0, 'int', 0]],
-							'discountID' => ['verifyData' => [1, 'id', 'discount']]
-						];
-					}
-					elseif ($itemType == 'P') {
-						$fields = [
-							'itemID' => ['verifyData' => [1, 'id', 'product']],
-							'discountID' => ['verifyData' => [1, 'id', 'discount']]
-						];
-					}
-					elseif ($itemType == 'S') {
-						$fields = [
-							'itemID' => ['verifyData' => [1, 'id', 'service']],
-							'discountID' => ['verifyData' => [1, 'id', 'discount']]
-						];
+						$data['subID'] = $row[0];
 					}
 				}
-				$return = verifyData(null, $data, $fields);
+				$return = verifyData('order', $subType, $data);
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
@@ -294,31 +373,33 @@
 							'INSERT INTO orderPayments (orderID, date, paymentType, paymentAmount)
 							VALUES(:orderID, :date, :paymentType, :paymentAmount)');
 						$sth->execute([':orderID' => $id, ':date' => $date, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
-						$changeData = ['type' => 'payment', 'id' => $dbh->lastInsertId(), 'date' => $date, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
+						$changeData = ['subType' => 'payment', 'date' => $date, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
 					elseif ($subType == 'product' || $subType == 'service') {
 						$sth = $dbh->prepare(
 							'SELECT quantity
 							FROM orders_'.$TYPES[$subType]['pluralName'].'
-							WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :itemID');
-						$sth->execute([':orderID' => $id, ':itemID' => $data['itemID']]);
+							WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID');
+						$sth->execute([':orderID' => $id, ':subID' => $data['subID']]);
 						$result = $sth->fetchAll();
 						if (count($result) == 1 && $data['recurring'] == 'no') {
 							//if the product or service is already present in the expense AND we aren't doing a recurring item, add the quantity to the existing row
+							$totalQuantity = $data['quantity'] + $result[0]['quantity'];
 							$sth = $dbh->prepare(
 								'UPDATE orders_'.$TYPES[$subType]['pluralName'].'
 								SET quantity = :quantity
-								WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :itemID');
-							$sth->execute([':quantity' => $data['quantity'] + $result[0]['quantity'], ':orderID' => $id, ':itemID' => $data['itemID']]);
-							$changeData = ['type' => $subType, 'id' => $data['itemID'], 'quantity' => $data['quantity'] + $result[0]['quantity']];
+								WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID');
+							$sth->execute([':quantity' => $totalQuantity, ':orderID' => $id, ':subID' => $data['subID']]);
+							$changeAction = 'E';  //this is technically an edit, not an add
+							$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'quantity' => $totalQuantity];
 						}
 						else {
 							//get defaultPrice
 							$sth = $dbh->prepare(
 								'SELECT defaultPrice
 								FROM '.$TYPES[$subType]['pluralName'].'
-								WHERE '.$TYPES[$subType]['idName'].' = :itemID');
-							$sth->execute([':itemID' => $data['itemID']]);
+								WHERE '.$TYPES[$subType]['idName'].' = :subID');
+							$sth->execute([':subID' => $data['subID']]);
 							$row = $sth->fetch();
 							$defaultPrice = $row['defaultPrice'];
 							
@@ -334,8 +415,8 @@
 								$recurringID = $result[0]['recurringID'] + 1;
 								$sth = $dbh->prepare(
 									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
-									VALUES(:orderID, :itemID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
-								$sth->execute([':orderID' => $id, ':itemID' => $data['itemID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+									VALUES(:orderID, :subID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
 								
 								//add occasions from start date to now
 								$temp = new DateTime();
@@ -349,22 +430,22 @@
 									if ($timestamp >= $startDate && $timestamp <= $endDate) {
 										$sth = $dbh->prepare(
 											'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', date, unitPrice, quantity, parentRecurringID)
-											VALUES(:orderID, :itemID, :date, :unitPrice, :quantity, :parentRecurringID)');
-										$sth->execute([':orderID' => $id, ':itemID' => $data['itemID'], ':date' => $timestamp, ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
+											VALUES(:orderID, :subID, :date, :unitPrice, :quantity, :parentRecurringID)');
+										$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $timestamp, ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['type' => $subType, 'id' => $data['itemID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
 							}
 							else {
 								$sth = $dbh->prepare(
 									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', unitPrice, quantity)
-									VALUES(:orderID, :itemID, :unitPrice, :quantity)');
-								$sth->execute([':orderID' => $id, ':itemID' => $data['itemID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity']]);
-								$changeData = ['type' => $subType, 'id' => $data['itemID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity']];
+									VALUES(:orderID, :subID, :unitPrice, :quantity)');
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity']]);
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity']];
 							}
 						}
 					}
-					elseif ($subType == 'discount') {
+					elseif ($subType == 'discountOrder' || $subType == 'discountProduct' || $subType == 'discountService') {
 						//get discountType and discountAmount
 						$sth = $dbh->prepare(
 							'SELECT discountType, discountAmount
@@ -379,9 +460,10 @@
 							'INSERT INTO orders_discounts (orderID, discountID, appliesToType, appliesToID, discountType, discountAmount)
 							VALUES(:orderID, :discountID, :appliesToType, :appliesToID, :discountType, :discountAmount)');
 						$sth->execute([':orderID' => $id, ':discountID' => $data['discountID'], ':appliesToType' => $itemType, ':appliesToID' => $uniqueID, ':discountType' => $discountType, ':discountAmount' => $discountAmount]);
-						$changeData = ['type' => 'discount', 'id' => $data['discountID'], 'appliesToType' => $itemType, 'appliesToID' => $uniqueID, 'discountType' => $discountType, 'discountAmount' => $discountAmount];
+						$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'discountID' => $data['discountID']];
 						
 						//determine if the appliesTo item is a recurring item, and if so, add a discount to past recurrences if they don't already have this discount
+						//TODO: user could possibly make a decision to apply this to past and future recurrences, or just future
 						if ($itemType != 'O') {
 							$sth = $dbh->prepare(
 								'SELECT recurringID
@@ -411,7 +493,8 @@
 					}
 					
 					self::updateAmountDue($id);
-					addChange('order', $id, $_SESSION['employeeID'], json_encode($changeData));
+					$temp = (isset($changeAction)) ? $changeAction : 'A';
+					addChange('order', $id, $_SESSION['employeeID'], $temp, json_encode($changeData));
 				}
 			}
 			elseif ($data['subAction'] == 'edit') {
@@ -428,19 +511,7 @@
 				$row = $sth->fetch();
 				$uniqueID = $data['subID'];
 				$data['subID'] = $row['id'];
-				if ($subType == 'product') {
-					$fields = [
-						'subID' => ['verifyData' => [1, 'id', 'product']],
-						'quantity' => ['verifyData' => [1, 'int', 4294967295]]
-					];
-				}
-				elseif ($subType == 'service') {
-					$fields = [
-						'subID' => ['verifyData' => [1, 'id', 'service']],
-						'quantity' => ['verifyData' => [1, 'dec', [12, 2]]]
-					];
-				}
-				$return = verifyData(null, $data, $fields);
+				$return = verifyData('order', $subType, $data);
 				
 				if ($return['status'] != 'fail') {
 					$sth = $dbh->prepare(
@@ -450,27 +521,34 @@
 					$sth->execute([':quantity' => $data['quantity'], ':uniqueID' => $uniqueID]);
 					
 					self::updateAmountDue($id);
-					addChange('order', $id, $_SESSION['employeeID'], json_encode(['type' => $subType, 'id' => $data['subID'], 'quantity' => $data['quantity']]));
+					addChange('order', $id, $_SESSION['employeeID'], 'E', json_encode(['subType' => $subType, 'subID' => $data['subID'], 'quantity' => $data['quantity']]));
 				}
 			}
 			elseif ($data['subAction'] == 'delete') {
 				//delete subAction
 				if ($data['subType'] == 'payment') {
 					$sth = $dbh->prepare(
+						'SELECT date, paymentAmount FROM orderPayments
+						WHERE paymentID = :paymentID');
+					$sth->execute([':paymentID' => $data['subID']]);
+					$row = $sth->fetch();
+					
+					$sth = $dbh->prepare(
 						'DELETE FROM orderPayments
 						WHERE paymentID = :paymentID');
 					$sth->execute([':paymentID' => $data['subID']]);
-					$changeData = ['type' => 'payment', 'id' => $data['subID']];
+					
+					$changeData = ['subType' => 'payment', 'date' => $row['date'], 'paymentAmount' => $row['paymentAmount']];
 				}
 				elseif ($data['subType'] == 'product' || $data['subType'] == 'service') {
 					$appliesToType = ($data['subType'] == 'product') ? 'P' : 'S';
 					$sth = $dbh->prepare(
-						'SELECT recurringID 
+						'SELECT '.$TYPES[$subType]['idName'].' AS id, recurringID, unitPrice, quantity
 						FROM orders_'.$TYPES[$data['subType']]['pluralName'].'
 						WHERE order'.$TYPES[$data['subType']]['formalName'].'ID = :uniqueID');
 					$sth->execute([':uniqueID' => $data['subID']]);
-					$result = $sth->fetchAll();
-					$recurringID = $result[0]['recurringID'];
+					$row = $sth->fetch();
+					$recurring = (is_null($row['recurringID'])) ? 'yes' : 'no';
 					
 					//delete item discounts and children's discounts (if any)
 					$sth = $dbh->prepare(
@@ -480,26 +558,42 @@
 							FROM orders_'.$TYPES[$data['subType']]['pluralName'].' 
 							WHERE parentRecurringID = :recurringID
 						) OR appliesToID = :appliesToID)');
-					$sth->execute([':appliesToType' => $appliesToType, ':recurringID' => $recurringID, ':appliesToID' => $data['subID']]);
+					$sth->execute([':appliesToType' => $appliesToType, ':recurringID' => $row['recurringID'], ':appliesToID' => $data['subID']]);
 					
-					//item and children (if any)
+					//delete item and children (if any)
 					$sth = $dbh->prepare(
 						'DELETE FROM orders_'.$TYPES[$data['subType']]['pluralName'].'
 						WHERE order'.$TYPES[$data['subType']]['formalName'].'ID = :uniqueID OR parentRecurringID = :recurringID');
-					$sth->execute([':uniqueID' => $data['subID'], ':recurringID' => $recurringID]);
-
-					$changeData = ['type' => $data['subType'], 'id' => $data['subID']];
+					$sth->execute([':uniqueID' => $data['subID'], ':recurringID' => $row['recurringID']]);
+					
+					$changeData = ['subType' => $data['subType'], 'subID' => $row['id'], 'unitPrice' => $row['unitPrice'], 'quantity' => $row['quantity'], 'recurring' => $recurring];
 				}
 				elseif ($data['subType'] == 'discount') {
+					$sth = $dbh->prepare(
+						'SELECT discountID, appliesToType, appliesToID FROM orders_discounts
+						WHERE orderDiscountID = :orderDiscountID');
+					$sth->execute([':orderDiscountID' => $data['subID']]);
+					$row = $sth->fetch();
+					if ($row['appliesTotype'] == 'O') {
+						$subType = 'discountOrder';
+					}
+					elseif ($row['appliesTotype'] == 'P') {
+						$subType = 'discountProduct';
+					}
+					elseif ($row['appliesTotype'] == 'S') {
+						$subType = 'discountService';
+					}
+					
 					$sth = $dbh->prepare(
 						'DELETE FROM orders_discounts
 						WHERE orderDiscountID = :orderDiscountID');
 					$sth->execute([':orderDiscountID' => $data['subID']]);
-					$changeData = ['type' => 'discount', 'id' => $data['subID'],];
+					
+					$changeData = ['subType' => $subType, 'subID' => $row['appliesToID'], 'discountID' => $row['discountID']];
 				}
 				
 				self::updateAmountDue($id);
-				addChange('order', $id, $_SESSION['employeeID'], json_encode($changeData));
+				addChange('order', $id, $_SESSION['employeeID'], 'D', json_encode($changeData));
 			}
 			
 			return $return;

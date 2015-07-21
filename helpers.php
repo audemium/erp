@@ -57,13 +57,14 @@
 	}
 	
 	/* addChange */
-	function addChange($type, $id, $employeeID, $data) {
+	function addChange($type, $id, $employeeID, $action, $data) {
+		//$action must be either A (add), E (edit) or D (delete)
 		global $dbh;
 	
 		$sth = $dbh->prepare(
-			'INSERT INTO changes (type, id, employeeID, changeTime, data)
-			VALUES(:type, :id, :employeeID, UNIX_TIMESTAMP(), :data)');
-		$sth->execute([':type' => $type, ':id' => $id, ':employeeID' => $employeeID, ':data' => $data]);
+			'INSERT INTO changes (type, id, employeeID, changeTime, action, data)
+			VALUES(:type, :id, :employeeID, UNIX_TIMESTAMP(), :action, :data)');
+		$sth->execute([':type' => $type, ':id' => $id, ':employeeID' => $employeeID, ':action' => $action, ':data' => $data]);
 	}
 	
 	/* parseValue */
@@ -84,15 +85,60 @@
 		return $parsed;
 	}
 	
+	/* parseSubTypeValue */
+	function parseSubTypeValue($type, $subType, $action, $item, $format) {
+		//unlike in parseValue, values are linked or made safe in $factoryItem->parseSubTypeValue
+		//this is because $factoryItem->parseSubTypeValue sometimes returns a string, and therefore this function couldn't fix up each piece
+		//if this becomes a problem, I could have $factoryItem->parseSubTypeValue only fix things if $format is 'str'
+		//$action must be A, E or D if $format is 'str', but can be null if $format is 'arr'
+		$factoryItem = Factory::createItem($type);
+		$parsed = $factoryItem->parseSubTypeValue($subType, $action, $item, $format);
+		
+		return $parsed;
+	}
+	
+	/* parseHistory */
+	function parseHistory($type, $changes) {
+		global $TYPES;
+		
+		foreach ($changes as $changeKey => $change) {
+			$dataStr = '';
+			if ($change['data'] == '') {
+				$dataStr = 'Item deleted.';
+			}
+			else {
+				$data = json_decode($change['data'], true);
+				if (isset($data['subType'])) {
+					$subType = $data['subType'];
+					unset($data['subType']);
+					$dataStr .= parseSubTypeValue($type, $subType, $change['action'], $data, 'str');
+				}
+				else {
+					$parsed = parseValue($type, $data);
+					if ($type == 'discount' && isset($data['hideType'])) {
+						//special change code to hide discountType if it was artificially added
+						unset($parsed['hideType']);
+						unset($parsed['discountType']);
+					}
+					foreach ($parsed as $key => $value) {
+						$dataStr .= '<b>'.$TYPES[$type]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					}
+				}
+			}
+			
+			$changes[$changeKey]['data'] = $dataStr;
+		}
+		
+		return $changes;
+	}
+	
 	/* verifyData */
-	function verifyData($type, $data, $fields) {
+	function verifyData($type, $subType, $data) {
 		global $dbh;
 		global $TYPES;
 		$return = ['status' => 'success'];
 		
-		if ($fields === null) {
-			$fields = $TYPES[$type]['fields'];
-		}
+		$fields = ($subType === null) ? $TYPES[$type]['fields'] : $TYPES[$type]['subTypes'][$subType]['fields'];
 		foreach ($data as $key => $value) {
 			if (!isset($fields[$key]['verifyData'])) {
 				$return['status'] = 'fail';
@@ -100,11 +146,21 @@
 			}
 			else {
 				$attributes = $fields[$key]['verifyData'];
-				if ($attributes[0] == 1 && $value == '' && $key != 'managerID') { //UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
+				//determine if the field is required
+				if (is_array($attributes[0]) === true) {
+					$required = ($data[$attributes[0][0]] == $attributes[0][1]) ? true : false;
+				}
+				else {
+					$required = ($attributes[0] == 1) ? true : false;
+				}
+				
+				if ($required == true && $value == '' && $key != 'managerID') {
+					//UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
 					$return['status'] = 'fail';
 					$return[$key] = 'Required';
 				}
 				elseif ($value != '') {
+					//this section gets hit if there is some value, regardless of $required
 					if ($attributes[1] == 'str') {
 						if (strlen($value) > $attributes[2]) {
 							$return['status'] = 'fail';
@@ -228,10 +284,10 @@
 	}
 	
 	/* updateHierarchy */
-	function updateHierarchy($type, $parentID, $childID) {
+	function updateHierarchy($action, $parentID, $childID) {
 		global $dbh;
 		
-		if ($type == 'add') {
+		if ($action == 'add') {
 			$sth = $dbh->prepare(
 				'INSERT INTO hierarchy (parentID, childID, depth)
 				VALUES(:childID, :childID, 0)');
@@ -244,7 +300,7 @@
 				WHERE p.childID = :parentID AND c.parentID = :childID');
 			$sth->execute([':parentID' => $parentID, ':childID' => $childID]);
 		}
-		elseif ($type == 'delete') {
+		elseif ($action == 'delete') {
 			$sth = $dbh->prepare(
 				'DELETE link FROM hierarchy p, hierarchy link, hierarchy c, hierarchy to_delete
 				WHERE p.parentID = link.parentID AND c.childID = link.childID

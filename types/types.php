@@ -137,6 +137,7 @@
 				]
 			],
 			'fields' => [
+				//order has orderID as a field because it uses it to identify an order to the user, whereas other types use a name
 				'orderID' => [
 					'formalName' => 'Order Number',
 					'verifyData' => [1, 'int', 4294967295]
@@ -152,6 +153,159 @@
 				'amountDue' => [
 					'formalName' => 'Amount Due',
 					'verifyData' => [0, 'disp']
+				]
+			],
+			'subTypes' => [
+				'payment' => [
+					'fields' => [
+						'date' => [
+							'formalName' => 'Date',
+							'verifyData' => [1, 'dateTime', ''],
+							'actions' => [1, 0, 1]
+						],
+						'paymentType' => [
+							'formalName' => 'Payment Type',
+							'verifyData' => [1, 'opt', ['CA', 'CH', 'CR']],
+							'actions' => [1, 0, 0]
+						],
+						'paymentAmount' => [
+							'formalName' => 'Payment Amount',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 0, 1]
+						]
+					]
+				],
+				'product' => [
+					'fields' => [
+						'subID' => [
+							'formalName' => 'Product',
+							'verifyData' => [1, 'id', 'product'],
+							'actions' => [1, 1, 1]
+						],
+						//TODO: change verifyData and actions arrays when I add unitPrices to orders
+						'unitPrice' => [
+							'formalName' => 'Unit Price',
+							'verifyData' => [0, 'dec', [12, 2]],
+							'actions' => [0, 0, 0]
+						],
+						'quantity' => [
+							'formalName' => 'Quantity',
+							'verifyData' => [1, 'int', 4294967295],
+							'actions' => [1, 1, 1]
+						],
+						'recurring' => [
+							'formalName' => 'Recurring',
+							'verifyData' => [1, 'opt', ['yes', 'no']],
+							'actions' => [1, 0, 1]
+						],
+						'interval' => [
+							'formalName' => 'Interval',
+							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
+							'actions' => [1, 0, 0]
+						],
+						'dayOfMonth' => [
+							'formalName' => 'Day of Month',
+							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'actions' => [1, 0, 0]
+						],
+						'startDate' => [
+							'formalName' => 'Start Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'actions' => [1, 0, 0]
+						],
+						'endDate' => [
+							'formalName' => 'End Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'actions' => [1, 0, 0]
+						]
+					]
+				],
+				'service' => [
+					'fields' => [
+						'subID' => [
+							'formalName' => 'Service',
+							'verifyData' => [1, 'id', 'service'],
+							'actions' => [1, 1, 1]
+						],
+						//TODO: change verifyData and actions arrays when I add unitPrices to orders
+						'unitPrice' => [
+							'formalName' => 'Unit Price',
+							'verifyData' => [0, 'dec', [12, 2]],
+							'actions' => [0, 0, 0]
+						],
+						'quantity' => [
+							'formalName' => 'Quantity',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 1]
+						],
+						'recurring' => [
+							'formalName' => 'Recurring',
+							'verifyData' => [1, 'opt', ['yes', 'no']],
+							'actions' => [1, 0, 1]
+						],
+						'interval' => [
+							'formalName' => 'Interval',
+							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
+							'actions' => [1, 0, 0]
+						],
+						'dayOfMonth' => [
+							'formalName' => 'Day of Month',
+							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'actions' => [1, 0, 0]
+						],
+						'startDate' => [
+							'formalName' => 'Start Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'actions' => [1, 0, 0]
+						],
+						'endDate' => [
+							'formalName' => 'End Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'actions' => [1, 0, 0]
+						]
+					]
+				],
+				'discountOrder' => [
+					'fields' => [
+						'subID' => [
+							'formalName' => '',
+							'verifyData' => [0, 'int', 0],
+							'actions' => [1, 0, 1]
+						],
+						'discountID' => [
+							'formalName' => 'Discount',
+							'verifyData' => [1, 'id', 'discount'],
+							'actions' => [1, 0, 1]
+						]
+					]
+				],
+				'discountProduct' => [
+					'fields' => [
+						'subID' => [
+							'formalName' => 'Product',
+							'verifyData' => [1, 'id', 'product'],
+							'actions' => [1, 0, 1]
+						],
+						'discountID' => [
+							'formalName' => 'Discount',
+							'verifyData' => [1, 'id', 'discount'],
+							'actions' => [1, 0, 1]
+						]
+					]
+				],
+				'discountService' => [
+					'fields' => [
+						'subID' => [
+							'formalName' => 'Service',
+							'verifyData' => [1, 'id', 'service'],
+							'actions' => [1, 0, 1]
+						],
+						'discountID' => [
+							'formalName' => 'Discount',
+							'verifyData' => [1, 'id', 'discount'],
+							'actions' => [1, 0, 1]
+						]
+					]
 				]
 			]
 		],
@@ -288,6 +442,7 @@
 				]
 			],
 			'fields' => [
+				//expense has expenseID as a field because it uses it to identify an expense to the user, whereas other types use a name
 				'expenseID' => [
 					'formalName' => 'Expense Number',
 					'verifyData' => [1, 'int', 4294967295]
@@ -303,6 +458,120 @@
 				'amountDue' => [
 					'formalName' => 'Amount Due',
 					'verifyData' => [0, 'disp']
+				]
+			],
+			'subTypes' => [
+				'payment' => [
+					'fields' => [
+						'date' => [
+							'formalName' => 'Date',
+							'verifyData' => [1, 'dateTime', ''],
+							'actions' => [1, 0, 0]
+						],
+						'paymentType' => [
+							'formalName' => 'Payment Type',
+							'verifyData' => [1, 'opt', ['CA', 'CH', 'CR']],
+							'actions' => [1, 0, 0]
+						],
+						'paymentAmount' => [
+							'formalName' => 'Payment Amount',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 0, 0]
+						]
+					]
+				],
+				'product' => [
+					'fields' => [
+						'productID' => [
+							'formalName' => 'Product',
+							'verifyData' => [1, 'id', 'product'],
+							'actions' => [1, 1, 1]
+						],
+						'locationID' => [
+							'formalName' => 'Location',
+							'verifyData' => [1, 'id', 'location'],
+							'actions' => [1, 0, 0]
+						],
+						'unitPrice' => [
+							'formalName' => 'Unit Price',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 0]
+						],
+						'quantity' => [
+							'formalName' => 'Quantity',
+							'verifyData' => [1, 'int', 4294967295],
+							'actions' => [1, 1, 0]
+						],
+						'recurring' => [
+							'formalName' => 'Recurring',
+							'verifyData' => [1, 'opt', ['yes', 'no']],
+							'actions' => [1, 0, 0]
+						],
+						'interval' => [
+							'formalName' => 'Interval',
+							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
+							'actions' => [1, 0, 0]
+						],
+						'dayOfMonth' => [
+							'formalName' => 'Day of Month',
+							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'actions' => [1, 0, 0]
+						],
+						'startDate' => [
+							'formalName' => 'Start Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'actions' => [1, 0, 0]
+						],
+						'endDate' => [
+							'formalName' => 'End Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'actions' => [1, 0, 0]
+						]
+					]
+				],
+				'other' => [
+					'fields' => [
+						'name' => [
+							'formalName' => 'Name',
+							'verifyData' => [1, 'str', 200],
+							'actions' => [1, 1, 1]
+						],
+						'unitPrice' => [
+							'formalName' => 'Unit Price',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 0]
+						],
+						'quantity' => [
+							'formalName' => 'Quantity',
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 0]
+						],
+						'recurring' => [
+							'formalName' => 'Recurring',
+							'verifyData' => [1, 'opt', ['yes', 'no']],
+							'actions' => [1, 0, 0]
+						],
+						'interval' => [
+							'formalName' => 'Interval',
+							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
+							'actions' => [1, 0, 0]
+						],
+						'dayOfMonth' => [
+							'formalName' => 'Day of Month',
+							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'actions' => [1, 0, 0]
+						],
+						'startDate' => [
+							'formalName' => 'Start Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'actions' => [1, 0, 0]
+						],
+						'endDate' => [
+							'formalName' => 'End Date',
+							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'actions' => [1, 0, 0]
+						]
+					]
 				]
 			]
 		],

@@ -83,6 +83,20 @@
 			return $item;
 		}
 		
+		public function parseSubTypeValue($subType, $action, $item, $format) {
+			//this should either be overridden by a type, or just not used at all, but it's here just in case
+			if ($format == 'arr') {
+				return $item;
+			}
+			else {
+				$parsed = '';
+				foreach ($item as $key => $value) {
+					$parsed .= '<b>'.$key.':</b> '.$value.' ';
+				}
+				return $parsed;
+			}
+		}
+		
 		public function generateTypeOptions($type) {
 			global $dbh;
 			global $TYPES;
