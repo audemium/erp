@@ -114,7 +114,6 @@ $(document).ready(function() {
 		$('#customBtn2').click(function() {
 			var ajaxData = $('#customPopup2 input[type!="checkbox"], #customPopup2 select[name!=itemType]').serializeArray();
 			var itemType = $('#customPopup2 [name=itemType]').val();
-			itemType = (itemType == 'preDiscount') ? 'discount' : itemType;
 			ajaxData.push(
 				{'name': 'action', 'value': 'customAjax'},
 				{'name': 'type', 'value': type},
