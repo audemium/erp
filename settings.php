@@ -2,7 +2,7 @@
 	//Database
 	$SETTINGS['dbServer'] = 'localhost';
 	$SETTINGS['dbName'] = 'erp';
-	$SETTINGS['dbUser'] = 'root';
+	$SETTINGS['dbUser'] = 'erpUser';
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
 	//Company information
