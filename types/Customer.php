@@ -28,12 +28,12 @@
 						</thead>
 						<tbody>';
 							$sth = $dbh->prepare(
-								'SELECT orders.*, MIN(changeTime) AS changeTime
-								FROM orders, changes
-								WHERE customerID = :customerID AND type = "order" AND id = orderID');
+								'SELECT orderID, employeeID, date
+								FROM orders
+								WHERE customerID = :customerID AND active = 1');
 							$sth->execute([':customerID' => $id]);
 							while ($row = $sth->fetch()) {
-								$return .= '<tr><td data-sort="'.$row['changeTime'].'">'.formatDateTime($row['changeTime']).'</td>';
+								$return .= '<tr><td data-sort="'.$row['date'].'">'.formatDateTime($row['date']).'</td>';
 								$return .= '<td>'.getLinkedName('order', $row['orderID']).'</td>';
 								$return .= '<td>'.getLinkedName('employee', $row['employeeID']).'</td></tr>';
 							}

@@ -122,5 +122,8 @@
 		public function printPopups() {
 			return '';
 		}
+		
+		public static function editHook($id, $data) {
+		}
 	}
 ?>

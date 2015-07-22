@@ -125,6 +125,9 @@
 		public function parseValue($type, $item) {
 			foreach ($item as $field => $value) {
 				switch ($field) {
+					case 'date':
+						$parsed[$field] = formatDate($value);
+						break;
 					case 'amountDue':
 						$parsed[$field] = formatCurrency($value);
 						break;
@@ -437,10 +440,18 @@
 								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
 							}
 							else {
+								//get date of order
 								$sth = $dbh->prepare(
-									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', unitPrice, quantity)
-									VALUES(:orderID, :subID, :unitPrice, :quantity)');
-								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity']]);
+									'SELECT date
+									FROM orders
+									WHERE orderID = :orderID');
+								$sth->execute([':orderID' => $id]);
+								$row = $sth->fetch();
+								
+								$sth = $dbh->prepare(
+									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', date, unitPrice, quantity)
+									VALUES(:orderID, :subID, :date, :unitPrice, :quantity)');
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $row['date'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity']]);
 								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity']];
 							}
 						}
@@ -543,7 +554,7 @@
 				elseif ($data['subType'] == 'product' || $data['subType'] == 'service') {
 					$appliesToType = ($data['subType'] == 'product') ? 'P' : 'S';
 					$sth = $dbh->prepare(
-						'SELECT '.$TYPES[$subType]['idName'].' AS id, recurringID, unitPrice, quantity
+						'SELECT '.$TYPES[$data['subType']]['idName'].' AS id, recurringID, unitPrice, quantity
 						FROM orders_'.$TYPES[$data['subType']]['pluralName'].'
 						WHERE order'.$TYPES[$data['subType']]['formalName'].'ID = :uniqueID');
 					$sth->execute([':uniqueID' => $data['subID']]);
@@ -758,14 +769,14 @@
 					Thank you for your order.  Your invoice is below.<br><br>';
 					//get order info
 					$sth = $dbh->prepare(
-						'SELECT MIN(changeTime)
-						FROM changes
-						WHERE type = "order" AND id = :id');
-					$sth->execute([':id' => $id]);
+						'SELECT date
+						FROM orders
+						WHERE orderID = :orderID');
+					$sth->execute([':orderID' => $id]);
 					$row = $sth->fetch();
 					$html .= 
 						'<b>Order ID:</b> '.$id.'<br>
-						<b>Order Time:</b> '.formatDateTime($row['MIN(changeTime)']).'<br><br>
+						<b>Order Date:</b> '.formatDate($row['date']).'<br><br>
 						<table style="width:100%;">
 							<thead>
 								<tr style="font-weight:bold;">
@@ -817,6 +828,25 @@
 			}
 			
 			return [$filename, $html];
+		}
+		
+		public static function editHook($id, $data) {
+			global $dbh;
+			
+			if (isset($data['date'])) {
+				//update the date on the associated subTypes
+				$sth = $dbh->prepare(
+					'UPDATE orders_products
+					SET date = :date
+					WHERE orderID = :orderID AND recurringID IS NULL AND parentRecurringID IS NULL');
+				$sth->execute([':orderID' => $id, ':date' => $data['date']]);
+				
+				$sth = $dbh->prepare(
+					'UPDATE orders_services
+					SET date = :date
+					WHERE orderID = :orderID AND recurringID IS NULL AND parentRecurringID IS NULL');
+				$sth->execute([':orderID' => $id, ':date' => $data['date']]);
+			}
 		}
 		
 		/* Local Helper Functions */

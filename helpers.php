@@ -226,7 +226,7 @@
 							$return[$key] = 'Must be an email address';
 						}
 					}
-					if ($attributes[1] == 'dateTime') {
+					if ($attributes[1] == 'date') {
 						if (strtotime($value) === false) {
 							$return['status'] = 'fail';
 							$return[$key] = 'Unrecognized date/time format.';
@@ -235,7 +235,7 @@
 							//if this is the end date, loop through until you find the start date, then if end is less than start, fail it
 							if ($attributes[2] == 'end') {
 								foreach ($data as $tempKey => $tempValue) {
-									if ($fields[$tempKey]['verifyData'][1] == 'dateTime' && $fields[$tempKey]['verifyData'][2] == 'start') {
+									if ($fields[$tempKey]['verifyData'][1] == 'date' && $fields[$tempKey]['verifyData'][2] == 'start') {
 										if (strtotime($value) < strtotime($tempValue)) {
 											$return['status'] = 'fail';
 											$return[$key] = 'End Time must be after Start Time.';

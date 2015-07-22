@@ -120,6 +120,10 @@
 					elseif ($attributes[1] == 'disp') {
 						$return['html'] .= '<li>&nbsp;</li>';
 					}
+					elseif ($attributes[1] == 'date') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off"></li>';
+					}
 				}
 				$return['html'] .= '</ul>';
 			}
@@ -149,6 +153,12 @@
 		
 		if ($return['status'] != 'fail') {
 			foreach ($data as $key => $value) {
+				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
+					//if this is a date, convert it to a unixTS
+					$temp = strtotime($value);
+					$data[$key] = $temp;
+					$value = $temp;
+				}
 				$keyArr[] = $key;
 				$placeholderArr[] = '?';
 				$valArr[] = (empty($value)) ? null : $value;
@@ -254,6 +264,10 @@
 					elseif ($attributes[1] == 'disp') {
 						$return['html'] .= '<li>&nbsp;</li>';
 					}
+					elseif ($attributes[1] == 'date') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off" value="'.formatDate($item[$field]).'"></li>';
+					}
 				}
 				$return['html'] .= '</ul>';
 			}
@@ -291,6 +305,13 @@
 						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
 						$return['html'] .= '</select></li>';
 					}
+					elseif ($attributes[1] == 'disp') {
+						$return['html'] .= '<li>&nbsp;</li>';
+					}
+					elseif ($attributes[1] == 'date') {
+						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
+						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off" value="'.formatDate($item[$field]).'"></li>';
+					}
 				}
 				$return['html'] .= '</ul>';
 			}
@@ -323,6 +344,12 @@
 			$idArr = explode(',', $_POST['id']);
 			$idArrSafe = [];
 			foreach ($data as $key => $value) {
+				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
+					//if this is a date, convert it to a unixTS
+					$temp = strtotime($value);
+					$data[$key] = $temp;
+					$value = $temp;
+				}
 				$updateArr[] = $key.' = ?';
 				$valArr[] = $value;
 				$changeData[$key] = $value;
@@ -347,6 +374,10 @@
 						}
 					}
 					if (count($tempData) > 0) {
+						//call the hook and only send the data that actually changed
+						$factoryItem = Factory::createItem($_POST['type']);
+						$factoryItem->editHook($id, $tempData);
+						
 						if ($_POST['type'] == 'discount' && isset($tempData['discountAmount']) && !isset($tempData['discountType'])) {
 							//special change code for discount because discountAmount formatting relies on discountType
 							$tempData['discountType'] = $row['discountType'];
@@ -362,7 +393,8 @@
 				}
 			}
 			
-			//do the update
+			//update all fields and all ids at once
+			//it's either this or move it to the for loop and do one sql statement per id, but this works fine
 			$ids = implode(',', $idArrSafe);
 			$sth = $dbh->prepare(
 				'UPDATE '.$tableName.'

@@ -14,8 +14,8 @@
 	//define types
 	//verifyData explanation
 		//required: 0 = no, 1 = yes
-		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, dateTime = date or date + time (time only does not work), disp = display only, email = email address
-		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' or '' to mark which dateTime comes first (dateTime) if needed, not used (disp, email)
+		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, date = date only, disp = display only, email = email address
+		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' or '' to mark which one comes first (date) if needed, not used (disp, email)
 	$TYPES = [
 		'employee' => [
 			'pluralName' => 'employees',
@@ -132,8 +132,8 @@
 			'idName' => 'orderID',
 			'formData' => [
 				'Basic Information' => [
-					['customerID', 'amountDue'],
-					['employeeID']
+					['customerID', 'date'],
+					['employeeID', 'amountDue']
 				]
 			],
 			'fields' => [
@@ -150,6 +150,10 @@
 					'formalName' => 'Employee',
 					'verifyData' => [1, 'id', 'employee']
 				],
+				'date' => [
+					'formalName' => 'Date',
+					'verifyData' => [1, 'date', '']
+				],
 				'amountDue' => [
 					'formalName' => 'Amount Due',
 					'verifyData' => [0, 'disp']
@@ -160,7 +164,7 @@
 					'fields' => [
 						'date' => [
 							'formalName' => 'Date',
-							'verifyData' => [1, 'dateTime', ''],
+							'verifyData' => [1, 'date', ''],
 							'actions' => [1, 0, 1]
 						],
 						'paymentType' => [
@@ -210,12 +214,12 @@
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
 							'actions' => [1, 0, 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
 							'actions' => [1, 0, 0]
 						]
 					]
@@ -255,12 +259,12 @@
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
 							'actions' => [1, 0, 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
 							'actions' => [1, 0, 0]
 						]
 					]
@@ -437,8 +441,8 @@
 			'idName' => 'expenseID',
 			'formData' => [
 				'Basic Information' => [
-					['supplierID', 'amountDue'],
-					['employeeID']
+					['supplierID', 'date'],
+					['employeeID', 'amountDue']
 				]
 			],
 			'fields' => [
@@ -455,6 +459,10 @@
 					'formalName' => 'Employee',
 					'verifyData' => [1, 'id', 'employee']
 				],
+				'date' => [
+					'formalName' => 'Date',
+					'verifyData' => [1, 'date', '']
+				],
 				'amountDue' => [
 					'formalName' => 'Amount Due',
 					'verifyData' => [0, 'disp']
@@ -465,7 +473,7 @@
 					'fields' => [
 						'date' => [
 							'formalName' => 'Date',
-							'verifyData' => [1, 'dateTime', ''],
+							'verifyData' => [1, 'date', ''],
 							'actions' => [1, 0, 0]
 						],
 						'paymentType' => [
@@ -519,12 +527,12 @@
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
 							'actions' => [1, 0, 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
 							'actions' => [1, 0, 0]
 						]
 					]
@@ -563,12 +571,12 @@
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'start'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
 							'actions' => [1, 0, 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'dateTime', 'end'],
+							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
 							'actions' => [1, 0, 0]
 						]
 					]

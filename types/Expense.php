@@ -187,6 +187,9 @@
 		public function parseValue($type, $item) {
 			foreach ($item as $field => $value) {
 				switch ($field) {
+					case 'date':
+						$parsed[$field] = formatDate($value);
+						break;
 					case 'amountDue':
 						$parsed[$field] = formatCurrency($value);
 						break;
@@ -408,10 +411,18 @@
 								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
 							}
 							else {
+								//get date of expense
 								$sth = $dbh->prepare(
-									'INSERT INTO expenses_products (expenseID, productID, locationID, unitPrice, quantity)
-									VALUES(:expenseID, :productID, :locationID, :unitPrice, :quantity)');
-								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
+									'SELECT date
+									FROM expenses
+									WHERE expenseID = :expenseID');
+								$sth->execute([':expenseID' => $id]);
+								$row = $sth->fetch();
+								
+								$sth = $dbh->prepare(
+									'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity)
+									VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity)');
+								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':date' => $row['date'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
 								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
 							}
 						}
@@ -469,10 +480,18 @@
 								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
 							}
 							else {
+								//get date of expense
 								$sth = $dbh->prepare(
-									'INSERT INTO expenseOthers (expenseID, name, unitPrice, quantity)
-									VALUES(:expenseID, :name, :unitPrice, :quantity)');
-								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
+									'SELECT date
+									FROM expenses
+									WHERE expenseID = :expenseID');
+								$sth->execute([':expenseID' => $id]);
+								$row = $sth->fetch();
+								
+								$sth = $dbh->prepare(
+									'INSERT INTO expenseOthers (expenseID, name, date, unitPrice, quantity)
+									VALUES(:expenseID, :name, :date, :unitPrice, :quantity)');
+								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':date' => $row['date'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
 								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
 							}
 						}
@@ -715,6 +734,25 @@
 				</div>
 			</div>';
 			return $return;
+		}
+		
+		public static function editHook($id, $data) {
+			global $dbh;
+			
+			if (isset($data['date'])) {
+				//update the date on the associated subTypes
+				$sth = $dbh->prepare(
+					'UPDATE expenses_products
+					SET date = :date
+					WHERE expenseID = :expenseID AND recurringID IS NULL AND parentRecurringID IS NULL');
+				$sth->execute([':expenseID' => $id, ':date' => $data['date']]);
+				
+				$sth = $dbh->prepare(
+					'UPDATE expenseOthers
+					SET date = :date
+					WHERE expenseID = :expenseID AND recurringID IS NULL AND parentRecurringID IS NULL');
+				$sth->execute([':expenseID' => $id, ':date' => $data['date']]);
+			}
 		}
 		
 		/* Local Helper Functions */

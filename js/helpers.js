@@ -39,6 +39,10 @@ $(document).ready(function() {
 			}
 		}).done(function(data) {
 			$('#defaultPopup > div > div').html(data.html);
+			$('.dateInput').datepicker({
+				dateFormat: dateFormatJS,
+				defaultDate: +7
+			}).datepicker('setDate', new Date());
 			$('#defaultPopup').show();
 			
 			$('#addBtn').click(function() {
@@ -108,6 +112,9 @@ $(document).ready(function() {
 				data: ajaxData
 			}).done(function(data) {
 				$('#defaultPopup > div > div').html(data.html);
+				$('.dateInput').datepicker({
+					dateFormat: dateFormatJS
+				});
 				$('#defaultPopup').show();
 				if (ajaxData.action == 'editMany') {
 					$('#defaultPopup input[type="checkbox"]').click(function() {
