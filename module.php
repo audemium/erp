@@ -29,11 +29,59 @@
 	
 	/* Recent Transactions */
 	if ($_POST['module'] == 'recentTransactions') {
+		//technically these are just the last 10 transactions, regardless of how recent they are
+		//I could change it to be transactions within the last month, but eh
 		$return['title'] = 'Recent Transactions';
-		$return['content'] = 'WIP';
-		//TODO: expensePayments and orderPayments need a date
+		$return['content'] = '<ul>';
+		$data = array();
+		
+		$sth = $dbh->prepare(
+			'SELECT CONCAT("E", paymentID) AS paymentID, expenses.expenseID, expensePayments.date, paymentAmount, supplierID
+			FROM expensePayments, expenses
+			WHERE expensePayments.expenseID = expenses.expenseID
+			ORDER BY date DESC LIMIT 10');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$sortThis[$row['paymentID']] = $row['date'];
+			$data[$row['paymentID']] = [$row['expenseID'], $row['date'], $row['paymentAmount'], $row['supplierID']];
+		}
+		
+		$sth = $dbh->prepare(
+			'SELECT CONCAT("O", paymentID) AS paymentID, orders.orderID, orderPayments.date, paymentAmount, customerID
+			FROM orderPayments, orders
+			WHERE orderPayments.orderID = orders.orderID
+			ORDER BY date DESC LIMIT 10');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$sortThis[$row['paymentID']] = $row['date'];
+			$data[$row['paymentID']] = [$row['orderID'], $row['date'], $row['paymentAmount'], $row['customerID']];
+		}
+		
 		//TODO: eventually should include payments to employees
 		
+		if (count($data) > 0) {
+			arsort($sortThis);
+			$i = 1;
+			foreach ($sortThis as $key => $value) {
+				$type = substr($key, 0, 1);
+				$id = substr($key, 1);
+				if ($type == 'E') {
+					$return['content'] .= '<li><a href="item.php?type=expense&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Paid '.formatCurrency($data[$key][2]).' to '.getLinkedName('supplier', $data[$key][3]).'.</li>';
+				}
+				else {
+					$return['content'] .= '<li><a href="item.php?type=order&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Received '.formatCurrency($data[$key][2]).' from '.getLinkedName('customer', $data[$key][3]).'.</li>';
+				}
+				if ($i == 10) {
+					break;
+				}
+				$i++;
+			}
+		}
+		else {
+			$return['content'] = 'No recent transactions.';
+		}
+		
+		$return['content'] .= '</ul>';
 		echo json_encode($return);
 	}
 	

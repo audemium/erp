@@ -206,6 +206,10 @@ nav img {
 .moduleData {
 	padding: 0 2%;
 }
+.moduleData ul {
+	margin: 0;
+	padding: 0 2%;
+}
 
 /* Qtip2 - custom version of tipsy style for text and for menu */
 .qtip-tipsy-custom {
@@ -449,7 +453,7 @@ section {
 	color: #ED1A87;
 }
 
-ul {
+.sectionData ul {
 	float: left;
 	width: 50%;
 	list-style: none;
