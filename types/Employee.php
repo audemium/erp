@@ -156,6 +156,7 @@
 		
 		public function generateTypeOptions($type) {
 			global $dbh;
+			$return = [];
 			
 			$sth = $dbh->prepare(
 				'SELECT employeeID, firstName, lastName, username
