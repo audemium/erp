@@ -283,26 +283,26 @@
 				if ($data['subType'] == 'preDiscount') {
 					//list all products and services on the order, plus an order line
 					$sth = $dbh->prepare(
-						'SELECT CONCAT("P", orderProductID), name, recurringID, date
+						'SELECT CONCAT("P", orderProductID) AS id, name, recurringID, parentRecurringID, date
 						FROM products, orders_products
 						WHERE orderID = 1 AND products.productID = orders_products.productID
 						UNION
-						SELECT CONCAT("S", orderServiceID), name, recurringID, date
+						SELECT CONCAT("S", orderServiceID) AS id, name, recurringID, parentRecurringID, date
 						FROM services, orders_services
 						WHERE orderID = 1 AND services.serviceID = orders_services.serviceID');
 					$sth->execute([':orderID' => $id]);
 					$return['options'][] = ['value' => 'O', 'text' => 'Order'];
 					while ($row = $sth->fetch()) {
-						if ($row[2] !== null) {
-							$text = 'Recurring: '.$row[1];
+						if ($row['recurringID'] !== null) {
+							$text = 'Recurring: '.$row['name'];
 						}
-						elseif ($row[3] !== null) {
-							$text = formatDate($row[3]).': '.$row[1];
+						elseif ($row['parentRecurringID'] !== null) {
+							$text = formatDate($row['date']).': '.$row['name'];
 						}
 						else {
-							$text = $row[1];
+							$text = $row['name'];
 						}
-						$return['options'][] = ['value' => $row[0], 'text' => htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8')];
+						$return['options'][] = ['value' => $row['id'], 'text' => htmlspecialchars($text, ENT_QUOTES | ENT_HTML5, 'UTF-8')];
 					}
 				}
 				else {
