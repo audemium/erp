@@ -66,10 +66,12 @@
 				$type = substr($key, 0, 1);
 				$id = substr($key, 1);
 				if ($type == 'E') {
-					$return['content'] .= '<li><a href="item.php?type=expense&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Paid '.formatCurrency($data[$key][2]).' to '.getLinkedName('supplier', $data[$key][3]).'.</li>';
+					$str = ($data[$key][3] === null) ? '' :  ' to '.getLinkedName('supplier', $data[$key][3]);
+					$return['content'] .= '<li><a href="item.php?type=expense&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Paid '.formatCurrency($data[$key][2]).$str.'.</li>';
 				}
 				else {
-					$return['content'] .= '<li><a href="item.php?type=order&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Received '.formatCurrency($data[$key][2]).' from '.getLinkedName('customer', $data[$key][3]).'.</li>';
+					$str = ($data[$key][3] === null) ? '' :  ' from '.getLinkedName('customer', $data[$key][3]);
+					$return['content'] .= '<li><a href="item.php?type=order&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Received '.formatCurrency($data[$key][2]).$str.'.</li>';
 				}
 				if ($i == 10) {
 					break;
