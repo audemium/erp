@@ -145,10 +145,113 @@
 		echo json_encode($return);
 	}
 	
+	/* Net Income */
+	if ($_POST['module'] == 'netIncome') {
+		$return['title'] = 'Net Income';
+		$return['content'] = 'WIP';
+		
+		$unix = mktime(0, 0, 0, 1, 1, date('Y'));
+		if ($SETTINGS['accounting'] == 'cash') {
+			//income
+			$sth = $dbh->prepare(
+				'SELECT SUM(paymentAmount) AS total
+				FROM orderPayments
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$income = $sth->fetch();
+			
+			//expenses
+			$sth = $dbh->prepare(
+				'SELECT SUM(paymentAmount) AS total
+				FROM expensePayments
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$expenses = $sth->fetch();
+			
+			$net = $income['total'] - $expenses['total'];
+			$color = ($net > 0) ? '#8bb50f' : '#d41111';
+			$spacer = ($net > 0) ? '&nbsp;' : '';
+			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
+		else {
+			//income
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM orders_products
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$op = $sth->fetch();
+			
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM orders_services
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$os = $sth->fetch();
+			
+			//expenses
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM expenses_products
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$ep = $sth->fetch();
+			
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM expenseOthers
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$eo = $sth->fetch();
+			
+			$net = ($op['total'] + $os['total']) - ($ep['total'] + $eo['total']);
+			$color = ($net > 0) ? '#8bb50f' : '#d41111';
+			$spacer = ($net > 0) ? '&nbsp;' : '';
+			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
+		
+		echo json_encode($return);
+	}
+	
 	/* Income */
 	if ($_POST['module'] == 'income') {
 		$return['title'] = 'Income';
-		$return['content'] = 'WIP';
+		
+		$unix = mktime(0, 0, 0, 1, 1, date('Y'));
+		if ($SETTINGS['accounting'] == 'cash') {
+			//for cash basis, just add the payments we took in
+			$sth = $dbh->prepare(
+				'SELECT SUM(paymentAmount) AS total
+				FROM orderPayments
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$row = $sth->fetch();
+			
+			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total']).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
+		else {
+			//for accrual basis, add up the lineAmount column
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM orders_products
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$products = $sth->fetch();
+			
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM orders_services
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$services = $sth->fetch();
+			
+			$total = $products['total'] + $services['total'];
+			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
 		
 		echo json_encode($return);
 	}
@@ -156,7 +259,40 @@
 	/* Expenses */
 	if ($_POST['module'] == 'expenses') {
 		$return['title'] = 'Expenses';
-		$return['content'] = 'WIP';
+		
+		$unix = mktime(0, 0, 0, 1, 1, date('Y'));
+		if ($SETTINGS['accounting'] == 'cash') {
+			//for cash basis, just add the payments we made
+			$sth = $dbh->prepare(
+				'SELECT SUM(paymentAmount) AS total
+				FROM expensePayments
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$row = $sth->fetch();
+			
+			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total']).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
+		else {
+			//for accrual basis, add up the lineAmount column
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM expenses_products
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$products = $sth->fetch();
+			
+			$sth = $dbh->prepare(
+				'SELECT SUM(lineAmount) AS total
+				FROM expenseOthers
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$others = $sth->fetch();
+			
+			$total = $products['total'] + $others['total'];
+			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total).'</span>';
+			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
+		}
 		
 		echo json_encode($return);
 	}

@@ -763,24 +763,42 @@
 			
 			//get product expenses
 			$sth = $dbh->prepare(
-				'SELECT quantity, unitPrice
+				'SELECT expenseProductID, quantity, unitPrice, lineAmount
 				FROM expenses_products
 				WHERE expenseID = :expenseID AND recurringID IS NULL');
 			$sth->execute([':expenseID' => $id]);
 			while ($row = $sth->fetch()) {
 				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$lines['P'.$row['expenseProductID']] = [$row['lineAmount'], $lineAmount];
 				$subTotal += $lineAmount;
 			}
 			
 			//get other expenses
 			$sth = $dbh->prepare(
-				'SELECT quantity, unitPrice
+				'SELECT expenseOtherID, quantity, unitPrice, lineAmount
 				FROM expenseOthers
 				WHERE expenseID = :expenseID AND recurringID IS NULL');
 			$sth->execute([':expenseID' => $id]);
 			while ($row = $sth->fetch()) {
 				$lineAmount = $row['quantity'] * $row['unitPrice'];
+				$lines['O'.$row['expenseOtherID']] = [$row['lineAmount'], $lineAmount];
 				$subTotal += $lineAmount;
+			}
+			
+			//update lineAmounts as needed
+			foreach ($lines as $key => $line) {
+				if ($line[0] != $line[1]) {
+					$itemType = substr($key, 0, 1);
+					$uniqueID = substr($key, 1);
+					$table = ($itemType == 'P') ? 'expenses_products' : 'expenseOthers';
+					$uniqueIDName = ($itemType == 'P') ? 'expenseProductID' : 'expenseOtherID';
+				
+					$sth = $dbh->prepare(
+						'UPDATE '.$table.'
+						SET lineAmount = :lineAmount
+						WHERE '.$uniqueIDName.' = :uniqueID');
+					$sth->execute([':lineAmount' => $line[1], ':uniqueID' => $uniqueID]);
+				}
 			}
 			
 			//get payments

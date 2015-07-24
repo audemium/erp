@@ -63,7 +63,7 @@
 	<div id="content">
 		<?php
 			//TODO: get user's module setup from the db
-			$modules = [['notifications', 'unpaidBills', 'unpaidOrders'], ['recentTransactions', 'income', 'expenses']];
+			$modules = [['unpaidBills', 'unpaidOrders', 'recentTransactions'], ['netIncome', 'income', 'expenses']];
 		?>
 		<div id="col1">
 			<?php

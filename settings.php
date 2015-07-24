@@ -8,6 +8,9 @@
 	//Company information
 	$SETTINGS['companyName'] = 'Audemium';
 	
+	//Accounting basis, values are cash OR accrual
+	$SETTINGS['accounting'] = 'accrual';
+	
 	//Types that allow you to add attachments (if you remove a type, existing attachments will be preserved)
 	$SETTINGS['attachments'] = ['employee', 'order', 'expense'];
 	

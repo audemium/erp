@@ -853,7 +853,7 @@
 		
 		private static function updateAmountDue($id) {
 			global $dbh;
-			$subTotal = 0;
+			$exactSubTotal = 0;
 			
 			//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
 			$sth = $dbh->prepare(
@@ -885,30 +885,84 @@
 				}
 			
 				$sth = $dbh->prepare(
-					'SELECT '.$uniqueIDName.' AS uniqueID, quantity, unitPrice
+					'SELECT '.$uniqueIDName.' AS uniqueID, quantity, unitPrice, lineAmount
 					FROM '.$table.'
 					WHERE orderID = :orderID AND recurringID IS NULL');
 				$sth->execute([':orderID' => $id]);
 				while ($row = $sth->fetch()) {
-					$lineAmount = $row['quantity'] * $row['unitPrice'];
-					$subTotal += $lineAmount;
-					
-					//apply any discounts to this item
+					$newLineAmount = $row['quantity'] * $row['unitPrice'];
 					if (isset($discounts[$shortType.$row['uniqueID']])) {
+						//apply any discounts to this item
 						foreach ($discounts[$shortType.$row['uniqueID']] as $discount) {
-							$discountAmount = ($discount[0] == 'P') ? $lineAmount * ($discount[1] / 100) : $row['quantity'] * $discount[1];
-							$lineAmount -= $discountAmount;
-							$subTotal -= $discountAmount;
+							$discountAmount = ($discount[0] == 'P') ? $newLineAmount * ($discount[1] / 100) : $row['quantity'] * $discount[1];
+							$newLineAmount -= $discountAmount;
 						}
 					}
+					$exactSubTotal += $newLineAmount;
+					$lines[$shortType.$row['uniqueID']] = [$row['lineAmount'], $newLineAmount];
 				}
 			}
 			
 			//apply order discounts
 			if (isset($discounts['O'])) {
+				$tempSubTotal = $exactSubTotal;
 				foreach ($discounts['O'] as $discount) {
-					$discountAmount = ($discount[0] == 'P') ? ($subTotal) * ($discount[1] / 100) : $discount[1];
-					$subTotal -= $discountAmount;
+					//apply order discount directly to the order to ensure accuracy
+					$discountAmount = ($discount[0] == 'P') ? $exactSubTotal * ($discount[1] / 100) : $discount[1];
+					$exactSubTotal -= $discountAmount;
+					
+					//then apply the order discount to each line individually
+					foreach ($lines as $key => $line) {
+						$discountAmount = ($discount[0] == 'P') ? $line[1] * ($discount[1] / 100) : $line[1] * ($discount[1] / $tempSubTotal);
+						$lines[$key][1] -= $discountAmount;
+					}
+				}
+			}
+			
+			//round each line to get the value that we're going to store in the db, and find out what that adds up to
+			//also round the $exactSubTotal just in case
+			$lineSubTotal = 0;
+			foreach ($lines as $key => $line) {
+				$lines[$key][1] = round($line[1], 2);
+				$lineSubTotal += $lines[$key][1];
+			}
+			$exactSubTotal = round($exactSubTotal, 2);
+			
+			//if the lines don't add up to the real subTotal, add or subtract $0.01 from each line until it does
+			if ($lineSubTotal != $exactSubTotal) {
+				$diff = round($lineSubTotal - $exactSubTotal, 2);
+				$i = 0;
+				$keys = array_keys($lines);
+				$count = count($lines);
+				while ($diff != 0) {
+					if ($diff > 0) {
+						$lines[$keys[$i]][1] -= 0.01;
+						$diff -= 0.01;
+					}
+					else {
+						$lines[$keys[$i]][1] += 0.01;
+						$diff -= 0.01;
+					}
+					$i++;
+					if ($i = $count) {
+						$i = 0;
+					}
+				}
+			}
+			
+			//update lineAmounts as needed
+			foreach ($lines as $key => $line) {
+				if ($line[0] != $line[1]) {
+					$itemType = substr($key, 0, 1);
+					$uniqueID = substr($key, 1);
+					$table = ($itemType == 'S') ? 'orders_services' : 'orders_products';
+					$uniqueIDName = ($itemType == 'S') ? 'orderServiceID' : 'orderProductID';
+				
+					$sth = $dbh->prepare(
+						'UPDATE '.$table.'
+						SET lineAmount = :lineAmount
+						WHERE '.$uniqueIDName.' = :uniqueID');
+					$sth->execute([':lineAmount' => $line[1], ':uniqueID' => $uniqueID]);
 				}
 			}
 			
@@ -920,7 +974,8 @@
 			$sth->execute([':orderID' => $id]);
 			$row = $sth->fetch();
 			
-			$amountDue = $subTotal - $row['paymentAmount'];
+			//update amountDue
+			$amountDue = $exactSubTotal - $row['paymentAmount'];
 			$sth = $dbh->prepare(
 				'UPDATE orders
 				SET amountDue = :amountDue
@@ -1087,7 +1142,8 @@
 				}
 			}
 			
-			return [$lines, $subTotal];
+			//round $subTotal just in case
+			return [$lines, round($subTotal, 2)];
 		}
 	}
 ?>
