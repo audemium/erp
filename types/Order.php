@@ -146,8 +146,8 @@
 			
 			foreach ($item as $field => $value) {
 				//check to see if it's an id first, then do the switch statement
-				if (isset($TYPES['expense']['subTypes'][$subType]['fields'][$field]) && $TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][1] == 'id') {
-					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][2], $value) : '';
+				if (isset($TYPES['order']['subTypes'][$subType]['fields'][$field]) && $TYPES['order']['subTypes'][$subType]['fields'][$field]['verifyData'][1] == 'id') {
+					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['order']['subTypes'][$subType]['fields'][$field]['verifyData'][2], $value) : '';
 				}
 				else {
 					if ($subType == 'payment') {
@@ -261,7 +261,7 @@
 				}
 				
 				foreach ($parsed as $key => $value) {
-					$dataStr .= '<b>'. $TYPES['expense']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					$dataStr .= '<b>'. $TYPES['order']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
 				}
 				
 				return $dataStr;
