@@ -12,10 +12,10 @@
 	*/
 
 	/* formatCurrency */
-	function formatCurrency($amount) {
+	function formatCurrency($amount, $displayZero = false) {
 		global $SETTINGS;
 		
-		if (empty($amount)) {
+		if (empty($amount) && $displayZero == false) {
 			return '';
 		}
 		elseif ($amount < 0) {

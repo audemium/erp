@@ -169,9 +169,17 @@
 			$expenses = $sth->fetch();
 			
 			$net = $income['total'] - $expenses['total'];
-			$color = ($net > 0) ? '#8bb50f' : '#d41111';
-			$spacer = ($net > 0) ? '&nbsp;' : '';
-			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net).'</span>';
+			if ($net > 0) {
+				$color = '#8bb50f';
+			}
+			elseif ($net < 0) {
+				$color = '#d41111';
+			}
+			else {
+				$color = '#000000';
+			}
+			$spacer = ($net >= 0) ? '&nbsp;' : '';
+			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		else {
@@ -206,9 +214,17 @@
 			$eo = $sth->fetch();
 			
 			$net = ($op['total'] + $os['total']) - ($ep['total'] + $eo['total']);
-			$color = ($net > 0) ? '#8bb50f' : '#d41111';
-			$spacer = ($net > 0) ? '&nbsp;' : '';
-			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net).'</span>';
+			if ($net > 0) {
+				$color = '#8bb50f';
+			}
+			elseif ($net < 0) {
+				$color = '#d41111';
+			}
+			else {
+				$color = '#000000';
+			}
+			$spacer = ($net >= 0) ? '&nbsp;' : '';
+			$return['content'] = '<span style="color:'.$color.'; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">'.$spacer.formatCurrency($net, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		
@@ -229,7 +245,7 @@
 			$sth->execute([':unix' => $unix]);
 			$row = $sth->fetch();
 			
-			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total']).'</span>';
+			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total'], true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		else {
@@ -249,7 +265,7 @@
 			$services = $sth->fetch();
 			
 			$total = $products['total'] + $services['total'];
-			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total).'</span>';
+			$return['content'] = '<span style="color:#8bb50f; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		
@@ -270,7 +286,7 @@
 			$sth->execute([':unix' => $unix]);
 			$row = $sth->fetch();
 			
-			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total']).'</span>';
+			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total'], true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		else {
@@ -290,7 +306,7 @@
 			$others = $sth->fetch();
 			
 			$total = $products['total'] + $others['total'];
-			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total).'</span>';
+			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		
