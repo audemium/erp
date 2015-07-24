@@ -225,10 +225,20 @@
 								$parsed[$field] = $value;
 						}
 					}
+					elseif ($subType == 'discountOrder') {
+						switch ($field) {
+							case 'subID':
+								break;
+							default:
+								$parsed[$field] = $value;
+						}
+					}
 					else {
 						$parsed[$field] = $value;
 					}
-					$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+					if (isset($parsed[$field])) {
+						$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+					}
 				}
 			}
 			
@@ -254,7 +264,7 @@
 					$dataStr .= 'service. ';
 				}
 				elseif ($subType == 'discountOrder') {
-					$dataStr .= 'discount to the order. ';
+					$dataStr .= ($action == 'A') ? 'discount to the order. ' : 'discount from the order. ';
 				}
 				elseif ($subType == 'discountProduct' || $subType == 'discountService') {
 					$dataStr .= 'discount. ';
@@ -355,7 +365,7 @@
 					}
 					
 					if ($itemType == 'O') {
-						$data['subID'] = $uniqueID;
+						$data['subID'] = 0;
 					}
 					else {
 						$sth = $dbh->prepare(
@@ -821,8 +831,8 @@
 						//print totals
 						$html .= '<table style="width:100%; text-align:right;"><tbody>';
 						$html .= '<tr><td>Total:</td><td>'.formatCurrency($lineItemTable[1]).'</td></tr>';
-						$html .= '<tr><td>Amount Paid:</td><td>'.formatCurrency($paidAmount).'</td></tr>';
-						$html .= '<tr style="font-weight: bold;"><td>Amount Due:</td><td>'.formatCurrency($lineItemTable[1] - $paidAmount).'</td></tr>';
+						$html .= '<tr><td>Amount Paid:</td><td>'.formatCurrency($paidAmount, true).'</td></tr>';
+						$html .= '<tr style="font-weight: bold;"><td>Amount Due:</td><td>'.formatCurrency($lineItemTable[1] - $paidAmount, true).'</td></tr>';
 						$html .= '</tbody></table>
 					</div>
 				</body>
