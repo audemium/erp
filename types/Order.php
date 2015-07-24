@@ -447,7 +447,7 @@
 										$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $timestamp, ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
 							}
 							else {
 								//get date of order
@@ -570,7 +570,7 @@
 						WHERE order'.$TYPES[$data['subType']]['formalName'].'ID = :uniqueID');
 					$sth->execute([':uniqueID' => $data['subID']]);
 					$row = $sth->fetch();
-					$recurring = (is_null($row['recurringID'])) ? 'yes' : 'no';
+					$recurring = ($row['recurringID'] === null) ? 'no' : 'yes';
 					
 					//delete item discounts and children's discounts (if any)
 					$sth = $dbh->prepare(

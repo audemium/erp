@@ -408,7 +408,7 @@
 										$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
 							}
 							else {
 								//get date of expense
@@ -477,7 +477,7 @@
 										$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $data['startDate'], 'endDate' => $data['endDate']];
+								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
 							}
 							else {
 								//get date of expense
@@ -556,7 +556,7 @@
 						WHERE expenseProductID = :expenseProductID');
 					$sth->execute([':expenseProductID' => $data['subID']]);
 					$row = $sth->fetch();
-					$recurring = (is_null($row['recurringID'])) ? 'yes' : 'no';
+					$recurring = ($row['recurringID'] === null) ? 'no' : 'yes';
 					
 					//delete item and children (if any)
 					$sth = $dbh->prepare(
@@ -573,7 +573,7 @@
 						WHERE expenseOtherID = :expenseOtherID');
 					$sth->execute([':expenseOtherID' => $data['subID']]);
 					$row = $sth->fetch();
-					$recurring = (is_null($row['recurringID'])) ? 'yes' : 'no';
+					$recurring = ($row['recurringID'] === null) ? 'no' : 'yes';
 					
 					//delete item and children (if any)
 					$sth = $dbh->prepare(
