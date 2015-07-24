@@ -24,6 +24,9 @@
 	
 	<script type="text/javascript">
 		var type = '<?php echo $_GET['type']; ?>';
+		//echo date/time formats
+		var dateFormatJS = '<?php echo $SETTINGS['dateFormatJS'] ?>';
+		var timeFormatJS = '<?php echo $SETTINGS['timeFormatJS'] ?>';
 	
 		$(document).ready(function() {
 			//change topControls and header when hitting the top of the page
