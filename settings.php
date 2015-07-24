@@ -1,7 +1,7 @@
 <?php
 	//Database
 	$SETTINGS['dbServer'] = 'localhost';
-	$SETTINGS['dbName'] = 'erp';
+	$SETTINGS['dbName'] = 'audemium_erp';
 	$SETTINGS['dbUser'] = 'erpUser';
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
