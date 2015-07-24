@@ -220,12 +220,6 @@ $(document).ready(function() {
 				{'name': 'subType', 'value': $button.data('type')},
 				{'name': 'subID', 'value': $button.data('id')}
 			];
-			if ($button.data('type') == 'discount') {
-				ajaxData.push(
-					{'name': 'appliesToType', 'value': $button.data('appliestotype')},
-					{'name': 'appliesToID', 'value': $button.data('appliestoid')}
-				);
-			}
 			$.ajax({
 				url: 'ajax.php',
 				type: 'POST',

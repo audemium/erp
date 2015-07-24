@@ -539,7 +539,8 @@
 				//delete subAction
 				if ($data['subType'] == 'payment') {
 					$sth = $dbh->prepare(
-						'SELECT date, paymentAmount FROM orderPayments
+						'SELECT date, paymentAmount
+						FROM orderPayments
 						WHERE paymentID = :paymentID');
 					$sth->execute([':paymentID' => $data['subID']]);
 					$row = $sth->fetch();
@@ -581,17 +582,18 @@
 				}
 				elseif ($data['subType'] == 'discount') {
 					$sth = $dbh->prepare(
-						'SELECT discountID, appliesToType, appliesToID FROM orders_discounts
+						'SELECT discountID, appliesToType, appliesToID
+						FROM orders_discounts
 						WHERE orderDiscountID = :orderDiscountID');
 					$sth->execute([':orderDiscountID' => $data['subID']]);
 					$row = $sth->fetch();
-					if ($row['appliesTotype'] == 'O') {
+					if ($row['appliesToType'] == 'O') {
 						$subType = 'discountOrder';
 					}
-					elseif ($row['appliesTotype'] == 'P') {
+					elseif ($row['appliesToType'] == 'P') {
 						$subType = 'discountProduct';
 					}
-					elseif ($row['appliesTotype'] == 'S') {
+					elseif ($row['appliesToType'] == 'S') {
 						$subType = 'discountService';
 					}
 					
