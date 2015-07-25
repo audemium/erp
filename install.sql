@@ -474,9 +474,12 @@ CREATE TABLE `vacationRequests` (
 -- Inserting some starter data
 --
 
-INSERT INTO `employees` VALUES (null, 'fs1', '$2y$10$NvL.1HHbXYrI9alSqyequOna3PDe3uoReiPpWelU5.qwMHOEf4V8W', 'First', 'Surname', 'S', 50000.00, '1600 Pennsylvania Avenue', 'Washington', 'DC', '20500', 'example@example.com', 1, 1, 0, 80, '', 1);
+INSERT INTO `employees` VALUES (null,'fs1','$2y$10$NvL.1HHbXYrI9alSqyequOna3PDe3uoReiPpWelU5.qwMHOEf4V8W','First','Surname','S',50000.00,'1600 Pennsylvania Avenue','Washington','DC','20500','example@example.com',1,1,0,80,'',1);
+INSERT INTO `changes` VALUES (null,'employee',1,1,1437787825,'A','{"firstName":"First","lastName":"Surname","payType":"S","payAmount":"50000.00","locationID":"1","positionID":"1","managerID":"","vacationTotal":"80","address":"1600 Pennsylvania Avenue","city":"Washington","personalEmail":"example@example.com","state":"DC","zip":"20500"}');
 INSERT INTO `positions` VALUES (null,'Owner',1);
+INSERT INTO `changes` VALUES (null,'position',1,1,1437787825,'A','{"name":"Owner"}');
 INSERT INTO `locations` VALUES (null,'HQ','1600 Pennsylvania Avenue','Washington','DC','20500',1);
+INSERT INTO `changes` VALUES (null,'location',1,1,1437787825,'A','{"name":"HQ","address":"1600 Pennsylvania Avenue","city":"Washington","state":"DC","zip":"20500"}');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
