@@ -7,9 +7,14 @@ It is currently under development and isn't ready for production systems.  ONLY 
 ## Installation
 
 1. Download Audemium ERP and copy it to your web server.
-2. Update settings.php with your database information, and change any other settings as desired.
-3. Run install.sql to set up the database and populate with starter data.  Delete install.sql afterwards.  Typically, the command to run it will be something like: mysql -u user -pPassword < /var/www/install.sql
-4. Open a browser to the site where you placed Audemium ERP and log on using the default credentials.  User: fs1  Password: userPasswordHere
+2. Configure your web server to deny access to the attachments directory.  In Apache, this could be something like:
+	<DirectoryMatch "attachments">
+		Order allow,deny
+		Deny from all
+	</DirectoryMatch>
+3. Update settings.php with your database information, and change any other settings as desired.
+4. Run install.sql to set up the database and populate with starter data.  Delete install.sql afterwards.  Typically, the command to run it will be something like: mysql -u user -pPassword < /var/www/install.sql
+5. Open a browser to the site where you placed Audemium ERP and log on using the default credentials.  User: fs1  Password: userPasswordHere
 
 ## Planned Features
 
