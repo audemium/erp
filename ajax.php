@@ -40,7 +40,7 @@
 				$_SESSION['loggedIn'] = true;
 				$_SESSION['employeeID'] = $result[0]['employeeID'];
 				$_SESSION['timeZone'] = $result[0]['timeZone'];
-				$redirect = (isset($_SESSION['loginDestination']) && $_SESSION['loginDestination'] != '/login.php') ? $_SESSION['loginDestination'] : '/index.php';
+				$redirect = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
 				unset($return);
 				$return = ['status' => 'success', 'redirect' => $redirect];
 				unset($_SESSION['loginDestination']);
