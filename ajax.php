@@ -488,7 +488,8 @@
 	if ($_POST['action'] == 'history') {
 		$return = ['status' => 'success', 'html' => ''];
 		
-		$limit = ((int)$_POST['limit'] < 0) ? 100000 : (int)$_POST['limit'];  //cast as int because we can't use a placeholder for LIMIT
+		$limit = (int)$_POST['limit']; //cast as int because we can't use a placeholder for LIMIT
+		$limit = ($limit < 0 || $limit > 10000) ? 10000 : $limit;
 		$sth = $dbh->prepare(
 			'SELECT *
 			FROM changes
