@@ -16,19 +16,17 @@
 		global $SETTINGS;
 		
 		if (empty($amount) && $displayZero == false) {
-			return '';
+			$return = '';
 		}
 		elseif ($amount < 0) {
-			if ($SETTINGS['negativeCurrencyFormat'] == 0) {
-				return '-$'.number_format(abs($amount), 2);
-			}
-			else {
-				return '($'.number_format(abs($amount), 2).')';
-			}
+			$temp = $SETTINGS['currencySymbol'].number_format(abs($amount), 2, $SETTINGS['decimalFormat'], $SETTINGS['thousandsSeparator']);
+			$return = ($SETTINGS['negativeCurrencyFormat'] == 0) ? '-'.$temp : '('.$temp.')';
 		}
 		else {
-			return '$'.number_format($amount, 2);
+			$return = $SETTINGS['currencySymbol'].number_format($amount, 2, $SETTINGS['decimalFormat'], $SETTINGS['thousandsSeparator']);
 		}
+		
+		return $return;
 	}
 	
 	/* formatDate */
@@ -69,6 +67,7 @@
 	
 	/* parseValue */
 	function parseValue($type, $item) {
+		//htmlspecialchars is in the object function
 		global $TYPES;
 		
 		$factoryItem = Factory::createItem($type);
@@ -77,9 +76,6 @@
 			if (isset($TYPES[$type]['fields'][$field]) && $TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
 				$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
 			}
-			else {
-				$parsed[$field] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-			}
 		}
 		
 		return $parsed;
@@ -87,10 +83,10 @@
 	
 	/* parseSubTypeValue */
 	function parseSubTypeValue($type, $subType, $action, $item, $format) {
-		//unlike in parseValue, values are linked or made safe in $factoryItem->parseSubTypeValue
-		//this is because $factoryItem->parseSubTypeValue sometimes returns a string, and therefore this function couldn't fix up each piece
-		//if this becomes a problem, I could have $factoryItem->parseSubTypeValue only fix things if $format is 'str'
+		//unlike in parseValue, values are linked in $factoryItem->parseSubTypeValue because it sometimes returns a string, and therefore this function couldn't fix up each piece
+		//like parseValue, htmlspecialchars is in the object function
 		//$action must be A, E or D if $format is 'str', but can be null if $format is 'arr'
+		
 		$factoryItem = Factory::createItem($type);
 		$parsed = $factoryItem->parseSubTypeValue($subType, $action, $item, $format);
 		

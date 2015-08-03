@@ -26,10 +26,11 @@
 	$SETTINGS['dateFormatJS'] = 'dd-M-yy';
 	$SETTINGS['timeFormatJS'] = 'h:mm TT';
 	
-	//Negative currency format
-	//	0 = negative sign 	ex. -$10.00
-	//	1 = parentheses 	ex. ($10.00)
-	$SETTINGS['negativeCurrencyFormat'] = 0;
+	//Currency and number formatting
+	$SETTINGS['currencySymbol'] = '&euro;';			//can be a character or html entity
+	$SETTINGS['negativeCurrencyFormat'] = 0;	//0 = negative sign ex. -$10.00		1 = parentheses ex. ($10.00)
+	$SETTINGS['decimalFormat'] = '.';
+	$SETTINGS['thousandsSeparator'] = ',';
 	
 	//Columns for list views
 	$SETTINGS['columns']['employee'] = ['name', 'positionID', 'locationID', 'payType', 'payAmount'];

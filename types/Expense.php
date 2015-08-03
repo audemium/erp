@@ -196,6 +196,9 @@
 					default:
 						$parsed[$field] = $value;
 				}
+				if (isset($parsed[$field]) && $field != 'amountDue') {
+					$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				}
 			}
 			
 			return $parsed;
@@ -293,7 +296,9 @@
 					else {
 						$parsed[$field] = $value;
 					}
-					$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+					if (isset($parsed[$field]) && $field != 'paymentAmount' && $field != 'unitPrice') {
+						$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+					}
 				}
 			}
 			

@@ -24,6 +24,9 @@
 					default:
 						$parsed[$field] = $value;
 				}
+				if (isset($parsed[$field]) && ($field != 'discountAmount' || ($field == 'discountAmount' && $item['discountType'] != 'C'))) {
+					$parsed[$field] = htmlspecialchars($parsed[$field], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				}
 			}
 			
 			return $parsed;
