@@ -164,9 +164,9 @@
 						}
 					}
 					if ($attributes[1] == 'int') {
-						if (!filter_var($value, FILTER_VALIDATE_INT, ['min_range' => 0, 'max_range' => $attributes[2]])) {
+						if (!filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $attributes[2]]])) {
 							$return['status'] = 'fail';
-							$return[$key] = 'Must be an integer';
+							$return[$key] = 'Must be a positive integer';
 						}
 					}
 					if ($attributes[1] == 'id') {
