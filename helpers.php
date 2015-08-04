@@ -11,6 +11,18 @@
     You should have received a copy of the GNU Affero General Public License along with Audemium ERP.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
+	/* formatNumber */
+	function formatNumber($amount) {
+		global $SETTINGS;
+		
+		//determine how many digits after the decimal $amount has, then format it to that number of digits
+		$temp = strrchr($amount, '.');
+		$digits = ($temp === false) ? 0 : strlen(substr($temp, 1));
+		$return = number_format($amount, $digits, $SETTINGS['decimalFormat'], $SETTINGS['thousandsSeparator']);
+		
+		return $return;
+	}
+	
 	/* formatCurrency */
 	function formatCurrency($amount, $displayZero = false) {
 		global $SETTINGS;

@@ -243,6 +243,9 @@
 							case 'unitPrice':
 								$parsed[$field] = formatCurrency($value);
 								break;
+							case 'quantity':
+								$parsed[$field] = formatNumber($value);
+								break;
 							case 'recurring':
 								if ($value == 'yes') {
 									$parsed[$field] = 'Yes';
@@ -270,7 +273,7 @@
 								$parsed[$field] = formatCurrency($value);
 								break;
 							case 'quantity':
-								$parsed[$field] = ($value + 0);
+								$parsed[$field] = formatNumber($value + 0);
 								break;
 							case 'recurring':
 								if ($value == 'yes') {

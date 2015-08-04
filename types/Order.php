@@ -49,7 +49,7 @@
 									}
 									$dateStr = (isset($line['date'])) ? formatDate($line['date']).': ' : '';
 									$return .= '<tr><td style="padding-left: '.$padding.'px;">'.$dateStr.'<a href="item.php?type='.$line['type'].'&id='.$line['id'].'">'.$line['name'].'</a>'.$recurringStr.'</td>';
-									$return .= '<td class="textCenter">'.$line['quantity'].'</td>';
+									$return .= '<td class="textCenter">'.formatNumber($line['quantity']).'</td>';
 									$return .= '<td class="textCenter">&nbsp;'.formatCurrency($line['unitPrice']).'</td>';   //added a space here to line up unit prices with the negative unit prices on discounts
 									$return .= '<td class="textRight">'.formatCurrency($line['lineAmount']).'</td>';
 									$return .= '<td class="textCenter">'.$editStr.'</td>';
@@ -181,6 +181,9 @@
 							case 'unitPrice':
 								$parsed[$field] = formatCurrency($value);
 								break;
+							case 'quantity':
+								$parsed[$field] = formatNumber($value);
+								break;
 							case 'recurring':
 								if ($value == 'yes') {
 									$parsed[$field] = 'Yes';
@@ -206,6 +209,9 @@
 						switch ($field) {
 							case 'unitPrice':
 								$parsed[$field] = formatCurrency($value);
+								break;
+							case 'quantity':
+								$parsed[$field] = formatNumber($value);
 								break;
 							case 'recurring':
 								if ($value == 'yes') {
@@ -810,7 +816,7 @@
 										$recurringStr = (!is_null($line['recurring'])) ? ' (occurs monthly on day '.$line['recurring'][0].' from '.formatDate($line['recurring'][1]).' to '.formatDate($line['recurring'][2]).')' : '';
 										$dateStr = (isset($line['date'])) ? formatDate($line['date']).': ' : '';
 										$html .= '<tr><td style="width:40%;">'.$dateStr.$line['name'].$recurringStr.'</td>';
-										$html .= '<td style="text-align:center; width:20%;">'.$line['quantity'].'</td>';
+										$html .= '<td style="text-align:center; width:20%;">'.formatNumber($line['quantity']).'</td>';
 										$html .= '<td style="text-align:center; width:20%;">'.formatCurrency($line['unitPrice']).'</td>';
 										$html .= '<td style="text-align:right; width:20%;">'.formatCurrency($line['lineAmount']).'</td></tr>';
 									}
