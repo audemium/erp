@@ -27,7 +27,7 @@
 	$SETTINGS['timeFormatJS'] = 'h:mm TT';
 	
 	//Currency and number formatting
-	$SETTINGS['currencySymbol'] = '&euro;';			//can be a character or html entity
+	$SETTINGS['currencySymbol'] = '$';			//can be a character or html entity
 	$SETTINGS['negativeCurrencyFormat'] = 0;	//0 = negative sign ex. -$10.00		1 = parentheses ex. ($10.00)
 	$SETTINGS['decimalFormat'] = '.';
 	$SETTINGS['thousandsSeparator'] = ',';
