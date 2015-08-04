@@ -109,7 +109,7 @@
 				while ($row = $sth->fetch()) {
 					$return['content'] .= '<tr><td><a href="item.php?type=order&id='.$row['orderID'].'">Order #'.$row['orderID'].'</a></td>';
 					$return['content'] .= '<td>'.getLinkedName('customer', $row['customerID']).'</td>';
-					$return['content'] .= '<td>'.formatCurrency($row['amountDue']).'</td></tr>';
+					$return['content'] .= '<td class="textRight">'.formatCurrency($row['amountDue']).'</td></tr>';
 				}
 			$return['content'] .= '</tbody>
 		</table>';
