@@ -13,22 +13,6 @@
 	
 	//version
 	$VERSION = '0.5';
-
-	//global error handler
-	function customError($errNum, $errStr, $errFile, $errLine) {
-		echo 'Error Code: '.$errNum.'<br>';
-		echo 'Error Message: '.$errStr.'<br>';
-		echo 'Error Location: '.$errFile.' on line '.$errLine.'<br>';
-	}
-	set_error_handler('customError');
-	
-	//global exception handler
-	function customException($exception) {
-		echo 'Exception Code: '.$exception->getCode().'<br>';
-		echo 'Exception Message: '.$exception->getMessage().'<br>';
-		echo 'Exception Location: '.$exception->getFile().' on line '.$exception->getLine().'<br>';
-	}
-	set_exception_handler('customException');
 	
 	//global autoloader
 	function customAutoloader($class) {
