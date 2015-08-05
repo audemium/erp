@@ -45,7 +45,7 @@
 									}
 									else {
 										$recurringStr = '';
-										$editStr = '<a class="controlEdit editEnabled" href="#" data-type="'.$line['type'].'" data-id="'.$line['uniqueID'].'" data-quantity="'.$line['quantity'].'"></a>';
+										$editStr = '<a class="controlEdit editEnabled" href="#" data-type="'.$line['type'].'" data-id="'.$line['uniqueID'].'" data-quantity="'.formatNumber($line['quantity']).'"></a>';
 									}
 									$dateStr = (isset($line['date'])) ? formatDate($line['date']).': ' : '';
 									$return .= '<tr><td style="padding-left: '.$padding.'px;">'.$dateStr.'<a href="item.php?type='.$line['type'].'&id='.$line['id'].'">'.$line['name'].'</a>'.$recurringStr.'</td>';
@@ -386,6 +386,7 @@
 						$data['subID'] = $row[0];
 					}
 				}
+				$data = cleanData('order', $subType, $data);
 				$return = verifyData('order', $subType, $data);
 				
 				if ($return['status'] != 'fail') {
@@ -541,6 +542,7 @@
 				$row = $sth->fetch();
 				$uniqueID = $data['subID'];
 				$data['subID'] = $row['id'];
+				$data = cleanData('order', $subType, $data);
 				$return = verifyData('order', $subType, $data);
 				
 				if ($return['status'] != 'fail') {

@@ -51,7 +51,8 @@
 								}
 								else {
 									$recurringStr = '';
-									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row['expenseProductID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a>';
+									//note for this and future edit strings, we can't use $parsed for unitPrice because it comes out with a currency symbol
+									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row['expenseProductID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a>';
 									$lineAmount = $row['quantity'] * $row['unitPrice'];
 									$subTotal += $lineAmount;
 								}
@@ -80,7 +81,7 @@
 										$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
 										$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
 										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row2['expenseProductID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
+										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row2['expenseProductID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a></td>';
 										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row2['expenseProductID'].'"></a></td></tr>';
 									}
 								}
@@ -101,7 +102,7 @@
 								}
 								else {
 									$recurringStr = '';
-									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'" data-unitprice="'.$row['unitPrice'].'" data-quantity="'.($row['quantity'] + 0).'"></a>';
+									$editStr = '<a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a>';
 									$lineAmount = $row['quantity'] * $row['unitPrice'];
 									$subTotal += $lineAmount;
 								}
@@ -130,7 +131,7 @@
 										$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
 										$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
 										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
-										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.$row2['unitPrice'].'" data-quantity="'.($row2['quantity'] + 0).'"></a></td>';
+										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a></td>';
 										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'"></a></td></tr>';
 									}
 								}
@@ -355,6 +356,7 @@
 				$subType = $data['subType'];
 				unset($data['subAction']);
 				unset($data['subType']);
+				$data = cleanData('expense', $subType, $data);
 				$return = verifyData('expense', $subType, $data);
 				
 				if ($return['status'] != 'fail') {
@@ -517,6 +519,7 @@
 				unset($data['subType']);
 				$subID = $data['subID'];
 				unset($data['subID']);
+				$data = cleanData('expense', $subType, $data);
 				$return = verifyData('expense', $subType, $data);
 				
 				if ($return['status'] != 'fail') {

@@ -140,6 +140,24 @@
 		return $changes;
 	}
 	
+	/* clean Data */
+	function cleanData($type, $subType, $data) {
+		global $SETTINGS;
+		global $TYPES;
+		
+		$fields = ($subType === null) ? $TYPES[$type]['fields'] : $TYPES[$type]['subTypes'][$subType]['fields'];
+		foreach ($data as $key => $value) {
+			if (isset($fields[$key]['verifyData']) && ($fields[$key]['verifyData'][1] == 'int' || $fields[$key]['verifyData'][1] == 'dec')) {
+				//strip out thousands separator
+				$data[$key] = str_replace($SETTINGS['thousandsSeparator'], '', $data[$key]);	
+				//make sure decimal is a period
+				$data[$key] = str_replace($SETTINGS['decimalFormat'], '.', $data[$key]);	
+			}
+		}
+		
+		return $data;
+	}
+	
 	/* verifyData */
 	function verifyData($type, $subType, $data) {
 		global $dbh;
@@ -195,7 +213,7 @@
 					}
 					if ($attributes[1] == 'dec') {
 						//test with salary: 10(pass) 10,000(pass) 10000(pass) 10.10(pass) 10.1234(fail) 123456789012.12(fail) 12345678901.1(fail)
-						if (!filter_var($value, FILTER_VALIDATE_FLOAT, ['flags' => FILTER_FLAG_ALLOW_THOUSAND])) {
+						if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
 							$return['status'] = 'fail';
 							$return[$key] = 'Must be a decimal';
 						}

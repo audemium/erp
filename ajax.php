@@ -144,6 +144,7 @@
 		$data = $_POST;
 		unset($data['action']);
 		unset($data['type']);
+		$data = cleanData($_POST['type'], null, $data);
 		$return = verifyData($_POST['type'], null, $data);
 		//manual check for managerID because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '') {
@@ -251,6 +252,9 @@
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
 					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
+					if ($attributes[1] == 'int' || $attributes[1] == 'dec') {
+						$item[$field] = formatNumber($item[$field]);
+					}
 					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec' || $attributes[1] == 'email') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" value="'.$item[$field].'"></li>';
@@ -333,6 +337,7 @@
 		unset($data['action']);
 		unset($data['type']);
 		unset($data['id']);
+		$data = cleanData($_POST['type'], null, $data);
 		$return = verifyData($_POST['type'], null, $data);
 		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
