@@ -236,7 +236,10 @@ table.dataTable thead, table.customTable thead, table.attachmentTable thead {
 }
 table.dataTable thead th, table.dataTable thead td {
 	border-bottom: 0;
-	border-top: 1px solid #000000;
+	border-top: 1px solid #DDDDDD;
+}
+table.dataTable tfoot th, table.dataTable tfoot td {
+	border-top: 1px solid #DDDDDD;
 }
 
 table.customTable, table.attachmentTable {
@@ -244,12 +247,12 @@ table.customTable, table.attachmentTable {
 	/* if you want sorting, just use class="dataTable stripe row-border" */
 	/* there might be a reason other than sorting that I did this, but I'm not sure what it would be right now */
 	border-spacing: 0;
-	border-bottom: 1px solid #111111;
+	border-bottom: 1px solid #DDDDDD;
 	clear: both;
 }
 table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
 	padding: 10px 18px;
-	border-top: 1px solid #000000;
+	border-top: 1px solid #DDDDDD;
 }
 table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
     padding: 8px 10px;
