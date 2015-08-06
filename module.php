@@ -67,11 +67,11 @@
 				$id = substr($key, 1);
 				if ($type == 'E') {
 					$str = ($data[$key][3] === null) ? '' :  ' to '.getLinkedName('supplier', $data[$key][3]);
-					$return['content'] .= '<li><a href="item.php?type=expense&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Paid '.formatCurrency($data[$key][2]).$str.'.</li>';
+					$return['content'] .= '<li><a href="item.php?type=expense&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Paid '.formatCurrency($data[$key][2]).$str.'</li>';
 				}
 				else {
 					$str = ($data[$key][3] === null) ? '' :  ' from '.getLinkedName('customer', $data[$key][3]);
-					$return['content'] .= '<li><a href="item.php?type=order&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Received '.formatCurrency($data[$key][2]).$str.'.</li>';
+					$return['content'] .= '<li><a href="item.php?type=order&id='.$data[$key][0].'">'.formatDate($data[$key][1]).'</a>: Received '.formatCurrency($data[$key][2]).$str.'</li>';
 				}
 				if ($i == 10) {
 					break;
@@ -80,7 +80,7 @@
 			}
 		}
 		else {
-			$return['content'] = 'No recent transactions.';
+			$return['content'] = 'No recent transactions';
 		}
 		
 		$return['content'] .= '</ul>';

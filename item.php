@@ -242,8 +242,8 @@
 			<div id="topControlLeft"></div>
 			<div id="topControlCenter">
 				<a class="controlAdd addEnabled" href="#">Add</a>
-				<a class="controlEdit editDisabled" href="#" title="Item is inactive and cannot be edited.">Edit</a>
-				<a class="controlDelete deleteDisabled" href="#" title="Item is inactive and cannot be deleted.">Delete</a>
+				<a class="controlEdit editDisabled" href="#" title="Item is inactive and cannot be edited">Edit</a>
+				<a class="controlDelete deleteDisabled" href="#" title="Item is inactive and cannot be deleted">Delete</a>
 			</div>
 			<div id="topControlRight"></div>
 		</div>

@@ -255,7 +255,7 @@
 					if ($attributes[1] == 'date') {
 						if (strtotime($value) === false) {
 							$return['status'] = 'fail';
-							$return[$key] = 'Unrecognized date/time format.';
+							$return[$key] = 'Unrecognized date/time format';
 						}
 						else {
 							//if this is the end date, loop through until you find the start date, then if end is less than start, fail it
@@ -264,7 +264,7 @@
 									if ($fields[$tempKey]['verifyData'][1] == 'date' && $fields[$tempKey]['verifyData'][2] == 'start') {
 										if (strtotime($value) < strtotime($tempValue)) {
 											$return['status'] = 'fail';
-											$return[$key] = 'End Time must be after Start Time.';
+											$return[$key] = 'End Time must be after Start Time';
 										}
 									}
 								}

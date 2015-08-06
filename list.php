@@ -122,8 +122,8 @@
 			</div>
 			<div id="topControlCenter">
 				<a class="controlAdd addEnabled" href="#">Add</a>
-				<a class="controlEdit editDisabled" href="#" title="Select one or more rows to edit.">Edit</a>
-				<a class="controlDelete deleteDisabled" href="#" title="Select one or more rows to delete.">Delete</a>
+				<a class="controlEdit editDisabled" href="#" title="Select one or more rows to edit">Edit</a>
+				<a class="controlDelete deleteDisabled" href="#" title="Select one or more rows to delete">Delete</a>
 			</div>
 			<!--<div id="topControlRight">
 				<a class="settings" href="#"></a>
