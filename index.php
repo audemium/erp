@@ -45,10 +45,7 @@
 						'paging': false,
 						'dom': 't',
 						'order': [0, 'desc'],
-						'autoWidth': false,
-						'columnDefs': [
-							{'width': '150px', 'targets': 'dateTimeHeader'}
-						]
+						'autoWidth': false
 					});
 				});
 			});

@@ -21,9 +21,9 @@
 					<table class="dataTable stripe row-border"> 
 						<thead>
 							<tr>
-								<th class="dateTimeHeader">Time</th>
-								<th>Order</th>
-								<th>Employee</th>
+								<th class="dateTimeHeader textLeft">Time</th>
+								<th class="textLeft">Order</th>
+								<th class="textLeft">Employee</th>
 							</tr>
 						</thead>
 						<tbody>';

@@ -94,9 +94,9 @@
 		$return['content'] = '<table class="dataTable stripe row-border" style="width:100%;">
 			<thead>
 				<tr>
-					<th>Order</th>
-					<th>Customer</th>
-					<th>Amount</th>
+					<th class="textLeft">Order</th>
+					<th class="textLeft">Customer</th>
+					<th class="textRight">Amount</th>
 				</tr>
 			</thead>
 			<tbody>';
@@ -124,9 +124,9 @@
 		$return['content'] = '<table class="dataTable stripe row-border" style="width:100%;">
 			<thead>
 				<tr>
-					<th>Expense</th>
-					<th>Supplier</th>
-					<th>Amount</th>
+					<th class="textLeft">Expense</th>
+					<th class="textLeft">Supplier</th>
+					<th class="textRight">Amount</th>
 				</tr>
 			</thead>
 			<tbody>';

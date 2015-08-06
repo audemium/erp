@@ -24,9 +24,9 @@
 					<table class="customTable" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Item</th>
-								<th class="textCenter">Quantity</th>
-								<th class="textCenter">Unit Price</th>
+								<th class="textLeft">Item</th>
+								<th class="textRight">Quantity</th>
+								<th class="textRight">Unit Price</th>
 								<th class="textRight">Item Total</th>
 								<th></th>
 								<th></th>
@@ -49,22 +49,26 @@
 									}
 									$dateStr = (isset($line['date'])) ? formatDate($line['date']).': ' : '';
 									$return .= '<tr><td style="padding-left: '.$padding.'px;">'.$dateStr.'<a href="item.php?type='.$line['type'].'&id='.$line['id'].'">'.$line['name'].'</a>'.$recurringStr.'</td>';
-									$return .= '<td class="textCenter">'.formatNumber($line['quantity']).'</td>';
-									$return .= '<td class="textCenter">&nbsp;'.formatCurrency($line['unitPrice']).'</td>';   //added a space here to line up unit prices with the negative unit prices on discounts
+									$return .= '<td class="textRight">'.formatNumber($line['quantity']).'</td>';
+									$return .= '<td class="textRight">&nbsp;'.formatCurrency($line['unitPrice']).'</td>';   //added a space here to line up unit prices with the negative unit prices on discounts
 									$return .= '<td class="textRight">'.formatCurrency($line['lineAmount']).'</td>';
 									$return .= '<td class="textCenter">'.$editStr.'</td>';
 									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="'.$line['type'].'" data-id="'.$line['uniqueID'].'"></a></td></tr>';
 								}
 								elseif ($line['type'] == 'discount') {
 									$unitPrice = ($line['discountType'] == 'C') ? formatCurrency(-$line['discountAmount']) : $line['discountAmount'].'%';
-									$return .= '<tr><td style="padding-left: '.$padding.'px;">Discount: <a href="item.php?type=discount&id='.$line['id'].'">'.$line['name'].'</a></td><td></td>';
-									$return .= '<td class="textCenter">'.$unitPrice.'</td>';
-									$return .= '<td class="textRight">'.formatCurrency(-$line['lineAmount']).'</td><td></td>';
+									$return .= '<tr><td style="padding-left: '.$padding.'px;">Discount: <a href="item.php?type=discount&id='.$line['id'].'">'.$line['name'].'</a></td>';
+									$return .= '<td></td>';
+									$return .= '<td class="textRight">'.$unitPrice.'</td>';
+									$return .= '<td class="textRight">'.formatCurrency(-$line['lineAmount']).'</td>';
+									$return .= '<td></td>';
 									$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="discount" data-id="'.$line['uniqueID'].'"></a></td></tr>';
 								}
 							}
 							
-							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td></td><td class="textRight">'.formatCurrency($lineItemTable[1]).'</td><td></td><td></td></tr>';
+							$return .= '<tr class="totalSeparator"><td colspan="3">Total:</td>';
+							$return .= '<td class="textRight">'.formatCurrency($lineItemTable[1]).'</td>';
+							$return .= '<td colspan="2"></td></tr>';
 						$return .= '</tbody>
 					</table>
 				</div>
@@ -79,8 +83,8 @@
 					<table class="customTable" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Date</th>
-								<th class="textCenter">Type</th>
+								<th class="textLeft">Date</th>
+								<th class="textLeft">Type</th>
 								<th class="textRight">Amount</th>
 								<th></th>
 							</tr>
@@ -94,12 +98,14 @@
 							while ($row = $sth->fetch()) {
 								$parsed = self::parseSubTypeValue('payment', null, $row, 'arr');
 								$subTotal += $row['paymentAmount'];
-								$return .= '<tr><td>'.$parsed['date'].'</td>';
-								$return .= '<td class="textCenter">'.$parsed['paymentType'].'</td>';
+								$return .= '<tr><td class="textLeft">'.$parsed['date'].'</td>';
+								$return .= '<td class="textLeft">'.$parsed['paymentType'].'</td>';
 								$return .= '<td class="textRight">'.$parsed['paymentAmount'].'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="payment" data-id="'.$row['paymentID'].'"></a></td></tr>';
 							}
-							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td></tr>';
+							$return .= '<tr class="totalSeparator"><td colspan="2">Total:</td>';
+							$return .= '<td class="textRight">'.formatCurrency($subTotal).'</td>';
+							$return .= '<td></td></tr>';
 						$return .= '</tbody>
 					</table>
 				</div>

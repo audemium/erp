@@ -26,10 +26,10 @@
 					<table class="customTable" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Item</th>
-								<th>Location</th>
-								<th class="textCenter">Quantity</th>
-								<th class="textCenter">Unit Price</th>
+								<th class="textLeft">Item</th>
+								<th class="textLeft">Location</th>
+								<th class="textRight">Quantity</th>
+								<th class="textRight">Unit Price</th>
 								<th class="textRight">Item Total</th>
 								<th></th>
 								<th></th>
@@ -58,8 +58,8 @@
 								}
 								$return .= '<tr><td>'.$parsed['productID'].$recurringStr.'</td>';
 								$return .= '<td>'.$parsed['locationID'].'</td>';
-								$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
-								$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
+								$return .= '<td class="textRight">'.$parsed['quantity'].'</td>';
+								$return .= '<td class="textRight">'.$parsed['unitPrice'].'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
 								$return .= '<td class="textCenter">'.$editStr.'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row['expenseProductID'].'"></a></td></tr>';
@@ -78,8 +78,8 @@
 										$subTotal += $lineAmount;
 										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.$parsed['productID'].'</td>';
 										$return .= '<td>'.$parsed['locationID'].'</td>';
-										$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
-										$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
+										$return .= '<td class="textRight">'.$parsed['quantity'].'</td>';
+										$return .= '<td class="textRight">'.$parsed['unitPrice'].'</td>';
 										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
 										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="product" data-id="'.$row2['expenseProductID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a></td>';
 										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="product" data-id="'.$row2['expenseProductID'].'"></a></td></tr>';
@@ -108,8 +108,8 @@
 								}
 								$return .= '<tr><td>'.$parsed['name'].$recurringStr.'</td>';
 								$return .= '<td></td>';
-								$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
-								$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
+								$return .= '<td class="textRight">'.$parsed['quantity'].'</td>';
+								$return .= '<td class="textRight">'.$parsed['unitPrice'].'</td>';
 								$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
 								$return .= '<td class="textCenter">'.$editStr.'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row['expenseOtherID'].'"></a></td></tr>';
@@ -128,8 +128,8 @@
 										$subTotal += $lineAmount;
 										$return .= '<tr><td style="padding-left: 50px;">'.formatDate($row2['date']).': '.$parsed['name'].'</td>';
 										$return .= '<td></td>';
-										$return .= '<td class="textCenter">'.$parsed['quantity'].'</td>';
-										$return .= '<td class="textCenter">'.$parsed['unitPrice'].'</td>';
+										$return .= '<td class="textRight">'.$parsed['quantity'].'</td>';
+										$return .= '<td class="textRight">'.$parsed['unitPrice'].'</td>';
 										$return .= '<td class="textRight">'.formatCurrency($lineAmount).'</td>';
 										$return .= '<td class="textCenter"><a class="controlEdit editEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'" data-unitprice="'.formatNumber($row['unitPrice']).'" data-quantity="'.$parsed['quantity'].'"></a></td>';
 										$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="other" data-id="'.$row2['expenseOtherID'].'"></a></td></tr>';
@@ -137,7 +137,9 @@
 								}
 							}
 							
-							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td></td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td><td></td></tr>';
+							$return .= '<tr class="totalSeparator"><td colspan="4">Total:</td>';
+							$return .= '<td class="textRight">'.formatCurrency($subTotal).'</td>';
+							$return .= '<td colspan="2"></td></tr>';
 						$return .= '</tbody>
 					</table>
 				</div>
@@ -152,8 +154,8 @@
 					<table class="customTable" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Date</th>
-								<th class="textCenter">Type</th>
+								<th class="textLeft">Date</th>
+								<th class="textLeft">Type</th>
 								<th class="textRight">Amount</th>
 								<th></th>
 							</tr>
@@ -168,11 +170,13 @@
 								$parsed = self::parseSubTypeValue('payment', null, $row, 'arr');
 								$subTotal += $row['paymentAmount'];
 								$return .= '<tr><td>'.$parsed['date'].'</td>';
-								$return .= '<td class="textCenter">'.$parsed['paymentType'].'</td>';
+								$return .= '<td>'.$parsed['paymentType'].'</td>';
 								$return .= '<td class="textRight">'.$parsed['paymentAmount'].'</td>';
 								$return .= '<td class="textCenter"><a class="controlDelete deleteEnabled" href="#" data-type="payment" data-id="'.$row['paymentID'].'"></a></td></tr>';
 							}
-							$return .= '<tr style="font-weight: bold;"><td>Total:</td><td></td><td class="textRight">'.formatCurrency($subTotal).'</td><td></td></tr>';
+							$return .= '<tr class="totalSeparator"><td colspan="2">Total:</td>';
+							$return .= '<td class="textRight">'.formatCurrency($subTotal).'</td>';
+							$return .= '<td></td></tr>';
 						$return .= '</tbody>
 					</table>
 				</div>

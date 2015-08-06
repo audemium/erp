@@ -41,9 +41,9 @@
 						<table class="attachmentTable" style="width:100%;">
 							<thead>
 								<tr>
-									<th>Attachment</th>
-									<th>Added By</th>
-									<th>Uploaded</th>
+									<th class="textLeft">Attachment</th>
+									<th class="textLeft">Added By</th>
+									<th class="textLeft">Uploaded</th>
 									<th></th>
 								</tr>
 							</thead>

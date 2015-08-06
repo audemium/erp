@@ -52,11 +52,11 @@
 					<table class="dataTable  stripe row-border" style="width:100%;">
 						<thead>
 							<tr>
-								<th>Date</th>
-								<th>Start Time</th>
-								<th>End Time</th>
-								<th>Submitted</th>
-								<th>Status</th>
+								<th class="textLeft">Date</th>
+								<th class="textLeft">Start Time</th>
+								<th class="textLeft">End Time</th>
+								<th class="textLeft">Submitted</th>
+								<th class="textLeft">Status</th>
 							</tr>
 						</thead>
 						<tbody>';
@@ -102,10 +102,10 @@
 					<table class="dataTable stripe row-border" id="changesMadeTable"> 
 						<thead>
 							<tr>
-								<th class="dateTimeHeader">Time</th>
-								<th>Item</th>
-								<th>Type</th>
-								<th>Changes</th>
+								<th class="dateTimeHeader textLeft">Time</th>
+								<th class="textLeft">Item</th>
+								<th class="textLeft">Type</th>
+								<th class="textLeft">Changes</th>
 							</tr>
 						</thead>
 						<tbody>

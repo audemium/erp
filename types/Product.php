@@ -22,8 +22,8 @@
 					<table class="dataTable stripe row-border"> 
 						<thead>
 							<tr>
-								<th>Location</th>
-								<th>Quantity</th>
+								<th class="textLeft">Location</th>
+								<th class="textRight">Quantity</th>
 							</tr>
 						</thead>
 						<tbody>';
@@ -34,7 +34,7 @@
 							$sth->execute([':productID' => $id]);
 							while ($row = $sth->fetch()) {
 								$return .= '<tr><td>'.getLinkedName('location', $row['locationID']).'</td>';
-								$return .= '<td>'.$row['quantity'].'</td></tr>';
+								$return .= '<td class="textRight">'.$row['quantity'].'</td></tr>';
 							}
 						$return .= '</tbody>
 					</table>

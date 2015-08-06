@@ -88,9 +88,9 @@
 					<table class="dataTable stripe row-border" id="historyTable"> 
 						<thead>
 							<tr>
-								<th class="dateTimeHeader">Time</th>
-								<th>Modified By</th>
-								<th>Changes</th>
+								<th class="dateTimeHeader textLeft">Time</th>
+								<th class="textLeft">Modified By</th>
+								<th class="textLeft">Changes</th>
 							</tr>
 						</thead>
 						<tbody>

@@ -92,6 +92,9 @@ button:hover {
 	border: 1px solid #e52d2d !important;
 	box-shadow: 0 0 5px #D45252 !important;
 }
+.textLeft {
+	text-align: left;
+}
 .textCenter {
 	text-align: center;
 }
@@ -241,6 +244,9 @@ table.dataTable thead th, table.dataTable thead td {
 table.dataTable tfoot th, table.dataTable tfoot td {
 	border-top: 1px solid #DDDDDD;
 }
+table.dataTable.no-footer {
+    border-bottom: 1px solid #DDDDDD;
+}
 
 table.customTable, table.attachmentTable {
 	/* customTable and attachmentTable essentially recreate the dataTable style without creating the dataTable in JS, which is used to remove resorting*/
@@ -251,7 +257,7 @@ table.customTable, table.attachmentTable {
 	clear: both;
 }
 table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
-	padding: 10px 18px;
+	padding: 10px;
 	border-top: 1px solid #DDDDDD;
 }
 table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
@@ -261,9 +267,13 @@ table.customTable tbody th, table.customTable tbody td, table.attachmentTable tb
 table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-child(odd) {
 	background-color: #F9F9F9;
 }
+.totalSeparator td {
+	border-top: 2px solid #BBBBBB !important;
+	font-weight: bold;
+}
 
+/* this is specifically for the View All footer */
 .tableFooter {
-	/* this is specifically for the View All footer */
 	text-align: center;
 }
 .tableFooter a:before, .tableFooter a:after {
