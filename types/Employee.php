@@ -269,7 +269,7 @@
 								</ul>
 							</div>
 						</section>
-						<div id="btnSpacer">
+						<div class="btnSpacer">
 							<button id="customBtn1">Request</button>
 						</div>
 					</div>

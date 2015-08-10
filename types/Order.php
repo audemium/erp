@@ -672,7 +672,7 @@
 								</ul>
 							</div>
 						</section>
-						<div id="btnSpacer">
+						<div class="btnSpacer">
 							<button id="customBtn1">Add</button>
 						</div>
 					</div>
@@ -750,7 +750,7 @@
 								</ul>
 							</div>
 						</section>
-						<div id="btnSpacer">
+						<div class="btnSpacer">
 							<button id="customBtn2">Add</button>
 						</div>
 					</div>
@@ -772,7 +772,7 @@
 								</ul>
 							</div>
 						</section>
-						<div id="btnSpacer">
+						<div class="btnSpacer">
 							<button id="customBtn3">Edit</button>
 						</div>
 					</div>

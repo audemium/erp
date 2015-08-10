@@ -129,7 +129,7 @@
 			}
 			$return['html'] .= '</div></section>';
 		}
-		$return['html'] .= '<div id="btnSpacer"><button id="addBtn">Add</button></div>';
+		$return['html'] .= '<div class="btnSpacer"><button id="addBtn">Add</button></div>';
 		
 		echo json_encode($return);
 	}
@@ -277,7 +277,7 @@
 			}
 			$return['html'] .= '</div></section>';
 		}
-		$return['html'] .= '<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
+		$return['html'] .= '<div class="btnSpacer"><button id="editBtn">Edit</button></div>';
 		
 		echo json_encode($return);
 	}
@@ -321,7 +321,7 @@
 			}
 			$return['html'] .= '</div></section>';
 		}
-		$return['html'] .= '<div id="btnSpacer"><button id="editBtn">Edit</button></div>';
+		$return['html'] .= '<div class="btnSpacer"><button id="editBtn">Edit</button></div>';
 		
 		echo json_encode($return);
 	}
@@ -422,7 +422,7 @@
 		$return['html'] = 
 			'<h1>Delete '.$_POST['type'].'</h1><br>
 			<div style="text-align: center;">Are you sure you want to delete <b>'.getName($_POST['type'], $_POST['id']).'</b>?  This will mark the '.$_POST['type'].' as inactive, but will retain historical information.</div>
-			<div id="btnSpacer"><button id="deleteBtn">Delete</button></div>';
+			<div class="btnSpacer"><button id="deleteBtn">Delete</button></div>';
 		
 		echo json_encode($return);
 	}
@@ -439,7 +439,7 @@
 		$return['html'] = 
 			'<h1>Delete '.$pluralName.'</h1><br>
 			<div style="text-align: center;">Are you sure you want to delete these '.$pluralName.'?  This will mark the '.$pluralName.' as inactive, but will retain historical information.</div>
-			<div id="btnSpacer"><button id="deleteBtn">Delete</button></div>';
+			<div class="btnSpacer"><button id="deleteBtn">Delete</button></div>';
 		
 		echo json_encode($return);
 	}

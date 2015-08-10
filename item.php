@@ -133,7 +133,7 @@
 						</div>
 					</div>
 				</section>
-				<div id="btnSpacer">
+				<div class="btnSpacer">
 					<button id="attachmentBtn">Add</button>
 				</div>
 			</div>
