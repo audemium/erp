@@ -186,11 +186,10 @@
 							'verifyData' => [1, 'id', 'product'],
 							'actions' => [1, 1, 1]
 						],
-						//TODO: change verifyData and actions arrays when I add unitPrices to orders
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [0, 'dec', [12, 2]],
-							'actions' => [0, 0, 0]
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',
@@ -231,11 +230,10 @@
 							'verifyData' => [1, 'id', 'service'],
 							'actions' => [1, 1, 1]
 						],
-						//TODO: change verifyData and actions arrays when I add unitPrices to orders
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [0, 'dec', [12, 2]],
-							'actions' => [0, 0, 0]
+							'verifyData' => [1, 'dec', [12, 2]],
+							'actions' => [1, 1, 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',

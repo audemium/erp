@@ -113,6 +113,23 @@ $(document).ready(function() {
 						});
 					}
 					else {
+						$('#customPopup2 [name=subID]').change(function() {
+							$.ajax({
+								url: 'ajax.php',
+								type: 'POST',
+								data: {
+									'action': 'customAjax',
+									'type': type,
+									'id': id,
+									'subAction': 'getDefaultPrice',
+									'subType': $('#customPopup2 [name=itemType]').val(),
+									'subID':  $(this).val()
+								}
+							}).done(function(data) {
+								$('#customPopup2 [name=unitPrice]').val(data.defaultPrice);
+							});
+						});
+						$ul.append('<li><label for="unitPrice">Unit Price</label><input type="text" name="unitPrice" autocomplete="off"></li>');
 						$ul.append('<li><label for="quantity">Quantity</label><input type="text" name="quantity" autocomplete="off" value="1"></li>');
 						$ul.append('<li><label for="recurring">Recurring</label><select name="recurring"><option value="no">No</option><option value="yes">Yes</option></select></li>');
 					}
@@ -184,6 +201,7 @@ $(document).ready(function() {
 		var $button = $(this);
 		if ($button.hasClass('editEnabled')) {
 			$('#customPopup3').show();
+			$('#customPopup3 [name=unitPrice]').val($button.data('unitprice'));
 			$('#customPopup3 [name=quantity]').val($button.data('quantity'));
 			
 			$('#customBtn3').click(function() {
@@ -197,6 +215,7 @@ $(document).ready(function() {
 						'subAction': 'edit',
 						'subType': $button.data('type'),
 						'subID':  $button.data('id'),
+						'unitPrice': $('#customPopup3 [name=unitPrice]').val(),
 						'quantity': $('#customPopup3 [name=quantity]').val()
 					}
 				}).done(function(data) {

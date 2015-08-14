@@ -45,7 +45,7 @@
 									}
 									else {
 										$recurringStr = '';
-										$editStr = '<a class="controlEdit editEnabled" href="#" data-type="'.$line['type'].'" data-id="'.$line['uniqueID'].'" data-quantity="'.formatNumber($line['quantity']).'"></a>';
+										$editStr = '<a class="controlEdit editEnabled" href="#" data-type="'.$line['type'].'" data-id="'.$line['uniqueID'].'" data-unitprice="'.formatNumber($line['unitPrice']).'" data-quantity="'.formatNumber($line['quantity']).'"></a>';
 									}
 									$dateStr = (isset($line['date'])) ? formatDate($line['date']).': ' : '';
 									$return .= '<tr><td style="padding-left: '.$padding.'px;">'.$dateStr.'<a href="item.php?type='.$line['type'].'&id='.$line['id'].'">'.$line['name'].'</a>'.$recurringStr.'</td>';
@@ -356,6 +356,16 @@
 					}
 				}
 			}
+			elseif ($data['subAction'] == 'getDefaultPrice') {
+				//getDefaultPrice subAction
+				$sth = $dbh->prepare(
+					'SELECT defaultPrice
+					FROM '.$TYPES[$data['subType']]['pluralName'].'
+					WHERE '.$TYPES[$data['subType']]['idName'].' = :subID');
+				$sth->execute([':subID' => $data['subID']]);
+				$row = $sth->fetch();
+				$return['defaultPrice'] = formatNumber($row['defaultPrice']);
+			}
 			elseif ($data['subAction'] == 'add') {
 				//add subAction
 				$return['status'] = 'fail';
@@ -408,8 +418,8 @@
 						$sth = $dbh->prepare(
 							'SELECT quantity
 							FROM orders_'.$TYPES[$subType]['pluralName'].'
-							WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID');
-						$sth->execute([':orderID' => $id, ':subID' => $data['subID']]);
+							WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID AND unitPrice = :unitPrice');
+						$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $data['unitPrice']]);
 						$result = $sth->fetchAll();
 						if (count($result) == 1 && $data['recurring'] == 'no') {
 							//if the product or service is already present in the expense AND we aren't doing a recurring item, add the quantity to the existing row
@@ -417,21 +427,12 @@
 							$sth = $dbh->prepare(
 								'UPDATE orders_'.$TYPES[$subType]['pluralName'].'
 								SET quantity = :quantity
-								WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID');
-							$sth->execute([':quantity' => $totalQuantity, ':orderID' => $id, ':subID' => $data['subID']]);
+								WHERE orderID = :orderID AND '.$TYPES[$subType]['idName'].' = :subID AND unitPrice = :unitPrice');
+							$sth->execute([':quantity' => $totalQuantity, ':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $data['unitPrice']]);
 							$changeAction = 'E';  //this is technically an edit, not an add
-							$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'quantity' => $totalQuantity];
+							$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $totalQuantity];
 						}
 						else {
-							//get defaultPrice
-							$sth = $dbh->prepare(
-								'SELECT defaultPrice
-								FROM '.$TYPES[$subType]['pluralName'].'
-								WHERE '.$TYPES[$subType]['idName'].' = :subID');
-							$sth->execute([':subID' => $data['subID']]);
-							$row = $sth->fetch();
-							$defaultPrice = $row['defaultPrice'];
-							
 							if ($data['recurring'] == 'yes') {
 								$startDate = strtotime($data['startDate']);
 								$endDate = strtotime($data['endDate']);
@@ -445,7 +446,7 @@
 								$sth = $dbh->prepare(
 									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
 									VALUES(:orderID, :subID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
-								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
 								
 								//add occasions from start date to now
 								$temp = new DateTime();
@@ -460,10 +461,10 @@
 										$sth = $dbh->prepare(
 											'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', date, unitPrice, quantity, parentRecurringID)
 											VALUES(:orderID, :subID, :date, :unitPrice, :quantity, :parentRecurringID)');
-										$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $timestamp, ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
+										$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
 							}
 							else {
 								//get date of order
@@ -477,8 +478,8 @@
 								$sth = $dbh->prepare(
 									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', date, unitPrice, quantity)
 									VALUES(:orderID, :subID, :date, :unitPrice, :quantity)');
-								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $row['date'], ':unitPrice' => $defaultPrice, ':quantity' => $data['quantity']]);
-								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $defaultPrice, 'quantity' => $data['quantity']];
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $row['date'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity']]);
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']];
 							}
 						}
 					}
@@ -554,12 +555,12 @@
 				if ($return['status'] != 'fail') {
 					$sth = $dbh->prepare(
 						'UPDATE orders_'.$TYPES[$subType]['pluralName'].'
-						SET quantity = :quantity
+						SET unitPrice = :unitPrice, quantity = :quantity
 						WHERE order'.$TYPES[$subType]['formalName'].'ID = :uniqueID');
-					$sth->execute([':quantity' => $data['quantity'], ':uniqueID' => $uniqueID]);
+					$sth->execute([':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':uniqueID' => $uniqueID]);
 					
 					self::updateAmountDue($id);
-					addChange('order', $id, $_SESSION['employeeID'], 'E', json_encode(['subType' => $subType, 'subID' => $data['subID'], 'quantity' => $data['quantity']]));
+					addChange('order', $id, $_SESSION['employeeID'], 'E', json_encode(['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity']]));
 				}
 			}
 			elseif ($data['subAction'] == 'delete') {
@@ -765,6 +766,10 @@
 							<h2></h2>
 							<div class="sectionData">
 								<ul>
+									<li>
+										<label for="unitPrice">Unit Price</label>
+										<input type="text" name="unitPrice" autocomplete="off" value="">
+									</li>
 									<li>
 										<label for="quantity">Quantity</label>
 										<input type="text" name="quantity" autocomplete="off" value="">
