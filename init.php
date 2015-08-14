@@ -12,7 +12,7 @@
 	*/
 	
 	//version
-	$VERSION = '0.5';
+	$VERSION = '0.6';
 	
 	//global autoloader
 	function customAutoloader($class) {
