@@ -688,8 +688,8 @@
 							<div class="sectionData">
 								<ul>
 									<li>
-										<label for="itemType">Type</label>
-										<select name="itemType">
+										<label for="itemType">Type</label><!-- this comment is required to avoid a rendered space
+										--><select name="itemType">
 											<option value=""></option>
 											<option value="product">Product</option>
 											<option value="service">Service</option>

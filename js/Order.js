@@ -84,7 +84,6 @@ $(document).ready(function() {
 						$ul.children(':not(:first)').remove();
 						resetRecurringOptions('#customPopup2');
 					}
-					//TODO: find out why these inputs don't line up with the first one
 					$ul.append(html);
 					if (itemType == 'preDiscount') {
 						$('#customPopup2 [name=subID]').change(function() {
