@@ -893,6 +893,7 @@
 		private static function updateAmountDue($id) {
 			global $dbh;
 			$exactSubTotal = 0;
+			$lines = [];
 			
 			//get discounts (ORDER BY clause is to ensure cash discounts are applied before percentage discounts(order matters!))
 			$sth = $dbh->prepare(
