@@ -331,9 +331,14 @@
 				elseif ($subType == 'other') {
 					$dataStr .= 'other expense. ';
 				}
+				elseif ($subType == 'attachment') {
+					$dataStr .= 'attachment '.$parsed['name'].'.'.$parsed['extension'].'.';
+				}
 				
 				foreach ($parsed as $key => $value) {
-					$dataStr .= '<b>'. $TYPES['expense']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					if ($subType != 'attachment') {
+						$dataStr .= '<b>'. $TYPES['expense']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					}
 				}
 				
 				return $dataStr;

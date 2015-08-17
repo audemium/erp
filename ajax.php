@@ -537,7 +537,7 @@
 			
 			if (move_uploaded_file($_FILES['uploadFile']['tmp_name'], 'attachments/'.$attachmentID)) {
 				$return = ['status' => 'success'];
-				//TODO: add change line
+				addChange($_POST['type'], $_POST['id'], $_SESSION['employeeID'], 'A', json_encode(['subType' => 'attachment', 'name' => $name, 'extension' => $extension]));
 			}
 			else {
 				$sth = $dbh->prepare(
@@ -568,11 +568,18 @@
 		
 		if (unlink('attachments/'.$_POST['subID'])) {
 			$sth = $dbh->prepare(
+				'SELECT type, id, name, extension FROM attachments
+				WHERE attachmentID = :attachmentID');
+			$sth->execute([':attachmentID' => $_POST['subID']]);
+			$row = $sth->fetch();
+			
+			$sth = $dbh->prepare(
 				'DELETE FROM attachments
 				WHERE attachmentID = :attachmentID');
 			$sth->execute([':attachmentID' => $_POST['subID']]);
+			
 			$return = ['status' => 'success'];
-			//TODO: add change line
+			addChange($row['type'], $row['id'], $_SESSION['employeeID'], 'D', json_encode(['subType' => 'attachment', 'name' => $row['name'], 'extension' => $row['extension']]));
 		}
 		
 		echo json_encode($return);

@@ -20,7 +20,7 @@
 			global $dbh;
 			global $SETTINGS;
 			$return = '';
-			$allowsAttachments = in_array($type, $SETTINGS['attachments']);
+			$allowsAttachments = in_array($type, ['employee', 'order', 'expense']);
 			
 			//anything that has an attachment, show it with a delete option
 			$sth = $dbh->prepare(

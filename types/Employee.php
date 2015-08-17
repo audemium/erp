@@ -157,6 +157,34 @@
 			return $parsed;
 		}
 		
+		public function parseSubTypeValue($subType, $action, $item, $format) {
+			global $TYPES;
+			$dataStr = '';
+			$parsed = [];
+			
+			foreach ($item as $field => $value) {
+				$parsed[$field] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+			}
+			
+			if ($format == 'str') {
+				//if we want a string format
+				if ($action == 'A') {
+					$dataStr = 'Added ';
+				}
+				elseif ($action == 'D') {
+					$dataStr = 'Deleted ';
+				}
+				
+				$dataStr .= 'attachment '.$parsed['name'].'.'.$parsed['extension'].'.';
+				
+				return $dataStr;
+			}
+			else {
+				//otherwise return the array
+				return $parsed;
+			}
+		}
+		
 		public function generateTypeOptions($type) {
 			global $dbh;
 			$return = [];

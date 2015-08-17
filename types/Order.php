@@ -284,9 +284,14 @@
 				elseif ($subType == 'discountProduct' || $subType == 'discountService') {
 					$dataStr .= 'discount. ';
 				}
+				elseif ($subType == 'attachment') {
+					$dataStr .= 'attachment '.$parsed['name'].'.'.$parsed['extension'].'.';
+				}
 				
 				foreach ($parsed as $key => $value) {
-					$dataStr .= '<b>'. $TYPES['order']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					if ($subType != 'attachment') {
+						$dataStr .= '<b>'. $TYPES['order']['subTypes'][$subType]['fields'][$key]['formalName'].':</b> '.$value.' ';
+					}
 				}
 				
 				return $dataStr;

@@ -89,6 +89,22 @@
 					'formalName' => 'Email',
 					'verifyData' => [1, 'email']
 				]
+			],
+			'subTypes' => [
+				'attachment' => [
+					'fields' => [
+						'name' => [
+							'formalName' => 'Name',
+							'verifyData' => [1, 'str', 200],
+							'actions' => [1, 0, 1]
+						],
+						'extension' => [
+							'formalName' => 'Extension',
+							'verifyData' => [1, 'str', 10],
+							'actions' => [1, 0, 1]
+						]
+					]
+				]
 			]
 		],
 		'location' => [
@@ -305,6 +321,20 @@
 						'discountID' => [
 							'formalName' => 'Discount',
 							'verifyData' => [1, 'id', 'discount'],
+							'actions' => [1, 0, 1]
+						]
+					]
+				],
+				'attachment' => [
+					'fields' => [
+						'name' => [
+							'formalName' => 'Name',
+							'verifyData' => [1, 'str', 200],
+							'actions' => [1, 0, 1]
+						],
+						'extension' => [
+							'formalName' => 'Extension',
+							'verifyData' => [1, 'str', 10],
 							'actions' => [1, 0, 1]
 						]
 					]
@@ -576,6 +606,20 @@
 							'formalName' => 'End Date',
 							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
 							'actions' => [1, 0, 0]
+						]
+					]
+				],
+				'attachment' => [
+					'fields' => [
+						'name' => [
+							'formalName' => 'Name',
+							'verifyData' => [1, 'str', 200],
+							'actions' => [1, 0, 1]
+						],
+						'extension' => [
+							'formalName' => 'Extension',
+							'verifyData' => [1, 'str', 10],
+							'actions' => [1, 0, 1]
 						]
 					]
 				]
