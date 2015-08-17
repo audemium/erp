@@ -161,6 +161,7 @@
 	/* verifyData */
 	function verifyData($type, $subType, $data) {
 		global $dbh;
+		global $SETTINGS;
 		global $TYPES;
 		$return = ['status' => 'success'];
 		
@@ -253,18 +254,22 @@
 						}
 					}
 					if ($attributes[1] == 'date') {
-						if (strtotime($value) === false) {
+						$date = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value);
+						if ($date === false) {
 							$return['status'] = 'fail';
-							$return[$key] = 'Unrecognized date/time format';
+							$return[$key] = 'Unrecognized date format';
 						}
 						else {
 							//if this is the end date, loop through until you find the start date, then if end is less than start, fail it
 							if ($attributes[2] == 'end') {
 								foreach ($data as $tempKey => $tempValue) {
 									if ($fields[$tempKey]['verifyData'][1] == 'date' && $fields[$tempKey]['verifyData'][2] == 'start') {
-										if (strtotime($value) < strtotime($tempValue)) {
-											$return['status'] = 'fail';
-											$return[$key] = 'End Time must be after Start Time';
+										$tempDate = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $tempValue);
+										if ($tempDate !== false) {
+											if ($date->getTimestamp() < $tempDate->getTimestamp()) {
+												$return['status'] = 'fail';
+												$return[$key] = 'End Date must be after Start Date';
+											}
 										}
 									}
 								}

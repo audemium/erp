@@ -304,6 +304,7 @@
 		
 		public function customAjax($id, $data) {
 			global $dbh;
+			global $SETTINGS;
 			global $TYPES;
 			$return = ['status' => 'success'];
 			
@@ -412,12 +413,12 @@
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
-						$date = strtotime($data['date']);
+						$dateTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['date'])->getTimestamp();
 						$sth = $dbh->prepare(
 							'INSERT INTO orderPayments (orderID, date, paymentType, paymentAmount)
 							VALUES(:orderID, :date, :paymentType, :paymentAmount)');
-						$sth->execute([':orderID' => $id, ':date' => $date, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
-						$changeData = ['subType' => 'payment', 'date' => $date, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
+						$sth->execute([':orderID' => $id, ':date' => $dateTS, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
+						$changeData = ['subType' => 'payment', 'date' => $dateTS, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
 					elseif ($subType == 'product' || $subType == 'service') {
 						$sth = $dbh->prepare(
@@ -439,8 +440,8 @@
 						}
 						else {
 							if ($data['recurring'] == 'yes') {
-								$startDate = strtotime($data['startDate']);
-								$endDate = strtotime($data['endDate']);
+								$startTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['startDate'])->getTimestamp();
+								$endTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['endDate'])->getTimestamp();
 								//add the recurring item
 								$sth = $dbh->prepare(
 									'SELECT MAX(recurringID) AS recurringID
@@ -451,25 +452,25 @@
 								$sth = $dbh->prepare(
 									'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
 									VALUES(:orderID, :subID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
-								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startTS, ':endDate' => $endTS]);
 								
 								//add occasions from start date to now
 								$temp = new DateTime();
-								$temp->setTimestamp($startDate);
+								$temp->setTimestamp($startTS);
 								$patternStart = new DateTime($data['dayOfMonth'].'-'.$temp->format('M').'-'.$temp->format('Y'));
 								$interval = new DateInterval('P1M');
 								$now = new DateTime();
 								$period = new DatePeriod($patternStart, $interval, $now);
 								foreach ($period as $date) {
 									$timestamp = $date->getTimestamp();
-									if ($timestamp >= $startDate && $timestamp <= $endDate) {
+									if ($timestamp >= $startTS && $timestamp <= $endTS) {
 										$sth = $dbh->prepare(
 											'INSERT INTO orders_'.$TYPES[$subType]['pluralName'].' (orderID, '.$TYPES[$subType]['idName'].', date, unitPrice, quantity, parentRecurringID)
 											VALUES(:orderID, :subID, :date, :unitPrice, :quantity, :parentRecurringID)');
 										$sth->execute([':orderID' => $id, ':subID' => $data['subID'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
+								$changeData = ['subType' => $subType, 'subID' => $data['subID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startTS, 'endDate' => $endTS];
 							}
 							else {
 								//get date of order

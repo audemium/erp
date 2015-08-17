@@ -351,6 +351,7 @@
 		
 		public function customAjax($id, $data) {
 			global $dbh;
+			global $SETTINGS;
 			global $TYPES;
 			$return = ['status' => 'success'];
 			
@@ -370,12 +371,12 @@
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
-						$date = strtotime($data['date']);
+						$dateTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['date'])->getTimestamp();
 						$sth = $dbh->prepare(
 							'INSERT INTO expensePayments (expenseID, date, paymentType, paymentAmount)
 							VALUES(:expenseID, :date, :paymentType, :paymentAmount)');
-						$sth->execute([':expenseID' => $id, ':date' => $date, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
-						$changeData = ['subType' => 'payment', 'date' => $date, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
+						$sth->execute([':expenseID' => $id, ':date' => $dateTS, ':paymentType' => $data['paymentType'], ':paymentAmount' => $data['paymentAmount']]);
+						$changeData = ['subType' => 'payment', 'date' => $dateTS, 'paymentType' => $data['paymentType'], 'paymentAmount' => $data['paymentAmount']];
 					}
 					elseif ($subType == 'product') {
 						$sth = $dbh->prepare(
@@ -397,8 +398,8 @@
 						}
 						else {
 							if ($data['recurring'] == 'yes') {
-								$startDate = strtotime($data['startDate']);
-								$endDate = strtotime($data['endDate']);
+								$startTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['startDate'])->getTimestamp();
+								$endTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['endDate'])->getTimestamp();
 								//add the recurring item
 								$sth = $dbh->prepare(
 									'SELECT MAX(recurringID) AS recurringID
@@ -409,25 +410,25 @@
 								$sth = $dbh->prepare(
 									'INSERT INTO expenses_products (expenseID, productID, locationID, unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
 									VALUES(:expenseID, :productID, :locationID, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
-								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startTS, ':endDate' => $endTS]);
 								
 								//add occasions from start date to now
 								$temp = new DateTime();
-								$temp->setTimestamp($startDate);
+								$temp->setTimestamp($startTS);
 								$patternStart = new DateTime($data['dayOfMonth'].'-'.$temp->format('M').'-'.$temp->format('Y'));
 								$interval = new DateInterval('P1M');
 								$now = new DateTime();
 								$period = new DatePeriod($patternStart, $interval, $now);
 								foreach ($period as $date) {
 									$timestamp = $date->getTimestamp();
-									if ($timestamp >= $startDate && $timestamp <= $endDate) {
+									if ($timestamp >= $startTS && $timestamp <= $endTS) {
 										$sth = $dbh->prepare(
 											'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
 											VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
 										$sth->execute([':expenseID' => $id, ':productID' => $data['productID'], ':locationID' => $data['locationID'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
+								$changeData = ['subType' => 'product', 'productID' => $data['productID'], 'locationID' => $data['locationID'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startTS, 'endDate' => $endTS];
 							}
 							else {
 								//get date of expense
@@ -466,8 +467,8 @@
 						}
 						else {
 							if ($data['recurring'] == 'yes') {
-								$startDate = strtotime($data['startDate']);
-								$endDate = strtotime($data['endDate']);
+								$startTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['startDate'])->getTimestamp();
+								$endTS = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data['endDate'])->getTimestamp();
 								//add the recurring item
 								$sth = $dbh->prepare(
 									'SELECT MAX(recurringID) AS recurringID
@@ -478,25 +479,25 @@
 								$sth = $dbh->prepare(
 									'INSERT INTO expenseOthers (expenseID, name, unitPrice, quantity, recurringID, dayOfMonth, startDate, endDate)
 									VALUES(:expenseID, :name, :unitPrice, :quantity, :recurringID, :dayOfMonth, :startDate, :endDate)');
-								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startDate, ':endDate' => $endDate]);
+								$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':recurringID' => $recurringID, ':dayOfMonth' => $data['dayOfMonth'], ':startDate' => $startTS, ':endDate' => $endTS]);
 								
 								//add occasions from start date to now
 								$temp = new DateTime();
-								$temp->setTimestamp($startDate);
+								$temp->setTimestamp($startTS);
 								$patternStart = new DateTime($data['dayOfMonth'].'-'.$temp->format('M').'-'.$temp->format('Y'));
 								$interval = new DateInterval('P1M');
 								$now = new DateTime();
 								$period = new DatePeriod($patternStart, $interval, $now);
 								foreach ($period as $date) {
 									$timestamp = $date->getTimestamp();
-									if ($timestamp >= $startDate && $timestamp <= $endDate) {
+									if ($timestamp >= $startTS && $timestamp <= $endTS) {
 										$sth = $dbh->prepare(
 											'INSERT INTO expenseOthers (expenseID, name, date, unitPrice, quantity, parentRecurringID)
 											VALUES(:expenseID, :name, :date, :unitPrice, :quantity, :parentRecurringID)');
 										$sth->execute([':expenseID' => $id, ':name' => $data['name'], ':date' => $timestamp, ':unitPrice' => $data['unitPrice'], ':quantity' => $data['quantity'], ':parentRecurringID' => $recurringID]);
 									}
 								}
-								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startDate, 'endDate' => $endDate];
+								$changeData = ['subType' => 'other', 'name' => $data['name'], 'unitPrice' => $data['unitPrice'], 'quantity' => $data['quantity'], 'recurring' => $data['recurring'], 'interval' => $data['interval'], 'dayOfMonth' => $data['dayOfMonth'], 'startDate' => $startTS, 'endDate' => $endTS];
 							}
 							else {
 								//get date of expense

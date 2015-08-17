@@ -156,7 +156,7 @@
 			foreach ($data as $key => $value) {
 				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
 					//if this is a date, convert it to a unixTS
-					$temp = strtotime($value);
+					$temp = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value)->getTimestamp();
 					$data[$key] = $temp;
 					$value = $temp;
 				}
@@ -351,7 +351,7 @@
 			foreach ($data as $key => $value) {
 				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
 					//if this is a date, convert it to a unixTS
-					$temp = strtotime($value);
+					$temp = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value)->getTimestamp();
 					$data[$key] = $temp;
 					$value = $temp;
 				}

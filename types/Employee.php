@@ -222,16 +222,18 @@
 					$return['status'] = 'fail';
 					$return['endTime'] = 'Required';
 				}
-				$start = strtotime($data['date'].' '.$data['startTime']);
-				$end = strtotime($data['date'].' '.$data['endTime']);
+				$startDate = DateTime::createFromFormat($SETTINGS['dateTimeFormat'].'|', $data['date'].' '.$data['startTime']);
+				$startTS = $startDate->getTimestamp();
+				$endDate = DateTime::createFromFormat($SETTINGS['dateTimeFormat'].'|', $data['date'].' '.$data['endTime']);
+				$endTS = $endDate->getTimestamp();
 				
 				if ($return['status'] != 'fail') {
-					if ($start === false || $end === false) {
+					if ($startDate === false || $endDate === false) {
 						$return['status'] = 'fail';
 						$return['date'] = 'Unrecognized date/time format.';
 					}
 					else {
-						if ($end < $start) {
+						if ($endTS < $startTS) {
 							$return['status'] = 'fail';
 							$return['endTime'] = 'End Time must be after Start Time.';
 						}
@@ -240,7 +242,7 @@
 							$sth = $dbh->prepare(
 								'INSERT INTO vacationRequests (employeeID, submitTime, startTime, endTime, status)
 								VALUES(:employeeID, UNIX_TIMESTAMP(), :startTime, :endTime, "P")');
-							$sth->execute([':employeeID' => $id, ':startTime' => $start, ':endTime' => $end]);
+							$sth->execute([':employeeID' => $id, ':startTime' => $startTS, ':endTime' => $endTS]);
 							//TODO: should a call to addChange be here? or is it already logged enough?
 						}
 					}
