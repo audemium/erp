@@ -70,7 +70,7 @@ $(document).ready(function() {
 	});
 	
 	//qtip
-	$('#controls [title]').qtip({
+	$('#topControls [title]').qtip({
 		'style': {'classes': 'qtip-tipsy-custom'},
 		'position': {
 			'my': 'bottom center',
