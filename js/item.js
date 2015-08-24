@@ -69,6 +69,11 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 	
+	if (active == 1) {
+		$('#topControlCenter .controlEdit').addClass('editEnabled').removeClass('editDisabled');
+		$('#topControlCenter .controlDelete').addClass('deleteEnabled').removeClass('deleteDisabled');
+		$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').removeAttr('title');
+	}
 	//qtip
 	$('#topControls [title]').qtip({
 		'style': {'classes': 'qtip-tipsy-custom'},
@@ -78,11 +83,6 @@ $(document).ready(function() {
 			'adjust': {'y': -12}
 		}
 	});
-	if (active == 1) {
-		$('#topControlCenter .controlEdit').addClass('editEnabled').removeClass('editDisabled');
-		$('#topControlCenter .controlDelete').addClass('deleteEnabled').removeClass('deleteDisabled');
-		$('#topControlCenter .controlEdit, #topControlCenter .controlDelete').removeAttr('title');
-	}
 	
 	//add attachments
 	$('#addAttachment').click(function(event) {
