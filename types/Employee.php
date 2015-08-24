@@ -144,7 +144,7 @@
 						$parsed[$field] = ($value == 'S') ? 'Salary' : 'Hourly';
 						break;
 					case 'payAmount':
-						$parsed[$field] = formatCurrency($value);
+						$parsed[$field] = formatCurrency($value, true);
 						break;
 					default:
 						$parsed[$field] = $value;
