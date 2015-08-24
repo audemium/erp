@@ -195,7 +195,7 @@
 						}
 					}
 					if ($attributes[1] == 'int') {
-						if (!filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $attributes[2]]])) {
+						if (filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $attributes[2]]]) === false) {
 							$return['status'] = 'fail';
 							$return[$key] = 'Must be a positive integer';
 						}
@@ -214,7 +214,7 @@
 					}
 					if ($attributes[1] == 'dec') {
 						//test with salary: 10(pass) 10,000(pass) 10000(pass) 10.10(pass) 10.1234(fail) 123456789012.12(fail) 12345678901.1(fail)
-						if (!filter_var($value, FILTER_VALIDATE_FLOAT)) {
+						if (filter_var($value, FILTER_VALIDATE_FLOAT) === false) {
 							$return['status'] = 'fail';
 							$return[$key] = 'Must be a decimal';
 						}
@@ -248,7 +248,7 @@
 						}
 					}
 					if ($attributes[1] == 'email') {
-						if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+						if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
 							$return['status'] = 'fail';
 							$return[$key] = 'Must be an email address';
 						}
