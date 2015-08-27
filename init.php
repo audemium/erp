@@ -21,7 +21,10 @@
 	spl_autoload_register('customAutoloader');
 	
 	//load settings, helper functions and type definitions
-	require('settings.php');
+	if (!include('settings.php')) {
+		header('Location: /maintenance/index.php');
+		die();
+	}
 	require('helpers.php');
 	require('types/types.php');
 	

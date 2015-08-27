@@ -24,11 +24,11 @@
 			'idName' => 'employeeID',
 			'formData' => [
 				'Basic Information' => [
-					['firstName', 'lastName', 'payType', 'payAmount'],
+					['firstName', 'lastName', 'payType', 'payAmount', 'workEmail'],
 					['locationID', 'positionID', 'managerID', 'vacationTotal']
 				],
 				'Personal Information' => [
-					['address', 'city', 'personalEmail'],
+					['address', 'city'],
 					['state', 'zip']
 				]
 			],
@@ -71,21 +71,21 @@
 				],
 				'address' => [
 					'formalName' => 'Address',
-					'verifyData' => [1, 'str', 200]
+					'verifyData' => [0, 'str', 200]
 				],
 				'city' => [
 					'formalName' => 'City',
-					'verifyData' => [1, 'str', 200]
+					'verifyData' => [0, 'str', 200]
 				],
 				'state' => [
 					'formalName' => 'State',
-					'verifyData' => [1, 'str', 2]
+					'verifyData' => [0, 'str', 2]
 				],
 				'zip' => [
 					'formalName' => 'Zip Code',
-					'verifyData' => [1, 'str', 10]
+					'verifyData' => [0, 'str', 10]
 				],
-				'personalEmail' => [
+				'workEmail' => [
 					'formalName' => 'Email',
 					'verifyData' => [1, 'email']
 				]
@@ -125,19 +125,19 @@
 				],
 				'address' => [
 					'formalName' => 'Address',
-					'verifyData' => [1, 'str', 65535]
+					'verifyData' => [0, 'str', 65535]
 				],
 				'city' => [
 					'formalName' => 'City',
-					'verifyData' => [1, 'str', 200]
+					'verifyData' => [0, 'str', 200]
 				],
 				'state' => [
 					'formalName' => 'State',
-					'verifyData' => [1, 'str', 2]
+					'verifyData' => [0, 'str', 2]
 				],
 				'zip' => [
 					'formalName' => 'Zip Code',
-					'verifyData' => [1, 'str', 10]
+					'verifyData' => [0, 'str', 10]
 				]
 			]
 		],
