@@ -1,5 +1,8 @@
 <?php
 	//These are the default settings for Audemium ERP. Use the installer to generate your own settings.php file.
+	
+	//Audemium ERP Version
+	$VERSION = '0.7.0';
 
 	//Database
 	$SETTINGS['dbServer'] = 'localhost';

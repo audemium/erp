@@ -107,6 +107,9 @@
 	//try to write settings.php, if we can't, we'll send it in the final section
 	if ($return['status'] == 'success') {
 		$settings = '<?php
+	//Audemium ERP Version
+	$VERSION = \'0.7.0\';
+	
 	//Database
 	$SETTINGS[\'dbServer\'] = \''.addcslashes($_POST['dbHost'], "'").'\';
 	$SETTINGS[\'dbName\'] = \''.addcslashes($_POST['dbName'], "'").'\';

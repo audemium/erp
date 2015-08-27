@@ -11,9 +11,6 @@
     You should have received a copy of the GNU Affero General Public License along with Audemium ERP.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 	
-	//version
-	$VERSION = '0.6';
-	
 	//global autoloader
 	function customAutoloader($class) {
 		include 'types/'.$class.'.php';
