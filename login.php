@@ -36,12 +36,9 @@
 			margin: 0 0 40px;
 		}
 		input {
-			border: 1px solid #AAAAAA;
-			border-radius: 4px;
-			box-shadow: 0 0 3px #CCCCCC;
 			margin-bottom: 20px;
-			padding: 7px;
-			width: 300px;
+			padding: 7px !important;
+			width: 300px !important;
 		}
 		.errorMessage {
 			color: #E52D2D;

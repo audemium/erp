@@ -329,9 +329,6 @@ table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-ch
 }
 
 #filter {
-	border: 1px solid #AAAAAA;
-	border-radius: 4px;
-	box-shadow: 0 0 3px #CCCCCC;
 	padding: 3px;
 	width: 250px;
 }
@@ -493,7 +490,7 @@ label {
 label:after {
 	content: ":";
 }
-.popup input[type="text"], .popup select, .popup textarea {
+input[type="text"], input[type="password"], select, textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;

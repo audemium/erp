@@ -23,12 +23,7 @@
 	<link type="text/css" rel="stylesheet" href="../css/styles.css">
 	<style type="text/css">
 		input, select {
-			box-sizing: border-box;
-			border: 1px solid #AAA;
-			border-radius: 4px;
-			box-shadow: 0px 0px 3px #CCC;
-			padding: 2px;
-			width: 150px;
+			width: 150px !important;
 		}
 		#defaultPopup .sectionData {
 			margin-bottom: 30px;
