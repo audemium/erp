@@ -184,7 +184,16 @@ nav img {
 #logo {
 	position: absolute;
 	top: 0;
-	right: 0;
+	left: 154px;
+}
+#accountBar {
+	background-color: #ffffff;
+	border-radius: 0 0 8px 8px;
+	font-size: 0.8em;
+	padding: 5px 10px;
+	position: absolute;
+	right: 90px;
+	top: 0;
 }
 
 /* Home */
