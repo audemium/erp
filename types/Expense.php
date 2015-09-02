@@ -558,7 +558,7 @@
 				//delete subAction
 				if ($data['subType'] == 'payment') {
 					$sth = $dbh->prepare(
-						'SELECT date, paymentAmount FROM orderPayments
+						'SELECT date, paymentAmount FROM expensePayments
 						WHERE paymentID = :paymentID');
 					$sth->execute([':paymentID' => $data['subID']]);
 					$row = $sth->fetch();
