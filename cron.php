@@ -11,7 +11,14 @@
     You should have received a copy of the GNU Affero General Public License along with Audemium ERP.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 	
+	function customAutoloader($class) {
+		include 'types/'.$class.'.php';
+	}
+	spl_autoload_register('customAutoloader');
+	
 	require('settings.php');
+	require('types/types.php');
+	
 	$dbh = new PDO(
 		'mysql:host='.$SETTINGS['dbServer'].';dbname='.$SETTINGS['dbName'],
 		$SETTINGS['dbUser'],
@@ -21,6 +28,7 @@
 			//default for emulate prepares is true, which allows things like using the same parameter multiple times
 		]
 	);
+	
 	date_default_timezone_set('UTC');
 	//if a default is set in settings.php, use that
 	if (isset($SETTINGS['timeZone']) && $SETTINGS['timeZone'] != '') {
@@ -32,6 +40,7 @@
 	}
 	
 	$today = strtotime('today');
+	$expenseItem = Factory::createItem('expense');
 	
 	//recurring expenses_products
 	$sth = $dbh->prepare(
@@ -46,6 +55,8 @@
 				'INSERT INTO expenses_products (expenseID, productID, locationID, date, unitPrice, quantity, parentRecurringID)
 				VALUES(:expenseID, :productID, :locationID, :date, :unitPrice, :quantity, :parentRecurringID)');
 			$sth2->execute([':expenseID' => $row['expenseID'], ':productID' => $row['productID'], ':locationID' => $row['locationID'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+
+			$expenseItem->updateAmountDue($row['expenseID']);
 		}
 	}
 	
@@ -62,8 +73,12 @@
 				'INSERT INTO expenseOthers (expenseID, name, date, unitPrice, quantity, parentRecurringID)
 				VALUES(:expenseID, :name, :date, :unitPrice, :quantity, :parentRecurringID)');
 			$sth2->execute([':expenseID' => $row['expenseID'], ':name' => $row['name'], ':date' => $today, ':unitPrice' => $row['unitPrice'], ':quantity' => $row['quantity'], ':parentRecurringID' => $row['recurringID']]);
+			
+			$expenseItem->updateAmountDue($row['expenseID']);
 		}
 	}
+	
+	$orderItem = Factory::createItem('order');
 	
 	//recurring orders_products
 	$sth = $dbh->prepare(
@@ -92,6 +107,8 @@
 					VALUES(:orderID, :discountID, "P", :appliesToID, :discountType, :discountAmount)');
 				$sth3->execute([':orderID' => $row['orderID'], ':discountID' => $row2['discountID'], ':appliesToID' => $id, ':discountType' => $row2['discountType'], ':discountAmount' => $row2['discountAmount']]);
 			}
+			
+			$orderItem->updateAmountDue($row['orderID']);
 		}
 	}
 	
@@ -122,6 +139,8 @@
 					VALUES(:orderID, :discountID, "S", :appliesToID, :discountType, :discountAmount)');
 				$sth3->execute([':orderID' => $row['orderID'], ':discountID' => $row2['discountID'], ':appliesToID' => $id, ':discountType' => $row2['discountType'], ':discountAmount' => $row2['discountAmount']]);
 			}
+			
+			$orderItem->updateAmountDue($row['orderID']);
 		}
 	}
 ?>

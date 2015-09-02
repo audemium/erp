@@ -889,9 +889,9 @@
 			}
 		}
 		
-		/* Local Helper Functions */
+		/* Helper Functions */
 		
-		private static function updateAmountDue($id) {
+		public static function updateAmountDue($id) {
 			global $dbh;
 			$exactSubTotal = 0;
 			$lines = [];
