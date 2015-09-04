@@ -14,6 +14,12 @@
 	require('../settings.php');
 	require('database.php');
 	
+	if (php_sapi_name() == 'cli') {
+		$break = PHP_EOL;
+	} else {
+		$break = '<br>';
+	}
+	
 	//connect to db
 	$dbh = new PDO(
 		'mysql:host='.$SETTINGS['dbServer'].';dbname='.$SETTINGS['dbName'],
@@ -33,6 +39,7 @@
 			foreach ($queryArr as $query) {
 				$sth = $dbh->prepare($query);
 				$sth->execute();
+				echo $query.$break;
 			}
 		}
 	}
@@ -43,6 +50,9 @@
 		$newStr = str_replace($VERSION, $maxVersion, $settingsStr);
 		$fileStatus = file_put_contents('../settings.php', $newStr);
 	}
+	
+	echo 'Old Version: '.$VERSION.$break;
+	echo 'New Version: '.$maxVersion.$break;
 	
 	if (version_compare($maxVersion, $VERSION) === 1) {
 		$fileStr = ($fileStatus === false) ? 'However, we were not able to update the version in your settings file. Change the version in settings.php to '.$maxVersion : 'Your settings file was also changed to have the correct version.';
