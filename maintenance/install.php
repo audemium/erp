@@ -189,7 +189,7 @@
 			$password = password_hash($_POST['password'], PASSWORD_BCRYPT, ['cost' => 10]);
 			$sth = $dbh->prepare(
 				'INSERT INTO employees
-				VALUES(null, :username, :password, :firstName, :lastName, "S", 0.00, "", "", "", "", :workEmail, 1, 1, 0, 0, "", 1)');
+				VALUES(null, :username, :password, 0, :firstName, :lastName, "S", 0.00, "", "", "", "", :workEmail, 1, 1, 0, 0, "", 1)');
 			$sth->execute([':username' => $_POST['username'], ':password' => $password, ':firstName' => $_POST['firstName'], ':lastName' => $_POST['lastName'], ':workEmail' => $_POST['workEmail']]);
 			$changes = ['firstName' => $_POST['firstName'], 'lastName' => $_POST['lastName'], 'payType' => 'S', 'payAmount' => '0', 'locationID' => '1', 'positionID' => '1', 'managerID' => '', 'vacationTotal' => '0', 'address' => '', 'city' => '', 'state' => '', 'zip' => '', 'workEmail' => $_POST['workEmail']];
 			$sth = $dbh->prepare(

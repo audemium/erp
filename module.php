@@ -12,7 +12,7 @@
 	*/
 
 	require_once('init.php');
-	if (empty($_SESSION['loggedIn'])) {
+	if (empty($_SESSION['loggedIn']) || isset($_SESSION['changePassword'])) {
 		$_SESSION['loginDestination'] = $_SERVER['HTTP_REFERER'];
 		http_response_code(401);
 		die();

@@ -12,7 +12,7 @@
 	*/
 
 	require_once('init.php');
-	if (empty($_SESSION['loggedIn']) && $_POST['action'] != 'login') {
+	if ((empty($_SESSION['loggedIn']) && $_POST['action'] != 'login') || (isset($_SESSION['changePassword']) && $_POST['action'] != 'changePassword')) {
 		$_SESSION['loginDestination'] = $_SERVER['HTTP_REFERER'];
 		http_response_code(401);
 		die();
@@ -28,7 +28,7 @@
 		$return = ['status' => 'fail'];
 		
 		$sth = $dbh->prepare(
-			'SELECT employeeID, password, timeZone
+			'SELECT employeeID, password, changePassword, timeZone
 			FROM employees
 			WHERE username = :username');
 		$sth->execute([':username' => $_POST['username']]);
@@ -40,10 +40,18 @@
 				$_SESSION['loggedIn'] = true;
 				$_SESSION['employeeID'] = $result[0]['employeeID'];
 				$_SESSION['timeZone'] = $result[0]['timeZone'];
-				$redirect = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
-				unset($return);
-				$return = ['status' => 'success', 'redirect' => $redirect];
-				unset($_SESSION['loginDestination']);
+				if ($result[0]['changePassword'] == 1) {
+					//redirect to change password page, leave $_SESSION['loginDestination'] alone
+					$redirect = 'reset.php';
+					$_SESSION['changePassword'] = 1;
+				}
+				else {
+					$redirect = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
+					unset($_SESSION['loginDestination']);
+				}
+				$return['status'] = 'success';
+				$return['redirect'] = $redirect;
+				
 			}
 		}
 		
@@ -51,15 +59,15 @@
 	}
 	
 	/*
-		Function: accountSave
+		Function: changePassword
 		Inputs: password, newPassword, retypePassword
 		Outputs: status (success / fail)
 	*/
-	if ($_POST['action'] == 'accountSave') {
+	if ($_POST['action'] == 'changePassword') {
 		$return = ['status' => 'success'];
 		
 		//if we're running as a demo, disable password reset
-		if ($SETTINGS['demoMode'] === true) {
+		if ($SETTINGS['demoMode'] === true && isset($_SESSION['changePassword']) === false) {
 			$return['status'] = 'popup';
 			$return['html'] = 'Password cannot be changed in Demo Mode.';
 		}
@@ -75,7 +83,7 @@
 		}
 		
 		//check current password is good
-		if ($return['status'] == 'success') {
+		if ($return['status'] == 'success' && isset($_SESSION['changePassword']) === false) {
 			$sth = $dbh->prepare(
 				'SELECT password
 				FROM employees
@@ -113,7 +121,19 @@
 				WHERE employeeID = :employeeID');
 			$sth->execute([':hash' => $hash, ':employeeID' => $_SESSION['employeeID']]);
 			session_regenerate_id(true);
-			$return['html'] = 'Your settings have been saved.';
+			if (isset($_SESSION['changePassword']) === false) {
+				$return['html'] = 'Your settings have been saved.';
+			}
+			else {
+				$sth = $dbh->prepare(
+					'UPDATE employees
+					SET changePassword = 0
+					WHERE employeeID = :employeeID');
+				$sth->execute([':employeeID' => $_SESSION['employeeID']]);
+				unset($_SESSION['changePassword']);
+				$return['redirect'] = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
+				unset($_SESSION['loginDestination']);
+			}
 		}
 		
 		echo json_encode($return);

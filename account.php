@@ -42,7 +42,7 @@
 			$('#accountSaveBtn').click(function() {
 				var ajaxData = $('#data input').serializeArray();
 				ajaxData.push(
-					{'name': 'action', 'value': 'accountSave'}
+					{'name': 'action', 'value': 'changePassword'}
 				);
 				$.ajax({
 					url: 'ajax.php',
@@ -114,7 +114,7 @@
 					</ul>
 					<b>Password Requirements</b>
 					<ul id="reqList">
-						<li>Minimum 10 characters</li>
+						<li>Must be at least 10 characters</li>
 						<li>Using a <a href="https://en.wikipedia.org/wiki/List_of_password_managers" target="_blank">password manager</a> is strongly recommended</li>
 					</ul>
 				</div>

@@ -56,12 +56,21 @@
 		date_default_timezone_set($_SESSION['timeZone']);
 	}
 	
-	//check if the user is logged in, if not then redirect
+	
 	$file = basename($_SERVER['SCRIPT_NAME']);
 	$exceptions = ['login.php', 'ajax.php', 'module.php'];
+	//check if the user is logged in, if not then redirect
 	if (empty($_SESSION['loggedIn']) && !in_array($file, $exceptions)) {
 		$_SESSION['loginDestination'] = $_SERVER['REQUEST_URI'];
 		header('Location: login.php');
+		die();
+	}
+	//check if the user needs to change their password
+	$exceptions[] = 'reset.php';
+	$exceptions[] = 'logout.php';
+	if (isset($_SESSION['changePassword']) === true && !in_array($file, $exceptions)) {
+		$_SESSION['loginDestination'] = $_SERVER['REQUEST_URI'];
+		header('Location: reset.php');
 		die();
 	}
 ?>
