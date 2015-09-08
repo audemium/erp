@@ -10,6 +10,9 @@
 	$SETTINGS['dbUser'] = 'erpUser';
 	$SETTINGS['dbPassword'] = 'dbPasswordHere';
 	
+	//Demo mode (disables password reset if true)
+	$SETTINGS['demoMode'] = false;
+	
 	//Company information
 	$SETTINGS['companyName'] = 'Audemium';
 	

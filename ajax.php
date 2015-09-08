@@ -51,6 +51,75 @@
 	}
 	
 	/*
+		Function: accountSave
+		Inputs: password, newPassword, retypePassword
+		Outputs: status (success / fail)
+	*/
+	if ($_POST['action'] == 'accountSave') {
+		$return = ['status' => 'success'];
+		
+		//if we're running as a demo, disable password reset
+		if ($SETTINGS['demoMode'] === true) {
+			$return['status'] = 'popup';
+			$return['html'] = 'Password cannot be changed in Demo Mode.';
+		}
+		
+		//if a field is empty, fail it
+		if ($return['status'] == 'success') {
+			foreach ($_POST as $key => $value) {
+				if ($value == '') {
+					$return['status'] = 'fail';
+					$return[$key] = 'Required';
+				}
+			}
+		}
+		
+		//check current password is good
+		if ($return['status'] == 'success') {
+			$sth = $dbh->prepare(
+				'SELECT password
+				FROM employees
+				WHERE employeeID = :employeeID');
+			$sth->execute([':employeeID' => $_SESSION['employeeID']]);
+			$row = $sth->fetch();
+			if (password_verify($_POST['password'], $row['password']) === false) {
+				$return['status'] = 'fail';
+				$return['password'] = 'Incorrect password';
+			}
+		}
+		
+		//check password requirements
+		if ($return['status'] == 'success') {
+			if (strlen($_POST['newPassword']) < 10) {
+				$return['status'] = 'fail';
+				$return['newPassword'] = 'Password must be at least 10 characters';
+			}
+		}
+		
+		//check new password and retype password match
+		if ($return['status'] == 'success') {
+			if ($_POST['newPassword'] != $_POST['retypePassword']) {
+				$return['status'] = 'fail';
+				$return['retypePassword'] = 'New passwords must match';
+			}
+		}
+		
+		//change password
+		if ($return['status'] == 'success') {
+			$hash = password_hash($_POST['newPassword'], PASSWORD_BCRYPT, ['cost' => 10]);
+			$sth = $dbh->prepare(
+				'UPDATE employees
+				SET password = :hash
+				WHERE employeeID = :employeeID');
+			$sth->execute([':hash' => $hash, ':employeeID' => $_SESSION['employeeID']]);
+			session_regenerate_id(true);
+			$return['html'] = 'Your settings have been saved.';
+		}
+		
+		echo json_encode($return);
+	}
+	
+	/*
 		Function: search
 		Inputs: 
 		Outputs: status (success / fail), results
@@ -186,7 +255,7 @@
 				$characters = 'bcdfghjkmnpqrstvwxyz23456789';
 				$length = strlen($characters) - 1;
 				$password = '';
-				for ($i = 0; $i < 8; $i++) {
+				for ($i = 0; $i < 10; $i++) {
 					$password .= $characters[mt_rand(0, $length)];
 				}
 				$hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);

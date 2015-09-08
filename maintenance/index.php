@@ -89,6 +89,12 @@
 						$(this).addClass('invalid');
 					}
 				});
+				if ($('#password').val().length < 10) {
+					noErrors = false;
+					$('#password').addClass('invalid');
+					$('#password').qtip('option', 'show.ready', true);
+					$('#password').qtip('option', 'hide.event', false);
+				}
 				if ($('#password').val() != $('#retypePassword').val()) {
 					noErrors = false;
 					$('#retypePassword').addClass('invalid');
@@ -209,7 +215,7 @@
 						</li>
 						<li>
 							<label for="password">Admin Password</label>
-							<input type="password" name="password" id="password">
+							<input type="password" name="password" id="password" title="Minimum 10 characters">
 						</li>
 						<li>
 							<label for="retypePassword">Retype Password</label>

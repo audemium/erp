@@ -13,7 +13,7 @@
 ?>
 
 <img id="logo" src="images/logo.png" alt="logo">
-<div id="accountBar"><a href="#" style="margin-right:20px;">Account Settings</a> <a href="logout.php">Sign out</a></div>
+<div id="accountBar"><a href="account.php" style="margin-right:20px;">Account Settings</a> <a href="logout.php">Sign out</a></div>
 <div id="searchDiv">
 	<input type="text" id="searchTerm" placeholder="Search">
 	<div id="searchResults">Type to begin searching...</div>

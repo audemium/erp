@@ -116,6 +116,9 @@
 	$SETTINGS[\'dbUser\'] = \''.addcslashes($_POST['dbUser'], "'").'\';
 	$SETTINGS[\'dbPassword\'] = \''.addcslashes($_POST['dbPassword'], "'").'\';
 	
+	//Demo mode (disables password reset if true)
+	$SETTINGS[\'demoMode\'] = false;
+	
 	//Company information
 	$SETTINGS[\'companyName\'] = \''.addcslashes($_POST['companyName'], "'").'\';
 	
