@@ -106,9 +106,8 @@
 </head>
 
 <body>
-	<img id="logo" src="images/logo.png" alt="logo">
 	<div id="loginBox">
-		<h1>Sign in</h1>
+		<h1>Sign in to <?php echo $SETTINGS['companyName']; ?></h1>
 		<form id="loginForm">
 			<input type="text" id="username" placeholder="Username" autofocus>
 			<div id="usernameError" class="errorMessage">Please enter a username.</div>

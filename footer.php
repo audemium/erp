@@ -13,5 +13,5 @@
 ?>
 
 <footer>
-	Powered by <a href="https://www.audemium.com">Audemium ERP</a>.
+	Powered by <a href="https://www.audemium.com">Audemium ERP</a>
 </footer>
