@@ -231,7 +231,7 @@
 				}
 				$keyArr[] = $key;
 				$placeholderArr[] = '?';
-				$valArr[] = (empty($value)) ? null : $value;
+				$valArr[] = ($value == '') ? null : $value;
 				$changeData[$key] = $value;
 			}
 			$tableName = $TYPES[$_POST['type']]['pluralName'];
@@ -284,8 +284,7 @@
 						Employee <a href="item.php?type=employee&id='.$id.'">'.$_POST['firstName'].' '.$_POST['lastName'].'</a> was added.<br>
 						Save the username and temporary password below to give to the employee.<br><br>
 						<b>Username: </b>'.$alphaUser.$numUser.'<br>
-						<b>Temporary Password: </b>'.$password.'
-					</div>';
+						<b>Temporary Password: </b>'.$password.'</div>';
 			}
 			else {
 				//add the type and id to redirect to the new item
