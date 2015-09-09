@@ -63,6 +63,7 @@
 					type: 'POST',
 					data: ajaxData
 				}).done(function(data) {
+					$('#loginBox .invalid').qtip('destroy', true);
 					$('#loginBox .invalid').removeClass('invalid');
 					if (data.status == 'success') {
 						window.location.replace(data.redirect);

@@ -56,6 +56,7 @@ $(document).ready(function() {
 					type: 'POST',
 					data: ajaxData
 				}).done(function(data) {
+					$('#defaultPopup .invalid').qtip('destroy', true);
 					$('#defaultPopup .invalid').removeClass('invalid');
 					if (data.status == 'success') {
 						if ('html' in data) {
@@ -152,6 +153,7 @@ $(document).ready(function() {
 						type: 'POST',
 						data: ajaxData
 					}).done(function(data) {
+						$('#defaultPopup .invalid').qtip('destroy', true);
 						$('#defaultPopup .invalid').removeClass('invalid');
 						if (data.status == 'success') {
 							location.reload();
