@@ -40,66 +40,55 @@
 			padding: 7px !important;
 			width: 300px !important;
 		}
-		.errorMessage {
-			color: #E52D2D;
-			font-size: 12px;
-			margin: -15px 0 0 100px;
-			text-align: left;
-			visibility: hidden;
-		}
 		#loginError {
 			color: #E52D2D;
 			visibility: hidden;
+			margin-bottom: 20px;
 		}
 	</style>
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('input').focusout(function() {
-				if ($(this).val() == '') {
-					$(this).addClass('invalid');
-					$(this).next().css('visibility', 'visible');
-				}
-				else {
-					$(this).removeClass('invalid');
-					$(this).next().css('visibility', 'hidden');
-				}
-			});
-
-			$('#loginForm').submit(function(event) {
-				//password is first so username gets focus if both are empty
-				if ($('#password').val() == '') {
-					$('#password').addClass('invalid');
-					$('#passwordError').show();
-					$('#password').focus();
-				}
-				if ($('#username').val() == '') {
-					$('#username').addClass('invalid');
-					$('#usernameError').show();
-					$('#username').focus();
-				}
-				
-				if ($('#username').val() != '' && $('#password').val() != '') {
-					$.ajax({
-						url: 'ajax.php',
-						type: 'POST',
-						data: {
-							'action': 'login',
-							'username': $('#username').val(),
-							'password': $('#password').val()
-						}
-					}).done(function(data) {
-						if (data.status == 'success') {
-							window.location.replace(data.redirect);
-						}
-						else {
-							$('#username').val('');
-							$('#password').val('');
-							$('#loginError').css('visibility', 'visible');
-						}
-					});
-				}
-				event.preventDefault();
+			$('#loginBtn').click(function() {
+				$.ajax({
+					url: 'ajax.php',
+					type: 'POST',
+					data: {
+						'action': 'login',
+						'username': $('#username').val(),
+						'password': $('#password').val()
+					}
+				}).done(function(data) {
+					$('.invalid').qtip('destroy', true);
+					$('.invalid').removeClass('invalid');
+					$('#loginError').css('visibility', 'hidden');
+					
+					if (data.status == 'success') {
+						window.location.replace(data.redirect);
+					}
+					else if (data.status == 'popup') {
+						$('#username').val('');
+						$('#password').val('');
+						$('#loginError').css('visibility', 'visible');
+					}
+					else {
+						$.each(data, function(key, value) {
+							if (key != 'status') {
+								$('#' + key).addClass('invalid');
+								$('#' + key).qtip({
+									'content': value,
+									'style': {'classes': 'qtip-tipsy-custom'},
+									'position': {
+										'my': 'left center',
+										'at': 'right center'
+									},
+									show: {'event': 'focus'},
+									hide: {'event': 'blur'}
+								});
+							}
+						});
+					}
+				});
 			});
 		});
 	</script>
@@ -108,18 +97,13 @@
 <body>
 	<div id="loginBox">
 		<h1>Sign in to <?php echo $SETTINGS['companyName']; ?></h1>
-		<form id="loginForm">
-			<input type="text" id="username" placeholder="Username" autofocus>
-			<div id="usernameError" class="errorMessage">Please enter a username.</div>
-			<br>
-			<input type="password" id="password" placeholder="Password">
-			<div id="passwordError" class="errorMessage">Please enter a password.</div>
-			<br>
-			<div id="loginError">Incorrect username or password.</div>
-			<a href="#">Forgot password?</a>
-			<br><br>
+		<input type="text" id="username" placeholder="Username" autofocus>
+		<input type="password" id="password" placeholder="Password">
+		<div id="loginError">Incorrect username or password.</div>
+		<a href="#">Forgot password?</a>
+		<div class="btnSpacer">
 			<button type="submit" id="loginBtn">Submit</button>
-		</form>
+		</div>
 	</div>
 	<?php
 		require('footer.php');

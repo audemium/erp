@@ -25,33 +25,47 @@
 		Outputs: status (success / fail), redirect
 	*/
 	if ($_POST['action'] == 'login') {
-		$return = ['status' => 'fail'];
+		$return = ['status' => 'success'];
 		
-		$sth = $dbh->prepare(
-			'SELECT employeeID, password, changePassword, timeZone
-			FROM employees
-			WHERE username = :username');
-		$sth->execute([':username' => $_POST['username']]);
-		$result = $sth->fetchAll();
-		if (count($result) == 1) {
-			if (password_verify($_POST['password'], $result[0]['password'])) {
-				//user is verified
-				session_regenerate_id(true);
-				$_SESSION['loggedIn'] = true;
-				$_SESSION['employeeID'] = $result[0]['employeeID'];
-				$_SESSION['timeZone'] = $result[0]['timeZone'];
-				if ($result[0]['changePassword'] == 1) {
-					//redirect to change password page, leave $_SESSION['loginDestination'] alone
-					$redirect = 'reset.php';
-					$_SESSION['changePassword'] = 1;
+		//if a field is empty, fail it
+		foreach ($_POST as $key => $value) {
+			if ($value == '') {
+				$return['status'] = 'fail';
+				$return[$key] = 'Required';
+			}
+		}
+		
+		if ($return['status'] == 'success') {
+			$sth = $dbh->prepare(
+				'SELECT employeeID, password, changePassword, timeZone
+				FROM employees
+				WHERE username = :username');
+			$sth->execute([':username' => $_POST['username']]);
+			$result = $sth->fetchAll();
+			if (count($result) == 1) {
+				if (password_verify($_POST['password'], $result[0]['password'])) {
+					//user is verified
+					session_regenerate_id(true);
+					$_SESSION['loggedIn'] = true;
+					$_SESSION['employeeID'] = $result[0]['employeeID'];
+					$_SESSION['timeZone'] = $result[0]['timeZone'];
+					if ($result[0]['changePassword'] == 1) {
+						//redirect to change password page, leave $_SESSION['loginDestination'] alone
+						$redirect = 'reset.php';
+						$_SESSION['changePassword'] = 1;
+					}
+					else {
+						$redirect = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
+						unset($_SESSION['loginDestination']);
+					}
+					$return['redirect'] = $redirect;
 				}
 				else {
-					$redirect = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
-					unset($_SESSION['loginDestination']);
+					$return['status'] = 'popup';
 				}
-				$return['status'] = 'success';
-				$return['redirect'] = $redirect;
-				
+			}
+			else {
+				$return['status'] = 'popup';
 			}
 		}
 		
