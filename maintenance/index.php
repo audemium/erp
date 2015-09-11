@@ -95,6 +95,13 @@
 					$('#password').qtip('option', 'show.ready', true);
 					$('#password').qtip('option', 'hide.event', false);
 				}
+				var simple = ['1234567890', '0123456789', 'password12', 'passwordab', '12password', 'abpassword', 'qwertyuiop', 'abcdefghij'];
+				if (simple.indexOf($('#password').val().toLowerCase()) > -1) {
+					noErrors = false;
+					$('#password').addClass('invalid');
+					$('#password').qtip('option', 'show.ready', true);
+					$('#password').qtip('option', 'hide.event', false);
+				}
 				if ($('#password').val() != $('#retypePassword').val()) {
 					noErrors = false;
 					$('#retypePassword').addClass('invalid');
@@ -215,7 +222,7 @@
 						</li>
 						<li>
 							<label for="password">Admin Password</label>
-							<input type="password" name="password" id="password" title="Minimum 10 characters">
+							<input type="password" name="password" id="password" title="Minimum 10 characters and no simple passwords allowed.">
 						</li>
 						<li>
 							<label for="retypePassword">Retype Password</label>

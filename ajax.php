@@ -117,6 +117,13 @@
 				$return['newPassword'] = 'Password must be at least 10 characters';
 			}
 		}
+		if ($return['status'] == 'success') {
+			$simple = ['1234567890', '0123456789', 'password12', 'passwordab', '12password', 'abpassword', 'qwertyuiop', 'abcdefghij'];
+			if (in_array(strtolower($_POST['newPassword']), $simple)) {
+				$return['status'] = 'fail';
+				$return['newPassword'] = 'Simple passwords are not allowed';
+			}
+		}
 		
 		//check new password and retype password match
 		if ($return['status'] == 'success') {

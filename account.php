@@ -115,6 +115,7 @@
 					<b>Password Requirements</b>
 					<ul id="reqList">
 						<li>Must be at least 10 characters</li>
+						<li>Simple passwords are not allowed</li>
 						<li>Using a <a href="https://en.wikipedia.org/wiki/List_of_password_managers" target="_blank">password manager</a> is strongly recommended</li>
 					</ul>
 				</div>
