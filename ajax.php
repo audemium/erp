@@ -80,7 +80,7 @@
 	if ($_POST['action'] == 'changePassword') {
 		$return = ['status' => 'success'];
 		
-		//if we're running as a demo, disable password reset
+		//if we're running as a demo, disable password reset except when a new employee logs in for the first time
 		if ($SETTINGS['demoMode'] === true && isset($_SESSION['changePassword']) === false) {
 			$return['status'] = 'popup';
 			$return['html'] = 'Password cannot be changed in Demo Mode.';

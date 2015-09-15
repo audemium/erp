@@ -12,6 +12,12 @@
 	*/
 
 	require_once('init.php');
+	
+	//if the user doesn't have the flag to force a password change, redirect them to the regular change password page
+	if (!isset($_SESSION['changePassword'])) {
+		header('Location: account.php');
+		die();
+	}
 ?>
 
 <!DOCTYPE html>
