@@ -12,7 +12,9 @@ It is currently under development and isn't ready for production systems. ONLY U
 		Order allow,deny
 		Deny from all
 	</DirectoryMatch>
-3. Open a browser to the site where you placed Audemium ERP. This will redirect you to the installer. Enter your information there and click Install.
+3. Add a cron job to run cron.php once a day. In crontab, this would be something like:
+	1 2 * * * php /var/www/erp/cron.php
+4. Open a browser to the site where you placed Audemium ERP. This will redirect you to the installer. Enter your information there and click Install.
 
 ## Planned Features
 
