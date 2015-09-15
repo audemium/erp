@@ -49,7 +49,7 @@
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('#loginBtn').click(function() {
+			$('#loginForm').submit(function(event) {
 				$.ajax({
 					url: 'ajax.php',
 					type: 'POST',
@@ -89,6 +89,7 @@
 						});
 					}
 				});
+				event.preventDefault();
 			});
 		});
 	</script>
@@ -97,13 +98,15 @@
 <body>
 	<div id="loginBox">
 		<h1>Sign in to <?php echo $SETTINGS['companyName']; ?></h1>
-		<input type="text" id="username" placeholder="Username" autofocus>
-		<input type="password" id="password" placeholder="Password">
-		<div id="loginError">Incorrect username or password.</div>
-		<a href="#">Forgot password?</a>
-		<div class="btnSpacer">
-			<button type="submit" id="loginBtn">Submit</button>
-		</div>
+		<form id="loginForm">
+			<input type="text" id="username" placeholder="Username" autofocus>
+			<input type="password" id="password" placeholder="Password">
+			<div id="loginError">Incorrect username or password.</div>
+			<a href="#">Forgot password?</a>
+			<div class="btnSpacer">
+				<button type="submit" id="loginBtn">Submit</button>
+			</div>
+		</form>
 	</div>
 	<?php
 		require('footer.php');
