@@ -1,12 +1,8 @@
 $(document).ready(function() {
 	//determine the selectedPage and apply style
-    var url = window.location.search;
-	var filename = 'index';
-	if (url != '') {
-		var stop = url.lastIndexOf('&');
-		filename = (stop == -1) ? url.substring(url.lastIndexOf('type') + 5) : url.substring(url.lastIndexOf('type') + 5, stop);
-	}
-	$('#' + filename).addClass('selectedPage');
+	var url = window.location.pathname + window.location.search;
+	var url2 = url.substring(1);
+	$('nav a[href="'+url2+'"]').parent().addClass('selectedPage');
 	
 	//set qtip globals
 	$.fn.qtip.defaults = $.extend(true, {}, $.fn.qtip.defaults, {
