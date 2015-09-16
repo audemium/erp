@@ -108,7 +108,7 @@
 	if ($return['status'] == 'success') {
 		$settings = '<?php
 	//Audemium ERP Version
-	$VERSION = \'0.7.0\';
+	$VERSION = \'0.8.0\';
 	
 	//Database
 	$SETTINGS[\'dbServer\'] = \''.addcslashes($_POST['dbHost'], "'").'\';
@@ -142,6 +142,16 @@
 	$SETTINGS[\'negativeCurrencyFormat\'] = 0;	//0 = negative sign ex. -$10.00		1 = parentheses ex. ($10.00)
 	$SETTINGS[\'decimalFormat\'] = \'.\';
 	$SETTINGS[\'thousandsSeparator\'] = \',\';
+	
+	//Email
+	$SETTINGS[\'SMTP\'] = [
+		\'host\' => \'\',
+		\'port\' => 587,
+		\'auth\' => true,
+		\'encryption\' => \'tls\',
+		\'username\' => \'\',
+		\'password\' => \'\'
+	];
 	
 	//Columns for list views
 	$SETTINGS[\'columns\'][\'employee\'] = [\'name\', \'positionID\', \'locationID\', \'payType\', \'payAmount\'];
