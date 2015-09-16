@@ -60,6 +60,8 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('#changeBtn').click(function() {
+				$('#changeBtn').prop('disabled', true);
+				$('#changeBtn').addClass('buttonDisabled');
 				var ajaxData = $('#loginBox input').serializeArray();
 				ajaxData.push(
 					{'name': 'action', 'value': 'changePassword'}
@@ -69,6 +71,8 @@
 					type: 'POST',
 					data: ajaxData
 				}).done(function(data) {
+					$('#changeBtn').prop('disabled', false);
+					$('#changeBtn').removeClass('buttonDisabled');
 					$('#loginBox .invalid').qtip('destroy', true);
 					$('#loginBox .invalid').removeClass('invalid');
 					if (data.status == 'success') {

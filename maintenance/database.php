@@ -250,7 +250,9 @@
 		]
 		'0.8.0' => [
 			'ALTER TABLE `employees` ADD `changePassword` TINYINT(1) NOT NULL DEFAULT "1" AFTER `password`',
-			'UPDATE employees SET changePassword = 0'
+			'UPDATE employees SET changePassword = 0',
+			'ALTER TABLE `employees` ADD `resetTime` INT NOT NULL AFTER `changePassword`',
+			'ALTER TABLE `employees` ADD `resetToken` VARCHAR(25) NOT NULL AFTER `resetTime`'
 		]
 	];
 ?>

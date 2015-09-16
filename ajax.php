@@ -12,7 +12,7 @@
 	*/
 
 	require_once('init.php');
-	if ((empty($_SESSION['loggedIn']) && $_POST['action'] != 'login') || (isset($_SESSION['changePassword']) && $_POST['action'] != 'changePassword')) {
+	if ((empty($_SESSION['loggedIn']) && $_POST['action'] != 'login' && $_POST['action'] != 'resetRequest' && $_POST['action'] != 'resetPassword') || (isset($_SESSION['changePassword']) && $_POST['action'] != 'changePassword')) {
 		$_SESSION['loginDestination'] = $_SERVER['HTTP_REFERER'];
 		http_response_code(401);
 		die();
@@ -142,6 +142,16 @@
 				WHERE employeeID = :employeeID');
 			$sth->execute([':hash' => $hash, ':employeeID' => $_SESSION['employeeID']]);
 			session_regenerate_id(true);
+			
+			//send email
+			$sth = $dbh->prepare(
+				'SELECT workEmail
+				FROM employees
+				WHERE employeeID = :employeeID');
+			$sth->execute([':employeeID' => $_SESSION['employeeID']]);
+			$row = $sth->fetch();
+			sendEmail($row['workEmail'], 'Password Changed', 'This email is to notify you that your password has been changed.');
+			
 			if (isset($_SESSION['changePassword']) === false) {
 				$return['html'] = 'Your settings have been saved.';
 			}
@@ -155,6 +165,96 @@
 				$return['redirect'] = (isset($_SESSION['loginDestination']) && basename($_SESSION['loginDestination']) != 'login.php') ? $_SESSION['loginDestination'] : 'index.php';
 				unset($_SESSION['loginDestination']);
 			}
+		}
+		
+		echo json_encode($return);
+	}
+	
+	/*
+		Function: resetPassword
+		Inputs: newPassword, retypePassword
+		Outputs: status (success / fail)
+	*/
+	if ($_POST['action'] == 'resetPassword') {
+		$return = ['status' => 'success'];
+		
+		//if we're running as a demo, disable password reset
+		if ($SETTINGS['demoMode'] === true) {
+			$return['status'] = 'popup';
+			$return['html'] = 'Password cannot be reset in Demo Mode.';
+		}
+		
+		//if a field is empty, fail it
+		if ($return['status'] == 'success') {
+			foreach ($_POST as $key => $value) {
+				if ($value == '') {
+					$return['status'] = 'fail';
+					$return[$key] = 'Required';
+				}
+			}
+		}
+		
+		//check password requirements
+		if ($return['status'] == 'success') {
+			if (strlen($_POST['newPassword']) < 10) {
+				$return['status'] = 'fail';
+				$return['newPassword'] = 'Password must be at least 10 characters';
+			}
+		}
+		if ($return['status'] == 'success') {
+			$simple = ['1234567890', '0123456789', 'password12', 'passwordab', '12password', 'abpassword', 'qwertyuiop', 'abcdefghij'];
+			if (in_array(strtolower($_POST['newPassword']), $simple)) {
+				$return['status'] = 'fail';
+				$return['newPassword'] = 'Simple passwords are not allowed';
+			}
+		}
+		
+		//check new password and retype password match
+		if ($return['status'] == 'success') {
+			if ($_POST['newPassword'] != $_POST['retypePassword']) {
+				$return['status'] = 'fail';
+				$return['retypePassword'] = 'New passwords must match';
+			}
+		}
+		
+		//check token is valid
+		if ($return['status'] == 'success') {
+			$sth = $dbh->prepare(
+				'SELECT resetTime, workEmail
+				FROM employees
+				WHERE resetToken = :resetToken');
+			$sth->execute([':resetToken' => $_POST['token']]);
+			$result = $sth->fetchAll();
+			if (count($result) == 1) {
+				$return['status'] = (time() < $result[0]['resetTime']) ? 'success' : 'popup';
+				$email = $result[0]['workEmail'];
+			}
+			else {
+				$return['status'] = 'popup';
+			}
+			if ($return['status'] == 'popup') {
+				$return['html'] = 'This token is either invalid or expired. Please restart the password reset process <a href="forgot.php">here</a>.';
+			}
+		}
+		
+		//change password
+		if ($return['status'] == 'success') {
+			$hash = password_hash($_POST['newPassword'], PASSWORD_BCRYPT, ['cost' => 10]);
+			$sth = $dbh->prepare(
+				'UPDATE employees
+				SET password = :hash, resetTime = 0, resetToken = ""
+				WHERE resetToken = :resetToken');
+			$sth->execute([':hash' => $hash, ':resetToken' => $_POST['token']]);
+			
+			//send email
+			sendEmail($email, 'Password Changed', 'This email is to notify you that your password has been changed.');
+			
+			//log the user in
+			session_regenerate_id(true);
+			$_SESSION['loggedIn'] = true;
+			$_SESSION['employeeID'] = $result[0]['employeeID'];
+			$_SESSION['timeZone'] = $result[0]['timeZone'];
+			$return['redirect'] = 'index.php';
 		}
 		
 		echo json_encode($return);
@@ -695,6 +795,46 @@
 	}
 	
 	/*
+		Function: resetRequest
+		Inputs: username
+		Outputs: 
+	*/
+	if ($_POST['action'] == 'resetRequest') {
+		$sth = $dbh->prepare(
+			'SELECT workEmail
+			FROM employees
+			WHERE username = :username');
+		$sth->execute([':username' => $_POST['username']]);
+		$result = $sth->fetchAll();
+		if (count($result) == 1) {
+			$characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
+			$length = strlen($characters) - 1;
+			$resetToken = '';
+			for ($i = 0; $i < 25; $i++) {
+				$resetToken .= $characters[mt_rand(0, $length)];
+			}
+			$resetTime = time() + 3600;
+			$message = 'A request to reset the password for your account has been received. Click on the link below or copy and paste it into your browser.<br><br>';
+			$message .= '<a href="http://'.$_SERVER['HTTP_HOST'].'/forgot.php?token='.$resetToken.'">http://'.$_SERVER['HTTP_HOST'].'/forgot.php?token='.$resetToken.'</a><br><br>';
+			$message .= 'If you did not make this request, you can ignore this email.';
+			
+			//update database
+			$sth = $dbh->prepare(
+				'UPDATE employees
+				SET resetTime = :resetTime, resetToken = :resetToken
+				WHERE username = :username');
+			$sth->execute([':resetTime' => $resetTime, ':resetToken' => $resetToken, ':username' => $_POST['username']]);
+			
+			//send email
+			sendEmail($result[0]['workEmail'], 'Password Reset Request', $message);
+		}
+		else {
+			//pause to simulate an email being sent
+			usleep(1000000 + mt_rand(0, 1000000));
+		}
+	}
+	
+	/*
 		Function: customAjax
 		Inputs: 
 		Outputs: 
@@ -709,5 +849,31 @@
 		$return = $factoryItem->customAjax($_POST['id'], $data);
 		
 		echo json_encode($return);
+	}
+	
+	function sendEmail($to, $subject, $body) {
+		global $dbh;
+		global $SETTINGS;
+		require_once('vendor/phpmailer/PHPMailerAutoload.php');
+		
+		$mail = new PHPMailer;
+		$mail->isSMTP();
+		$mail->Host = $SETTINGS['SMTP']['host'];
+		$mail->SMTPAuth = $SETTINGS['SMTP']['auth'];
+		$mail->Username = $SETTINGS['SMTP']['username'];
+		$mail->Password = $SETTINGS['SMTP']['password'];
+		$mail->SMTPSecure = $SETTINGS['SMTP']['encryption'];
+		$mail->Port = $SETTINGS['SMTP']['port'];
+
+		$mail->From = $SETTINGS['SMTP']['username'];
+		$mail->FromName = $SETTINGS['companyName'].' Admin';
+		$mail->addAddress($to);
+
+		$mail->isHTML(true);
+		$mail->Subject = $subject;
+		$mail->Body = $body;
+		$result = $mail->send();
+		
+		return $result;
 	}
 ?>

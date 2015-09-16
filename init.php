@@ -58,7 +58,7 @@
 	
 	
 	$file = basename($_SERVER['SCRIPT_NAME']);
-	$exceptions = ['login.php', 'ajax.php', 'module.php'];
+	$exceptions = ['login.php', 'ajax.php', 'module.php', 'forgot.php'];
 	//check if the user is logged in, if not then redirect
 	if (empty($_SESSION['loggedIn']) && !in_array($file, $exceptions)) {
 		$_SESSION['loginDestination'] = $_SERVER['REQUEST_URI'];

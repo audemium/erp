@@ -102,7 +102,7 @@
 			<input type="text" id="username" placeholder="Username" autofocus>
 			<input type="password" id="password" placeholder="Password">
 			<div id="loginError">Incorrect username or password.</div>
-			<a href="#">Forgot password?</a>
+			<a href="forgot.php">Forgot password?</a>
 			<div class="btnSpacer">
 				<button type="submit" id="loginBtn">Submit</button>
 			</div>

@@ -40,6 +40,8 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('#accountSaveBtn').click(function() {
+				$('#accountSaveBtn').prop('disabled', true);
+				$('#accountSaveBtn').addClass('buttonDisabled');
 				var ajaxData = $('#data input').serializeArray();
 				ajaxData.push(
 					{'name': 'action', 'value': 'changePassword'}
@@ -50,7 +52,10 @@
 					data: ajaxData
 				}).done(function(data) {
 					$('#data .invalid').removeClass('invalid');
+					$('#accountSaveBtn').prop('disabled', false);
+					$('#accountSaveBtn').removeClass('buttonDisabled');
 					if (data.status == 'success') {
+						$('#data input').val('');
 						$('#defaultPopup > div > div > h1').html('Success');
 						$('#defaultPopup .sectionData').html(data.html);
 						$('#defaultPopup').show();
