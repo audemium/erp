@@ -74,7 +74,7 @@
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
-			var token = '<?php echo $_GET['token']; ?>';
+			var token = '<?php if (isset($_GET['token'])) {echo $_GET['token'];} ?>';
 			
 			$('#changeBtn').click(function() {
 				$('#changeBtn').prop('disabled', true);
