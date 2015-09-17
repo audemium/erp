@@ -220,14 +220,13 @@
 		//check token is valid
 		if ($return['status'] == 'success') {
 			$sth = $dbh->prepare(
-				'SELECT resetTime, workEmail
+				'SELECT resetTime, workEmail, employeeID, timeZone
 				FROM employees
 				WHERE resetToken = :resetToken');
 			$sth->execute([':resetToken' => $_POST['token']]);
 			$result = $sth->fetchAll();
 			if (count($result) == 1) {
 				$return['status'] = (time() < $result[0]['resetTime']) ? 'success' : 'popup';
-				$email = $result[0]['workEmail'];
 			}
 			else {
 				$return['status'] = 'popup';
@@ -247,7 +246,7 @@
 			$sth->execute([':hash' => $hash, ':resetToken' => $_POST['token']]);
 			
 			//send email
-			sendEmail($email, 'Password Changed', 'This email is to notify you that your password has been changed.');
+			sendEmail($result[0]['workEmail'], 'Password Changed', 'This email is to notify you that your password has been changed.');
 			
 			//log the user in
 			session_regenerate_id(true);
