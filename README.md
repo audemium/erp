@@ -16,6 +16,14 @@ It is currently under development and isn't ready for production systems. ONLY U
 	1 2 * * * php /var/www/erp/cron.php
 4. Open a browser to the site where you placed Audemium ERP. This will redirect you to the installer. Enter your information there and click Install.
 
+## Updating
+
+1. Create a backup of your files and database.
+2. Download Audemium ERP and copy it to your web server, except for the attachments folder.
+3. In a browser or on the command line, run maintenance/update.php.
+4. You may need to add any new settings to your settings.php file. Copy any new lines from maintenance/settings.php, but don't overwrite your settings.php with the default one.
+5. Delete the maintenance folder from the server.
+
 ## Planned Features
 
 * Employee Time system (shift planning, paycheck tracking, etc.)
