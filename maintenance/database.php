@@ -247,7 +247,7 @@
 				`status` varchar(1) NOT NULL,
 				PRIMARY KEY (`vacationRequestID`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8'
-		]
+		],
 		'0.8.0' => [
 			'ALTER TABLE `employees` ADD `changePassword` TINYINT(1) NOT NULL DEFAULT "1" AFTER `password`',
 			'UPDATE employees SET changePassword = 0',
