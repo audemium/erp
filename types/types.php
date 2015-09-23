@@ -402,7 +402,7 @@
 				],
 				'email' => [
 					'formalName' => 'Email',
-					'verifyData' => [0, 'email']
+					'verifyData' => [1, 'email']
 				]
 			]
 		],
