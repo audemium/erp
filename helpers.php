@@ -147,11 +147,16 @@
 		
 		$fields = ($subType === null) ? $TYPES[$type]['fields'] : $TYPES[$type]['subTypes'][$subType]['fields'];
 		foreach ($data as $key => $value) {
-			if (isset($fields[$key]['verifyData']) && ($fields[$key]['verifyData'][1] == 'int' || $fields[$key]['verifyData'][1] == 'dec')) {
-				//strip out thousands separator
-				$data[$key] = str_replace($SETTINGS['thousandsSeparator'], '', $data[$key]);	
-				//make sure decimal is a period
-				$data[$key] = str_replace($SETTINGS['decimalFormat'], '.', $data[$key]);	
+			if (!isset($fields[$key])) {
+				unset($data[$key]);
+			}
+			else {
+				if ($fields[$key]['verifyData'][1] == 'int' || $fields[$key]['verifyData'][1] == 'dec') {
+					//strip out thousands separator
+					$data[$key] = str_replace($SETTINGS['thousandsSeparator'], '', $data[$key]);	
+					//make sure decimal is a period
+					$data[$key] = str_replace($SETTINGS['decimalFormat'], '.', $data[$key]);	
+				}
 			}
 		}
 		
