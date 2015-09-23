@@ -121,31 +121,12 @@ nav ul {
 nav li {
 	padding: 8px 0 0 16px;
 }
-nav img {
+nav li div {
+	height: 32px;
+	width: 32px;
+}
+#searchLink {
 	cursor: pointer;
-}
-.selectedPage {
-	border-left: 3px solid #1A87ED;
-	margin-left: 5px;
-}
-.selectedPage img {
-	margin-left: -8px;
-}
-.selectedPage .menuTooltip {
-	margin: -34px 0 0 45px;
-}
-.badge {
-	position: absolute;
-	border-radius: 16px;
-	font-weight: bold;
-	color: #FFFFFF;
-	border: 2px solid #FFFFFF;
-	box-shadow: 0 0 4px 1px #444444;
-	height: 21px;
-	padding: 2px 0px 0px 7px;
-	width: 16px;
-	background-color: #ED1A87;
-	margin: -34px 0 0 35px;
 }
 #searchDiv {
 	-webkit-box-sizing: border-box;

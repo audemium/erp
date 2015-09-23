@@ -21,19 +21,15 @@
 <nav>
 	<ul>
 		<li id="search">
-			<!-- searchLink div is to make the hover js have the same number of parents for all elements-->
-			<div id="searchLink"><img src="images/icons/search.png" title="Search" alt="search"></div>
+			<div id="searchLink"><div style="background-image:url('images/icons/search.png');" title="Search"></div></div>
 		</li>
 		<li id="index">
-			<a href="index.php"><img src="images/icons/home.png" title="Home" alt="home"></a>
+			<a href="index.php"><div style="background-image:url('images/icons/home.png');" title="Home"></div></a>
 		</li>
 		<?php
 			foreach ($TYPES as $key => $value) {
-				//TODO: get rid of $keyImg when we have real icons for everything
-				$keyImg = ($key == 'employee' || $key == 'order') ? $key : 'star';
-			
 				echo '<li id="'.$key.'">';
-				echo '<a href="list.php?type='.$key.'"><img src="images/icons/'.$keyImg.'.png" title="'.$value['formalPluralName'].'" alt="'.$key.'"></a>';
+				echo '<a href="list.php?type='.$key.'"><div style="background-image:url(\'images/icons/'.$key.'.png\');" title="'.$value['formalPluralName'].'"></div></a>';
 				echo '</li>';
 			}
 		?>

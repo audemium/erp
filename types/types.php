@@ -17,130 +17,6 @@
 		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, date = date only, disp = display only, email = email address
 		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' or '' to mark which one comes first (date) if needed, not used (disp, email)
 	$TYPES = [
-		'employee' => [
-			'pluralName' => 'employees',
-			'formalName' => 'Employee',
-			'formalPluralName' => 'Employees',
-			'idName' => 'employeeID',
-			'formData' => [
-				'Basic Information' => [
-					['firstName', 'lastName', 'payType', 'payAmount', 'workEmail'],
-					['locationID', 'positionID', 'managerID', 'vacationTotal']
-				],
-				'Personal Information' => [
-					['address', 'city'],
-					['state', 'zip']
-				]
-			],
-			'fields' => [
-				'username' => [
-					'formalName' => 'Username',
-					'verifyData' => [1, 'str', 100]
-				],
-				'firstName' => [
-					'formalName' => 'First Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'lastName' => [
-					'formalName' => 'Last Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'payType' => [
-					'formalName' => 'Pay Type',
-					'verifyData' => [1, 'opt', ['S', 'H']]
-				],
-				'payAmount' => [
-					'formalName' => 'Pay Amount',
-					'verifyData' => [1, 'dec', [12, 2]]
-				],
-				'locationID' => [
-					'formalName' => 'Location',
-					'verifyData' => [0, 'id', 'location']
-				],
-				'positionID' => [
-					'formalName' => 'Position',
-					'verifyData' => [1, 'id', 'position']
-				],
-				'managerID' => [
-					'formalName' => 'Manager',
-					'verifyData' => [1, 'id', 'employee']
-				],
-				'vacationTotal' => [
-					'formalName' => 'Total Vacation (hours)',
-					'verifyData' => [1, 'int', 4294967295]
-				],
-				'address' => [
-					'formalName' => 'Address',
-					'verifyData' => [0, 'str', 200]
-				],
-				'city' => [
-					'formalName' => 'City',
-					'verifyData' => [0, 'str', 200]
-				],
-				'state' => [
-					'formalName' => 'State',
-					'verifyData' => [0, 'str', 2]
-				],
-				'zip' => [
-					'formalName' => 'Zip Code',
-					'verifyData' => [0, 'str', 10]
-				],
-				'workEmail' => [
-					'formalName' => 'Email',
-					'verifyData' => [1, 'email']
-				]
-			],
-			'subTypes' => [
-				'attachment' => [
-					'fields' => [
-						'name' => [
-							'formalName' => 'Name',
-							'verifyData' => [1, 'str', 200],
-							'actions' => [1, 0, 1]
-						],
-						'extension' => [
-							'formalName' => 'Extension',
-							'verifyData' => [1, 'str', 10],
-							'actions' => [1, 0, 1]
-						]
-					]
-				]
-			]
-		],
-		'location' => [
-			'pluralName' => 'locations',
-			'formalName' => 'Location',
-			'formalPluralName' => 'Locations',
-			'idName' => 'locationID',
-			'formData' => [
-				'Basic Information' => [
-					['name', 'address'],
-					['city', 'state', 'zip']
-				]
-			],
-			'fields' => [
-				'name' => [
-					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'address' => [
-					'formalName' => 'Address',
-					'verifyData' => [0, 'str', 65535]
-				],
-				'city' => [
-					'formalName' => 'City',
-					'verifyData' => [0, 'str', 200]
-				],
-				'state' => [
-					'formalName' => 'State',
-					'verifyData' => [0, 'str', 2]
-				],
-				'zip' => [
-					'formalName' => 'Zip Code',
-					'verifyData' => [0, 'str', 10]
-				]
-			]
-		],
 		'order' => [
 			'pluralName' => 'orders',
 			'formalName' => 'Order',
@@ -341,127 +217,6 @@
 				]
 			]
 		],
-		'position' => [
-			'pluralName' => 'positions',
-			'formalName' => 'Position',
-			'formalPluralName' => 'Positions',
-			'idName' => 'positionID',
-			'formData' => [
-				'Basic Information' => [
-					['name']
-				]
-			],
-			'fields' => [
-				'name' => [
-					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
-				]
-			]
-		],
-		'product' => [
-			'pluralName' => 'products',
-			'formalName' => 'Product',
-			'formalPluralName' => 'Products',
-			'idName' => 'productID',
-			'formData' => [
-				'Basic Information' => [
-					['name', 'description'],
-					['defaultPrice']
-				]
-			],
-			'fields' => [
-				'name' => [
-					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'description' => [
-					'formalName' => 'Description',
-					'verifyData' => [1, 'str', 65535]
-				],
-				'defaultPrice' => [
-					'formalName' => 'Price',
-					'verifyData' => [1, 'dec', [12, 2]]
-				]
-			]
-		],
-		'service' => [
-			'pluralName' => 'services',
-			'formalName' => 'Service',
-			'formalPluralName' => 'Services',
-			'idName' => 'serviceID',
-			'formData' => [
-				'Basic Information' => [
-					['name', 'description'],
-					['defaultPrice']
-				]
-			],
-			'fields' => [
-				'name' => [
-					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'description' => [
-					'formalName' => 'Description',
-					'verifyData' => [1, 'str', 65535]
-				],
-				'defaultPrice' => [
-					'formalName' => 'Price',
-					'verifyData' => [1, 'dec', [12, 2]]
-				]
-			]
-		],
-		'customer' => [
-			'pluralName' => 'customers',
-			'formalName' => 'Customer',
-			'formalPluralName' => 'Customers',
-			'idName' => 'customerID',
-			'formData' => [
-				'Basic Information' => [
-					['firstName', 'lastName'],
-					['email']
-				]
-			],
-			'fields' => [
-				'firstName' => [
-					'formalName' => 'First Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'lastName' => [
-					'formalName' => 'Last Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'email' => [
-					'formalName' => 'Email',
-					'verifyData' => [1, 'email']
-				]
-			]
-		],
-		'discount' => [
-			'pluralName' => 'discounts',
-			'formalName' => 'Discount',
-			'formalPluralName' => 'Discounts',
-			'idName' => 'discountID',
-			'formData' => [
-				'Basic Information' => [
-					['name', 'discountAmount'],
-					['discountType']
-				]
-			],
-			'fields' => [
-				'name' => [
-					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
-				],
-				'discountType' => [
-					'formalName' => 'Type',
-					'verifyData' => [1, 'opt', ['P', 'C']]
-				],
-				'discountAmount' => [
-					'formalName' => 'Amount',
-					'verifyData' => [1, 'dec', [12, 2]]
-				]
-			]
-		],
 		'expense' => [
 			'pluralName' => 'expenses',
 			'formalName' => 'Expense',
@@ -625,6 +380,32 @@
 				]
 			]
 		],
+		'customer' => [
+			'pluralName' => 'customers',
+			'formalName' => 'Customer',
+			'formalPluralName' => 'Customers',
+			'idName' => 'customerID',
+			'formData' => [
+				'Basic Information' => [
+					['firstName', 'lastName'],
+					['email']
+				]
+			],
+			'fields' => [
+				'firstName' => [
+					'formalName' => 'First Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'lastName' => [
+					'formalName' => 'Last Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'email' => [
+					'formalName' => 'Email',
+					'verifyData' => [1, 'email']
+				]
+			]
+		],
 		'supplier' => [
 			'pluralName' => 'suppliers',
 			'formalName' => 'Supplier',
@@ -640,6 +421,225 @@
 				'name' => [
 					'formalName' => 'Company',
 					'verifyData' => [1, 'str', 200]
+				]
+			]
+		],
+		'product' => [
+			'pluralName' => 'products',
+			'formalName' => 'Product',
+			'formalPluralName' => 'Products',
+			'idName' => 'productID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'description'],
+					['defaultPrice']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'description' => [
+					'formalName' => 'Description',
+					'verifyData' => [1, 'str', 65535]
+				],
+				'defaultPrice' => [
+					'formalName' => 'Price',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
+			]
+		],
+		'service' => [
+			'pluralName' => 'services',
+			'formalName' => 'Service',
+			'formalPluralName' => 'Services',
+			'idName' => 'serviceID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'description'],
+					['defaultPrice']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'description' => [
+					'formalName' => 'Description',
+					'verifyData' => [1, 'str', 65535]
+				],
+				'defaultPrice' => [
+					'formalName' => 'Price',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
+			]
+		],
+		'discount' => [
+			'pluralName' => 'discounts',
+			'formalName' => 'Discount',
+			'formalPluralName' => 'Discounts',
+			'idName' => 'discountID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'discountAmount'],
+					['discountType']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'discountType' => [
+					'formalName' => 'Type',
+					'verifyData' => [1, 'opt', ['P', 'C']]
+				],
+				'discountAmount' => [
+					'formalName' => 'Amount',
+					'verifyData' => [1, 'dec', [12, 2]]
+				]
+			]
+		],
+		'employee' => [
+			'pluralName' => 'employees',
+			'formalName' => 'Employee',
+			'formalPluralName' => 'Employees',
+			'idName' => 'employeeID',
+			'formData' => [
+				'Basic Information' => [
+					['firstName', 'lastName', 'payType', 'payAmount', 'workEmail'],
+					['locationID', 'positionID', 'managerID', 'vacationTotal']
+				],
+				'Personal Information' => [
+					['address', 'city'],
+					['state', 'zip']
+				]
+			],
+			'fields' => [
+				'username' => [
+					'formalName' => 'Username',
+					'verifyData' => [1, 'str', 100]
+				],
+				'firstName' => [
+					'formalName' => 'First Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'lastName' => [
+					'formalName' => 'Last Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'payType' => [
+					'formalName' => 'Pay Type',
+					'verifyData' => [1, 'opt', ['S', 'H']]
+				],
+				'payAmount' => [
+					'formalName' => 'Pay Amount',
+					'verifyData' => [1, 'dec', [12, 2]]
+				],
+				'locationID' => [
+					'formalName' => 'Location',
+					'verifyData' => [0, 'id', 'location']
+				],
+				'positionID' => [
+					'formalName' => 'Position',
+					'verifyData' => [1, 'id', 'position']
+				],
+				'managerID' => [
+					'formalName' => 'Manager',
+					'verifyData' => [1, 'id', 'employee']
+				],
+				'vacationTotal' => [
+					'formalName' => 'Total Vacation (hours)',
+					'verifyData' => [1, 'int', 4294967295]
+				],
+				'address' => [
+					'formalName' => 'Address',
+					'verifyData' => [0, 'str', 200]
+				],
+				'city' => [
+					'formalName' => 'City',
+					'verifyData' => [0, 'str', 200]
+				],
+				'state' => [
+					'formalName' => 'State',
+					'verifyData' => [0, 'str', 2]
+				],
+				'zip' => [
+					'formalName' => 'Zip Code',
+					'verifyData' => [0, 'str', 10]
+				],
+				'workEmail' => [
+					'formalName' => 'Email',
+					'verifyData' => [1, 'email']
+				]
+			],
+			'subTypes' => [
+				'attachment' => [
+					'fields' => [
+						'name' => [
+							'formalName' => 'Name',
+							'verifyData' => [1, 'str', 200],
+							'actions' => [1, 0, 1]
+						],
+						'extension' => [
+							'formalName' => 'Extension',
+							'verifyData' => [1, 'str', 10],
+							'actions' => [1, 0, 1]
+						]
+					]
+				]
+			]
+		],
+		'position' => [
+			'pluralName' => 'positions',
+			'formalName' => 'Position',
+			'formalPluralName' => 'Positions',
+			'idName' => 'positionID',
+			'formData' => [
+				'Basic Information' => [
+					['name']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				]
+			]
+		],
+		'location' => [
+			'pluralName' => 'locations',
+			'formalName' => 'Location',
+			'formalPluralName' => 'Locations',
+			'idName' => 'locationID',
+			'formData' => [
+				'Basic Information' => [
+					['name', 'address'],
+					['city', 'state', 'zip']
+				]
+			],
+			'fields' => [
+				'name' => [
+					'formalName' => 'Name',
+					'verifyData' => [1, 'str', 200]
+				],
+				'address' => [
+					'formalName' => 'Address',
+					'verifyData' => [0, 'str', 65535]
+				],
+				'city' => [
+					'formalName' => 'City',
+					'verifyData' => [0, 'str', 200]
+				],
+				'state' => [
+					'formalName' => 'State',
+					'verifyData' => [0, 'str', 2]
+				],
+				'zip' => [
+					'formalName' => 'Zip Code',
+					'verifyData' => [0, 'str', 10]
 				]
 			]
 		]
