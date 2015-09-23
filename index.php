@@ -22,6 +22,7 @@
 		require('head.php');
 	?>
 	<script type="text/javascript">
+		var type = 'index';
 		$(document).ready(function() {
 			$(window).resize(function() {
 				var colWidth = ($(window).width() - 154 - 50 - 90 - 17) / 2;

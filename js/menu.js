@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	//determine the selectedPage and apply style
-	var url = window.location.pathname + window.location.search;
-	var url2 = url.substring(1);
-	$('nav a[href="'+url2+'"]').children().css('background-position', '0 -32px');
+	if (typeof type !== 'undefined') {
+		$('#' + type + ' div').css('background-position', '0 -32px');
+	}
 	
 	//set qtip globals
 	$.fn.qtip.defaults = $.extend(true, {}, $.fn.qtip.defaults, {
