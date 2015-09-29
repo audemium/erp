@@ -340,7 +340,7 @@
 						'name' => [
 							'formalName' => 'Name',
 							'typeData' => ['str', 200],
-							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'unitPrice' => [
 							'formalName' => 'Unit Price',

@@ -201,6 +201,8 @@ $(document).ready(function() {
 		var $button = $(this);
 		if ($button.hasClass('editEnabled')) {
 			$('#customPopup3').show();
+			$('#customPopup3 .invalid').qtip('destroy', true);
+			$('#customPopup3 .invalid').removeClass('invalid');
 			$('#customPopup3 [name=unitPrice]').val($button.data('unitprice'));
 			$('#customPopup3 [name=quantity]').val($button.data('quantity'));
 			
@@ -219,7 +221,28 @@ $(document).ready(function() {
 						'quantity': $('#customPopup3 [name=quantity]').val()
 					}
 				}).done(function(data) {
-					location.reload();
+					$('#customPopup3 .invalid').qtip('destroy', true);
+					$('#customPopup3 .invalid').removeClass('invalid');
+					if (data.status == 'success') {
+						location.reload();
+					}
+					else {
+						$.each(data, function(key, value) {
+							if (key != 'status') {
+								$('#customPopup3 [name=' + key + ']').addClass('invalid');
+								$('#customPopup3 [name=' + key + ']').qtip({
+									'content': value,
+									'style': {'classes': 'qtip-tipsy-custom'},
+									'position': {
+										'my': 'bottom center',
+										'at': 'top center'
+									},
+									show: {'event': 'focus'},
+									hide: {'event': 'blur'}
+								});
+							}
+						});
+					}
 				});
 			});
 		}
