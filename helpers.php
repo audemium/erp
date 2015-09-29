@@ -85,8 +85,8 @@
 		$factoryItem = Factory::createItem($type);
 		$parsed = $factoryItem->parseValue($type, $item);
 		foreach ($parsed as $field => $value) {
-			if (isset($TYPES[$type]['fields'][$field]) && $TYPES[$type]['fields'][$field]['verifyData'][1] == 'id') {
-				$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['verifyData'][2], $value) : '';
+			if (isset($TYPES[$type]['fields'][$field]) && $TYPES[$type]['fields'][$field]['typeData'][0] == 'id') {
+				$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES[$type]['fields'][$field]['typeData'][1], $value) : '';
 			}
 		}
 		
@@ -151,7 +151,7 @@
 				unset($data[$key]);
 			}
 			else {
-				if ($fields[$key]['verifyData'][1] == 'int' || $fields[$key]['verifyData'][1] == 'dec') {
+				if ($fields[$key]['typeData'][0] == 'int' || $fields[$key]['typeData'][0] == 'dec') {
 					//strip out thousands separator
 					$data[$key] = str_replace($SETTINGS['thousandsSeparator'], '', $data[$key]);	
 					//make sure decimal is a period
@@ -164,117 +164,110 @@
 	}
 	
 	/* verifyData */
-	function verifyData($type, $subType, $data) {
+	function verifyData($type, $subType, $action, $data) {
 		global $dbh;
 		global $SETTINGS;
 		global $TYPES;
 		$return = ['status' => 'success'];
 		
 		$fields = ($subType === null) ? $TYPES[$type]['fields'] : $TYPES[$type]['subTypes'][$subType]['fields'];
-		foreach ($data as $key => $value) {
-			if (!isset($fields[$key]['verifyData'])) {
-				$return['status'] = 'fail';
-				$return[$key] = 'Could not verify data';
+		foreach ($fields as $fieldName => $fieldInfo) {
+			//determine if the field is required
+			if (is_array($fieldInfo['requiredData'][$action]) === true) {
+				$required = ($data[$fieldInfo['requiredData'][$action][0]] == $fieldInfo['requiredData'][$action][1]) ? true : false;
 			}
 			else {
-				$attributes = $fields[$key]['verifyData'];
-				//determine if the field is required
-				if (is_array($attributes[0]) === true) {
-					$required = ($data[$attributes[0][0]] == $attributes[0][1]) ? true : false;
-				}
-				else {
-					$required = ($attributes[0] == 1) ? true : false;
-				}
-				
-				if ($required == true && $value == '' && $key != 'managerID') {
-					//UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
-					$return['status'] = 'fail';
-					$return[$key] = 'Required';
-				}
-				elseif ($value != '') {
-					//this section gets hit if there is some value, regardless of $required
-					if ($attributes[1] == 'str') {
-						if (strlen($value) > $attributes[2]) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Must be '.$attributes[2].' or fewer characters';
-						}
+				$required = ($fieldInfo['requiredData'][$action] == 1) ? true : false;
+			}
+			
+			if ($required == true && $data[$fieldName] == '' && $fieldName != 'managerID') {
+				//UI will only let someone choose a blank manager if it's allowed, but technically this won't verify it
+				$return['status'] = 'fail';
+				$return[$fieldName] = 'Required';
+			}
+			elseif ($data[$fieldName] != '') {
+				//this section gets hit if there is some value, regardless of $required
+				if ($fieldInfo['typeData'][0] == 'str') {
+					if (strlen($data[$fieldName]) > $fieldInfo['typeData'][1]) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Must be '.$fieldInfo['typeData'][1].' or fewer characters';
 					}
-					if ($attributes[1] == 'int') {
-						if (filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $attributes[2]]]) === false) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Must be a positive integer';
-						}
+				}
+				if ($fieldInfo['typeData'][0] == 'int') {
+					if (filter_var($data[$fieldName], FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => $fieldInfo['typeData'][1]]]) === false) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Must be a positive integer';
 					}
-					if ($attributes[1] == 'id') {
-						$sth = $dbh->prepare(
-							'SELECT  '.$TYPES[$attributes[2]]['idName'].'
-							FROM '.$TYPES[$attributes[2]]['pluralName'].'
-							WHERE '.$TYPES[$attributes[2]]['idName'].' = :value AND active = 1');
-						$sth->execute([':value' => $value]);
-						$result = $sth->fetchAll();
-						if (count($result) != 1) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Selected item does not exist or is inactive';
-						}
+				}
+				if ($fieldInfo['typeData'][0] == 'id') {
+					$sth = $dbh->prepare(
+						'SELECT  '.$TYPES[$fieldInfo['typeData'][1]]['idName'].'
+						FROM '.$TYPES[$fieldInfo['typeData'][1]]['pluralName'].'
+						WHERE '.$TYPES[$fieldInfo['typeData'][1]]['idName'].' = :value AND active = 1');
+					$sth->execute([':value' => $data[$fieldName]]);
+					$result = $sth->fetchAll();
+					if (count($result) != 1) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Selected item does not exist or is inactive';
 					}
-					if ($attributes[1] == 'dec') {
-						//test with salary: 10(pass) 10,000(pass) 10000(pass) 10.10(pass) 10.1234(fail) 123456789012.12(fail) 12345678901.1(fail)
-						if (filter_var($value, FILTER_VALIDATE_FLOAT) === false) {
+				}
+				if ($fieldInfo['typeData'][0] == 'dec') {
+					//test with salary: 10(pass) 10,000(pass) 10000(pass) 10.10(pass) 10.1234(fail) 123456789012.12(fail) 12345678901.1(fail)
+					if (filter_var($data[$fieldName], FILTER_VALIDATE_FLOAT) === false) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Must be a decimal';
+					}
+					else {
+						$temp = strrpos($data[$fieldName], '.');
+						if ($temp === false) {
+							$data[$fieldName] .= '.';
+							$temp = strrpos($data[$fieldName], '.');
+						}
+						$length = strlen(substr($data[$fieldName], $temp + 1));
+						if ($length < $fieldInfo['typeData'][1][1]) {
+							$data[$fieldName] .= str_repeat('0', $fieldInfo['typeData'][1][1] - $length);
+							$length = strlen(substr($data[$fieldName], $temp + 1));
+						}
+						if ($length > $fieldInfo['typeData'][1][1]) {
 							$return['status'] = 'fail';
-							$return[$key] = 'Must be a decimal';
+							$return[$fieldName] = 'Must have '.$fieldInfo['typeData'][1][1].' or fewer digits after the decimal';
 						}
 						else {
-							$temp = strrpos($value, '.');
-							if ($temp === false) {
-								$value .= '.';
-								$temp = strrpos($value, '.');
-							}
-							$length = strlen(substr($value, $temp + 1));
-							if ($length < $attributes[2][1]) {
-								$value .= str_repeat('0', $attributes[2][1] - $length);
-								$length = strlen(substr($value, $temp + 1));
-							}
-							if ($length > $attributes[2][1]) {
+							if (strlen(str_replace([',', '.'], '', $data[$fieldName])) > $fieldInfo['typeData'][1][0]) {
 								$return['status'] = 'fail';
-								$return[$key] = 'Must have '.$attributes[2][1].' or fewer digits after the decimal';
-							}
-							else {
-								if (strlen(str_replace([',', '.'], '', $value)) > $attributes[2][0]) {
-									$return['status'] = 'fail';
-									$return[$key] = 'Must have '.$attributes[2][0].' or fewer digits';
-								}
+								$return[$fieldName] = 'Must have '.$fieldInfo['typeData'][1][0].' or fewer digits';
 							}
 						}
 					}
-					if ($attributes[1] == 'opt') {
-						if (!in_array($value, $attributes[2])) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Invalid value';
-						}
+				}
+				if ($fieldInfo['typeData'][0] == 'opt') {
+					if (!in_array($data[$fieldName], $fieldInfo['typeData'][1])) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Invalid value';
 					}
-					if ($attributes[1] == 'email') {
-						if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Must be an email address';
-						}
+				}
+				if ($fieldInfo['typeData'][0] == 'email') {
+					if (filter_var($data[$fieldName], FILTER_VALIDATE_EMAIL) === false) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Must be an email address';
 					}
-					if ($attributes[1] == 'date') {
-						$date = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value);
-						if ($date === false) {
-							$return['status'] = 'fail';
-							$return[$key] = 'Unrecognized date format';
-						}
-						else {
-							//if this is the end date, loop through until you find the start date, then if end is less than start, fail it
-							if ($attributes[2] == 'end') {
-								foreach ($data as $tempKey => $tempValue) {
-									if ($fields[$tempKey]['verifyData'][1] == 'date' && $fields[$tempKey]['verifyData'][2] == 'start') {
-										$tempDate = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $tempValue);
-										if ($tempDate !== false) {
-											if ($date->getTimestamp() < $tempDate->getTimestamp()) {
-												$return['status'] = 'fail';
-												$return[$key] = 'End Date must be after Start Date';
-											}
+				}
+				if ($fieldInfo['typeData'][0] == 'date') {
+					$date = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data[$fieldName]);
+					if ($date === false) {
+						$return['status'] = 'fail';
+						$return[$fieldName] = 'Unrecognized date format';
+					}
+					else {
+						//if this is the end date, loop through until you find the start date, then if end is less than start, fail it
+						if ($fieldInfo['typeData'][1] == 'end') {
+							foreach ($fields as $tempFieldName => $tempFieldInfo) {
+								if ($tempFieldInfo['typeData'][0] == 'date' && $tempFieldInfo['typeData'][1] == 'start') {
+									$tempDate = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $data[$tempFieldName]);
+									if ($tempDate !== false) {
+										if ($date->getTimestamp() < $tempDate->getTimestamp()) {
+											$return['status'] = 'fail';
+											$return[$fieldName] = 'End Date must be after Start Date';
 										}
 									}
 								}
@@ -307,7 +300,7 @@
 		global $TYPES;
 		
 		$return = ($empty == true) ? '<option value=""></option>' : '';
-		$options = $TYPES[$type]['fields'][$field]['verifyData'][2];
+		$options = $TYPES[$type]['fields'][$field]['typeData'][1];
 		foreach ($options as $option) {
 			$selected = ($option == $value) ? ' selected' : '';
 			//slightly risky, as we could send a field that relies on another field to parse, but I'm going to say that's unlikely

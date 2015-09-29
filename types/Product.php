@@ -14,7 +14,6 @@
 	class Product extends GenericItem {
 		public function printItemBody($id) {
 			global $dbh;
-			global $TYPES;
 		
 			$return = '<section>
 				<h2>Inventory</h2>

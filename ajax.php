@@ -316,20 +316,20 @@
 				$return['html'] .= '<ul>';
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
-					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
-					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec' || $attributes[1] == 'email') {
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['typeData'];
+					if ($attributes[0] == 'int' || $attributes[0] == 'str' || $attributes[0] == 'dec' || $attributes[0] == 'email') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off"></li>';
 					}
-					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+					elseif ($attributes[0] == 'id' || $attributes[0] == 'opt') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
-						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
+						$return['html'] .= ($attributes[0] == 'id') ? generateTypeOptions($attributes[1], true) : generateFieldOptions($_POST['type'], $field, true);
 						$return['html'] .= '</select></li>';
 					}
-					elseif ($attributes[1] == 'disp') {
+					elseif ($attributes[0] == 'disp') {
 						$return['html'] .= '<li>&nbsp;</li>';
 					}
-					elseif ($attributes[1] == 'date') {
+					elseif ($attributes[0] == 'date') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off"></li>';
 					}
@@ -354,7 +354,7 @@
 		unset($data['action']);
 		unset($data['type']);
 		$data = cleanData($_POST['type'], null, $data);
-		$return = verifyData($_POST['type'], null, $data);
+		$return = verifyData($_POST['type'], null, 'add', $data);
 		//manual check for managerID because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '') {
 			$return['status'] = 'fail';
@@ -363,7 +363,7 @@
 		
 		if ($return['status'] != 'fail') {
 			foreach ($data as $key => $value) {
-				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
+				if ($TYPES[$_POST['type']]['fields'][$key]['typeData'][0] == 'date') {
 					//if this is a date, convert it to a unixTS
 					$temp = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value)->getTimestamp();
 					$data[$key] = $temp;
@@ -459,24 +459,26 @@
 				$return['html'] .= '<ul>';
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
-					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
-					if ($attributes[1] == 'int' || $attributes[1] == 'dec') {
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['typeData'];
+					if ($attributes[0] == 'int' || $attributes[0] == 'dec') {
 						$item[$field] = formatNumber($item[$field]);
 					}
-					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec' || $attributes[1] == 'email') {
+					if ($attributes[0] == 'int' || $attributes[0] == 'str' || $attributes[0] == 'dec' || $attributes[0] == 'email') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" value="'.$item[$field].'"></li>';
 					}
-					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
-						$empty = ($attributes[0] == 0 || ($field == 'managerID' && $item[$field] == 0)) ? true : false; //allow empty field if it's not required, or if the item is the top employee
+					elseif ($attributes[0] == 'id' || $attributes[0] == 'opt') {
+						//allow empty field if it's not required, or if the item is the top employee
+						//NOTE: this will not work if the requiredData is an array, but since non-subTypes don't use an array right now, it works for now
+						$empty = ($TYPES[$_POST['type']]['fields'][$field]['requiredData']['edit'] == 0 || ($field == 'managerID' && $item[$field] == 0)) ? true : false;
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'">';
-						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], $empty, $item[$field]) : generateFieldOptions($_POST['type'], $field, $empty, $item[$field]);
+						$return['html'] .= ($attributes[0] == 'id') ? generateTypeOptions($attributes[1], $empty, $item[$field]) : generateFieldOptions($_POST['type'], $field, $empty, $item[$field]);
 						$return['html'] .= '</select></li>';
 					}
-					elseif ($attributes[1] == 'disp') {
+					elseif ($attributes[0] == 'disp') {
 						$return['html'] .= '<li>&nbsp;</li>';
 					}
-					elseif ($attributes[1] == 'date') {
+					elseif ($attributes[0] == 'date') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off" value="'.formatDate($item[$field]).'"></li>';
 					}
@@ -505,22 +507,22 @@
 				$return['html'] .= '<ul>';
 				foreach ($column as $field) {
 					$formalName = $TYPES[$_POST['type']]['fields'][$field]['formalName'];
-					$attributes = $TYPES[$_POST['type']]['fields'][$field]['verifyData'];
-					if ($attributes[1] == 'int' || $attributes[1] == 'str' || $attributes[1] == 'dec') {
+					$attributes = $TYPES[$_POST['type']]['fields'][$field]['typeData'];
+					if ($attributes[0] == 'int' || $attributes[0] == 'str' || $attributes[0] == 'dec') {
 						$return['html'] .= '<li><input type="checkbox">';
 						$return['html'] .= '<label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" name="'.$field.'" autocomplete="off" disabled></li>';
 					}
-					elseif ($attributes[1] == 'id' || $attributes[1] == 'opt') {
+					elseif ($attributes[0] == 'id' || $attributes[0] == 'opt') {
 						$return['html'] .= '<li><input type="checkbox">';
 						$return['html'] .= '<label for="'.$field.'">'.$formalName.'</label><select name="'.$field.'" disabled>';
-						$return['html'] .= ($attributes[1] == 'id') ? generateTypeOptions($attributes[2], true) : generateFieldOptions($_POST['type'], $field, true);
+						$return['html'] .= ($attributes[0] == 'id') ? generateTypeOptions($attributes[1], true) : generateFieldOptions($_POST['type'], $field, true);
 						$return['html'] .= '</select></li>';
 					}
-					elseif ($attributes[1] == 'disp') {
+					elseif ($attributes[0] == 'disp') {
 						$return['html'] .= '<li>&nbsp;</li>';
 					}
-					elseif ($attributes[1] == 'date') {
+					elseif ($attributes[0] == 'date') {
 						$return['html'] .= '<li><label for="'.$field.'">'.$formalName.'</label>';
 						$return['html'] .= '<input type="text" class="dateInput" name="'.$field.'" autocomplete="off" value="'.formatDate($item[$field]).'"></li>';
 					}
@@ -546,7 +548,7 @@
 		unset($data['type']);
 		unset($data['id']);
 		$data = cleanData($_POST['type'], null, $data);
-		$return = verifyData($_POST['type'], null, $data);
+		$return = verifyData($_POST['type'], null, 'edit', $data);
 		//manual check for managerID (ONLY for editMany (I think only for editMany because otherwise you can't edit the CEO)) because it's required, but not checked in verifyData
 		if (array_key_exists('managerID', $data) && $data['managerID'] == '' && count(explode(',', $_POST['id'])) > 1) {
 			$return['status'] = 'fail';
@@ -557,7 +559,7 @@
 			$idArr = explode(',', $_POST['id']);
 			$idArrSafe = [];
 			foreach ($data as $key => $value) {
-				if ($TYPES[$_POST['type']]['fields'][$key]['verifyData'][1] == 'date') {
+				if ($TYPES[$_POST['type']]['fields'][$key]['typeData'][0] == 'date') {
 					//if this is a date, convert it to a unixTS
 					$temp = DateTime::createFromFormat($SETTINGS['dateFormat'].'|', $value)->getTimestamp();
 					$data[$key] = $temp;

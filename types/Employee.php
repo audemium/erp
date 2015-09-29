@@ -14,7 +14,6 @@
 	class Employee extends GenericItem {
 		public function printItemBody($id) {
 			global $dbh;
-			global $TYPES;
 			global $SETTINGS;
 			
 			$requestTimeOff = ($id == $_SESSION['employeeID']) ? 'addEnabled' : 'addDisabled';
@@ -158,7 +157,6 @@
 		}
 		
 		public function parseSubTypeValue($subType, $action, $item, $format) {
-			global $TYPES;
 			$dataStr = '';
 			$parsed = [];
 			

@@ -11,11 +11,16 @@
     You should have received a copy of the GNU Affero General Public License along with Audemium ERP.  If not, see <http://www.gnu.org/licenses/>.
 	*/
 
-	//define types
-	//verifyData explanation
-		//required: 0 = no, 1 = yes
-		//type: int = integer, id = object id, str = string, dec = decimal, opt = option, date = date only, disp = display only, email = email address
-		//size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' or '' to mark which one comes first (date) if needed, not used (disp, email)
+	/* 
+	typeData
+		type: int = integer, id = object id, str = string, dec = decimal, opt = option, date = date only, disp = display only, email = email address
+		size: max value (int), object type (id), char length (str), array of precision and scale (dec), array of options (opt), 'start' or 'end' or '' to mark which one comes first (date) if needed, not used (disp, email)
+	requiredData
+		three possible actions: add, edit and delete
+		0: not required for that action
+		1: required for that action
+		array: required when the field in the first element has the value in the second element
+	*/
 	$TYPES = [
 		'order' => [
 			'pluralName' => 'orders',
@@ -32,23 +37,28 @@
 				//order has orderID as a field because it uses it to identify an order to the user, whereas other types use a name
 				'orderID' => [
 					'formalName' => 'Order Number',
-					'verifyData' => [1, 'int', 4294967295]
+					'typeData' => ['int', 4294967295],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'customerID' => [
 					'formalName' => 'Customer',
-					'verifyData' => [0, 'id', 'customer']
+					'typeData' => ['id', 'customer'],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'employeeID' => [
 					'formalName' => 'Employee',
-					'verifyData' => [1, 'id', 'employee']
+					'typeData' => ['id', 'employee'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'date' => [
 					'formalName' => 'Date',
-					'verifyData' => [1, 'date', '']
+					'typeData' => ['date', ''],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'amountDue' => [
 					'formalName' => 'Amount Due',
-					'verifyData' => [0, 'disp']
+					'typeData' => ['disp'],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				]
 			],
 			'subTypes' => [
@@ -56,18 +66,18 @@
 					'fields' => [
 						'date' => [
 							'formalName' => 'Date',
-							'verifyData' => [1, 'date', ''],
-							'actions' => [1, 0, 1]
+							'typeData' => ['date', ''],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'paymentType' => [
 							'formalName' => 'Payment Type',
-							'verifyData' => [1, 'opt', ['CA', 'CH', 'CR']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['CA', 'CH', 'CR']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'paymentAmount' => [
 							'formalName' => 'Payment Amount',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 0, 1]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				],
@@ -75,43 +85,43 @@
 					'fields' => [
 						'subID' => [
 							'formalName' => 'Product',
-							'verifyData' => [1, 'id', 'product'],
-							'actions' => [1, 1, 1]
+							'typeData' => ['id', 'product'],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',
-							'verifyData' => [1, 'int', 4294967295],
-							'actions' => [1, 1, 1]
+							'typeData' => ['int', 4294967295],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'recurring' => [
 							'formalName' => 'Recurring',
-							'verifyData' => [1, 'opt', ['yes', 'no']],
-							'actions' => [1, 0, 1]
+							'typeData' => ['opt', ['yes', 'no']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'interval' => [
 							'formalName' => 'Interval',
-							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['monthly']],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'dayOfMonth' => [
 							'formalName' => 'Day of Month',
-							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'start'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'end'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						]
 					]
 				],
@@ -119,43 +129,43 @@
 					'fields' => [
 						'subID' => [
 							'formalName' => 'Service',
-							'verifyData' => [1, 'id', 'service'],
-							'actions' => [1, 1, 1]
+							'typeData' => ['id', 'service'],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 1]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'recurring' => [
 							'formalName' => 'Recurring',
-							'verifyData' => [1, 'opt', ['yes', 'no']],
-							'actions' => [1, 0, 1]
+							'typeData' => ['opt', ['yes', 'no']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'interval' => [
 							'formalName' => 'Interval',
-							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['monthly']],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'dayOfMonth' => [
 							'formalName' => 'Day of Month',
-							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'start'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'end'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						]
 					]
 				],
@@ -163,13 +173,13 @@
 					'fields' => [
 						'subID' => [
 							'formalName' => '',
-							'verifyData' => [0, 'int', 0],
-							'actions' => [1, 0, 1]
+							'typeData' => ['int', 0],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'discountID' => [
 							'formalName' => 'Discount',
-							'verifyData' => [1, 'id', 'discount'],
-							'actions' => [1, 0, 1]
+							'typeData' => ['id', 'discount'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				],
@@ -177,13 +187,13 @@
 					'fields' => [
 						'subID' => [
 							'formalName' => 'Product',
-							'verifyData' => [1, 'id', 'product'],
-							'actions' => [1, 0, 1]
+							'typeData' => ['id', 'product'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'discountID' => [
 							'formalName' => 'Discount',
-							'verifyData' => [1, 'id', 'discount'],
-							'actions' => [1, 0, 1]
+							'typeData' => ['id', 'discount'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				],
@@ -191,13 +201,13 @@
 					'fields' => [
 						'subID' => [
 							'formalName' => 'Service',
-							'verifyData' => [1, 'id', 'service'],
-							'actions' => [1, 0, 1]
+							'typeData' => ['id', 'service'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'discountID' => [
 							'formalName' => 'Discount',
-							'verifyData' => [1, 'id', 'discount'],
-							'actions' => [1, 0, 1]
+							'typeData' => ['id', 'discount'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				],
@@ -205,13 +215,13 @@
 					'fields' => [
 						'name' => [
 							'formalName' => 'Name',
-							'verifyData' => [1, 'str', 200],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 200],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'extension' => [
 							'formalName' => 'Extension',
-							'verifyData' => [1, 'str', 10],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 10],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				]
@@ -232,23 +242,28 @@
 				//expense has expenseID as a field because it uses it to identify an expense to the user, whereas other types use a name
 				'expenseID' => [
 					'formalName' => 'Expense Number',
-					'verifyData' => [1, 'int', 4294967295]
+					'typeData' => ['int', 4294967295],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'supplierID' => [
 					'formalName' => 'Supplier',
-					'verifyData' => [0, 'id', 'supplier']
+					'typeData' => ['id', 'supplier'],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'employeeID' => [
 					'formalName' => 'Employee',
-					'verifyData' => [1, 'id', 'employee']
+					'typeData' => ['id', 'employee'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'date' => [
 					'formalName' => 'Date',
-					'verifyData' => [1, 'date', '']
+					'typeData' => ['date', ''],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'amountDue' => [
 					'formalName' => 'Amount Due',
-					'verifyData' => [0, 'disp']
+					'typeData' => ['disp'],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				]
 			],
 			'subTypes' => [
@@ -256,18 +271,18 @@
 					'fields' => [
 						'date' => [
 							'formalName' => 'Date',
-							'verifyData' => [1, 'date', ''],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', ''],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'paymentType' => [
 							'formalName' => 'Payment Type',
-							'verifyData' => [1, 'opt', ['CA', 'CH', 'CR']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['CA', 'CH', 'CR']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'paymentAmount' => [
 							'formalName' => 'Payment Amount',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 0, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						]
 					]
 				],
@@ -275,48 +290,48 @@
 					'fields' => [
 						'productID' => [
 							'formalName' => 'Product',
-							'verifyData' => [1, 'id', 'product'],
-							'actions' => [1, 1, 1]
+							'typeData' => ['id', 'product'],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'locationID' => [
 							'formalName' => 'Location',
-							'verifyData' => [1, 'id', 'location'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['id', 'location'],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',
-							'verifyData' => [1, 'int', 4294967295],
-							'actions' => [1, 1, 0]
+							'typeData' => ['int', 4294967295],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'recurring' => [
 							'formalName' => 'Recurring',
-							'verifyData' => [1, 'opt', ['yes', 'no']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['yes', 'no']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'interval' => [
 							'formalName' => 'Interval',
-							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['monthly']],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'dayOfMonth' => [
 							'formalName' => 'Day of Month',
-							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'start'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'end'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						]
 					]
 				],
@@ -324,43 +339,43 @@
 					'fields' => [
 						'name' => [
 							'formalName' => 'Name',
-							'verifyData' => [1, 'str', 200],
-							'actions' => [1, 1, 1]
+							'typeData' => ['str', 200],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 						],
 						'unitPrice' => [
 							'formalName' => 'Unit Price',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'quantity' => [
 							'formalName' => 'Quantity',
-							'verifyData' => [1, 'dec', [12, 2]],
-							'actions' => [1, 1, 0]
+							'typeData' => ['dec', [12, 2]],
+							'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 0]
 						],
 						'recurring' => [
 							'formalName' => 'Recurring',
-							'verifyData' => [1, 'opt', ['yes', 'no']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['yes', 'no']],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 0]
 						],
 						'interval' => [
 							'formalName' => 'Interval',
-							'verifyData' => [['recurring', 'yes'], 'opt', ['monthly']],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', ['monthly']],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'dayOfMonth' => [
 							'formalName' => 'Day of Month',
-							'verifyData' => [['recurring', 'yes'], 'opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
-							'actions' => [1, 0, 0]
+							'typeData' => ['opt', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'startDate' => [
 							'formalName' => 'Start Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'start'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'start'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						],
 						'endDate' => [
 							'formalName' => 'End Date',
-							'verifyData' => [['recurring', 'yes'], 'date', 'end'],
-							'actions' => [1, 0, 0]
+							'typeData' => ['date', 'end'],
+							'requiredData' => ['add' => ['recurring', 'yes'], 'edit' => 0, 'delete' => 0]
 						]
 					]
 				],
@@ -368,13 +383,13 @@
 					'fields' => [
 						'name' => [
 							'formalName' => 'Name',
-							'verifyData' => [1, 'str', 200],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 200],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'extension' => [
 							'formalName' => 'Extension',
-							'verifyData' => [1, 'str', 10],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 10],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				]
@@ -394,15 +409,18 @@
 			'fields' => [
 				'firstName' => [
 					'formalName' => 'First Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'lastName' => [
 					'formalName' => 'Last Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'email' => [
 					'formalName' => 'Email',
-					'verifyData' => [1, 'email']
+					'typeData' => ['email'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -420,7 +438,8 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Company',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -438,15 +457,18 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'description' => [
 					'formalName' => 'Description',
-					'verifyData' => [1, 'str', 65535]
+					'typeData' => ['str', 65535],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'defaultPrice' => [
 					'formalName' => 'Price',
-					'verifyData' => [1, 'dec', [12, 2]]
+					'typeData' => ['dec', [12, 2]],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -464,15 +486,18 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'description' => [
 					'formalName' => 'Description',
-					'verifyData' => [1, 'str', 65535]
+					'typeData' => ['str', 65535],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'defaultPrice' => [
 					'formalName' => 'Price',
-					'verifyData' => [1, 'dec', [12, 2]]
+					'typeData' => ['dec', [12, 2]],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -490,15 +515,18 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'discountType' => [
 					'formalName' => 'Type',
-					'verifyData' => [1, 'opt', ['P', 'C']]
+					'typeData' => ['opt', ['P', 'C']],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'discountAmount' => [
 					'formalName' => 'Amount',
-					'verifyData' => [1, 'dec', [12, 2]]
+					'typeData' => ['dec', [12, 2]],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -520,59 +548,73 @@
 			'fields' => [
 				'username' => [
 					'formalName' => 'Username',
-					'verifyData' => [1, 'str', 100]
+					'typeData' => ['str', 100],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'firstName' => [
 					'formalName' => 'First Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'lastName' => [
 					'formalName' => 'Last Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'payType' => [
 					'formalName' => 'Pay Type',
-					'verifyData' => [1, 'opt', ['S', 'H']]
+					'typeData' => ['opt', ['S', 'H']],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'payAmount' => [
 					'formalName' => 'Pay Amount',
-					'verifyData' => [1, 'dec', [12, 2]]
+					'typeData' => ['dec', [12, 2]],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'locationID' => [
 					'formalName' => 'Location',
-					'verifyData' => [0, 'id', 'location']
+					'typeData' => ['id', 'location'],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'positionID' => [
 					'formalName' => 'Position',
-					'verifyData' => [1, 'id', 'position']
+					'typeData' => ['id', 'position'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'managerID' => [
 					'formalName' => 'Manager',
-					'verifyData' => [1, 'id', 'employee']
+					'typeData' => ['id', 'employee'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'vacationTotal' => [
 					'formalName' => 'Total Vacation (hours)',
-					'verifyData' => [1, 'int', 4294967295]
+					'typeData' => ['int', 4294967295],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'address' => [
 					'formalName' => 'Address',
-					'verifyData' => [0, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'city' => [
 					'formalName' => 'City',
-					'verifyData' => [0, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'state' => [
 					'formalName' => 'State',
-					'verifyData' => [0, 'str', 2]
+					'typeData' => ['str', 2],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'zip' => [
 					'formalName' => 'Zip Code',
-					'verifyData' => [0, 'str', 10]
+					'typeData' => ['str', 10],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'workEmail' => [
 					'formalName' => 'Email',
-					'verifyData' => [1, 'email']
+					'typeData' => ['email'],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			],
 			'subTypes' => [
@@ -580,13 +622,13 @@
 					'fields' => [
 						'name' => [
 							'formalName' => 'Name',
-							'verifyData' => [1, 'str', 200],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 200],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						],
 						'extension' => [
 							'formalName' => 'Extension',
-							'verifyData' => [1, 'str', 10],
-							'actions' => [1, 0, 1]
+							'typeData' => ['str', 10],
+							'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 						]
 					]
 				]
@@ -605,7 +647,8 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				]
 			]
 		],
@@ -623,23 +666,28 @@
 			'fields' => [
 				'name' => [
 					'formalName' => 'Name',
-					'verifyData' => [1, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 				],
 				'address' => [
 					'formalName' => 'Address',
-					'verifyData' => [0, 'str', 65535]
+					'typeData' => ['str', 65535],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'city' => [
 					'formalName' => 'City',
-					'verifyData' => [0, 'str', 200]
+					'typeData' => ['str', 200],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'state' => [
 					'formalName' => 'State',
-					'verifyData' => [0, 'str', 2]
+					'typeData' => ['str', 2],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				],
 				'zip' => [
 					'formalName' => 'Zip Code',
-					'verifyData' => [0, 'str', 10]
+					'typeData' => ['str', 10],
+					'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 				]
 			]
 		]

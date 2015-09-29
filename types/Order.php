@@ -14,7 +14,6 @@
 	class Order extends GenericItem {
 		public function printItemBody($id) {
 			global $dbh;
-			global $TYPES;
 			
 			//Line Items section
 			$return = '<section>
@@ -155,8 +154,8 @@
 			
 			foreach ($item as $field => $value) {
 				//check to see if it's an id first, then do the switch statement
-				if (isset($TYPES['order']['subTypes'][$subType]['fields'][$field]) && $TYPES['order']['subTypes'][$subType]['fields'][$field]['verifyData'][1] == 'id') {
-					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['order']['subTypes'][$subType]['fields'][$field]['verifyData'][2], $value) : '';
+				if (isset($TYPES['order']['subTypes'][$subType]['fields'][$field]) && $TYPES['order']['subTypes'][$subType]['fields'][$field]['typeData'][0] == 'id') {
+					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['order']['subTypes'][$subType]['fields'][$field]['typeData'][1], $value) : '';
 				}
 				else {
 					if ($subType == 'payment') {
@@ -409,7 +408,7 @@
 					}
 				}
 				$data = cleanData('order', $subType, $data);
-				$return = verifyData('order', $subType, $data);
+				$return = verifyData('order', $subType, 'add', $data);
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
@@ -556,7 +555,7 @@
 				$uniqueID = $data['subID'];
 				$data['subID'] = $row['id'];
 				$data = cleanData('order', $subType, $data);
-				$return = verifyData('order', $subType, $data);
+				$return = verifyData('order', $subType, 'edit', $data);
 				
 				if ($return['status'] != 'fail') {
 					$sth = $dbh->prepare(

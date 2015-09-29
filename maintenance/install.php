@@ -72,12 +72,12 @@
 			'payType' => 'S',
 			'workEmail' => $_POST['workEmail']
 		];
-		$employee = verifyData('employee', null, $data);
+		$employee = verifyData('employee', null, 'add', $data);
 		
 		$data = [
 			'name' => $_POST['position'],
 		];
-		$position = verifyData('position', null, $data);
+		$position = verifyData('position', null, 'add', $data);
 		if (isset($position['name'])) {
 			$position['position'] = $position['name'];
 			unset($position['name']);
@@ -86,7 +86,7 @@
 		$data = [
 			'name' => $_POST['location'],
 		];
-		$location = verifyData('location', null, $data);
+		$location = verifyData('location', null, 'add', $data);
 		if (isset($location['name'])) {
 			$location['location'] = $location['name'];
 			unset($location['name']);

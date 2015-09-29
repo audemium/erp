@@ -14,7 +14,6 @@
 	class Expense extends GenericItem {
 		public function printItemBody($id) {
 			global $dbh;
-			global $TYPES;
 			global $SETTINGS;
 			
 			//Line Items section
@@ -216,8 +215,8 @@
 			
 			foreach ($item as $field => $value) {
 				//check to see if it's an id first, then do the switch statement
-				if (isset($TYPES['expense']['subTypes'][$subType]['fields'][$field]) && $TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][1] == 'id') {
-					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['expense']['subTypes'][$subType]['fields'][$field]['verifyData'][2], $value) : '';
+				if (isset($TYPES['expense']['subTypes'][$subType]['fields'][$field]) && $TYPES['expense']['subTypes'][$subType]['fields'][$field]['typeData'][0] == 'id') {
+					$parsed[$field] = (!is_null($value)) ? getLinkedName($TYPES['expense']['subTypes'][$subType]['fields'][$field]['typeData'][1], $value) : '';
 				}
 				else {
 					if ($subType == 'payment') {
@@ -352,7 +351,6 @@
 		public function customAjax($id, $data) {
 			global $dbh;
 			global $SETTINGS;
-			global $TYPES;
 			$return = ['status' => 'success'];
 			
 			if ($data['subAction'] == 'list') {
@@ -367,7 +365,7 @@
 				unset($data['subAction']);
 				unset($data['subType']);
 				$data = cleanData('expense', $subType, $data);
-				$return = verifyData('expense', $subType, $data);
+				$return = verifyData('expense', $subType, 'add', $data);
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'payment') {
@@ -530,7 +528,7 @@
 				$subID = $data['subID'];
 				unset($data['subID']);
 				$data = cleanData('expense', $subType, $data);
-				$return = verifyData('expense', $subType, $data);
+				$return = verifyData('expense', $subType, 'edit', $data);
 				
 				if ($return['status'] != 'fail') {
 					if ($subType == 'product') {
