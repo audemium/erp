@@ -38,7 +38,7 @@
 				'orderID' => [
 					'formalName' => 'Order Number',
 					'typeData' => ['int', 4294967295],
-					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
+					'requiredData' => ['add' => 0, 'edit' => 1, 'delete' => 1]
 				],
 				'customerID' => [
 					'formalName' => 'Customer',
@@ -243,7 +243,7 @@
 				'expenseID' => [
 					'formalName' => 'Expense Number',
 					'typeData' => ['int', 4294967295],
-					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
+					'requiredData' => ['add' => 0, 'edit' => 1, 'delete' => 1]
 				],
 				'supplierID' => [
 					'formalName' => 'Supplier',
