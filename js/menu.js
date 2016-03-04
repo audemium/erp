@@ -51,9 +51,8 @@ $(document).ready(function() {
 				if (data.status == 'success') {
 					var searchHtml = '';
 					$.each(data.results, function(index, result) {
-						keyImg = (result.type == 'employee' || result.type == 'order') ? result.type : 'star';
 						searchHtml += '<a href="item.php?type=' + result.type + '&id=' + result.id + '"><div class = "resultItem">';
-						searchHtml += '<img src="images/icons/' + keyImg + '.png" alt="' + result.name + '"><br>';
+						searchHtml += '<div style="background-image:url(\'images/icons/' + result.type + '.png\');"></div>';
 						searchHtml += result.name;
 						searchHtml += '</div></a>';
 					});

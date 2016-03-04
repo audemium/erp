@@ -162,6 +162,11 @@ nav li div {
 	text-align: center;
 	width: 96px;
 }
+.resultItem > div {
+	height: 32px;
+	margin: 0 auto 10px;
+	width: 32px;
+}
 #logo {
 	position: absolute;
 	top: 0;
