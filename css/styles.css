@@ -415,6 +415,7 @@ section {
 }
 .sectionData > dl > dd {
 	float: left;
+	padding: 2px 0;
 }
 .customAddLink {
 	margin-bottom: 10px;
