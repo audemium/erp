@@ -108,7 +108,7 @@
 	if ($return['status'] == 'success') {
 		$settings = '<?php
 	//Audemium ERP Version
-	$VERSION = \'0.8.1\';
+	$VERSION = \'0.8.2\';
 	
 	//Database
 	$SETTINGS[\'dbServer\'] = \''.addcslashes($_POST['dbHost'], "'").'\';
