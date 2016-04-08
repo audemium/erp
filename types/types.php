@@ -549,7 +549,7 @@
 				'username' => [
 					'formalName' => 'Username',
 					'typeData' => ['str', 100],
-					'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
+					'requiredData' => ['add' => 1, 'edit' => 0, 'delete' => 1]
 				],
 				'firstName' => [
 					'formalName' => 'First Name',
