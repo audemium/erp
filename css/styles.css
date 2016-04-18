@@ -406,7 +406,7 @@ section {
 .sectionData > dl > dt {
 	float: left;
 	clear: both;
-	width: 200px;
+	width: 31%;
 	font-weight: bold;
 	padding: 2px 0;
 }
@@ -501,6 +501,10 @@ input[type="text"], input[type="password"], select, textarea {
 	box-shadow: 0 2px 9px rgba(255, 255, 255, 0.3) inset, 0 -2px 6px rgba(0, 0, 0, 0.4) inset;
 	display: block;
 	height: 100%;
+}
+
+#customPopupTimesheet input {
+	width: 50px;
 }
 
 /* Icons */

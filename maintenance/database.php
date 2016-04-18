@@ -256,6 +256,34 @@
 		],
 		'0.8.1' => [],
 		'0.8.2' => [],
-		'0.8.1' => []
+		'0.9.0' => [
+			'CREATE TABLE `timesheetHours` (
+				`timesheetID` INT NOT NULL,
+				`date` INT NOT NULL,
+				`regularHours` DECIMAL(5,2) NOT NULL,
+				`overtimeHours` DECIMAL(5,2) NOT NULL,
+				`holidayHours` DECIMAL(5,2) NOT NULL,
+				PRIMARY KEY (`timesheetID`,`date`)
+			) ENGINE = InnoDB DEFAULT CHARSET=utf8',
+			'CREATE TABLE `timesheets` (
+				`timesheetID` INT NOT NULL AUTO_INCREMENT,
+				`employeeID` INT NOT NULL,
+				`firstDate` INT NOT NULL,
+				`lastDate` INT NOT NULL,
+				`payType` VARCHAR(1) NOT NULL,
+				`payAmount` DECIMAL(12,2) NOT NULL,
+				`status` VARCHAR(1) NOT NULL,
+				PRIMARY KEY (`timesheetID`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8',
+			'CREATE TABLE `paystubs` (
+				`paystubID` INT NOT NULL AUTO_INCREMENT,
+				`employeeID` INT NOT NULL,
+				`timesheetID` INT NOT NULL,
+				`date` INT NOT NULL,
+				`grossPay` DECIMAL(12,2) NOT NULL,
+				PRIMARY KEY (`paystubID`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8',
+			'DROP TABLE vacationRequests'
+		]
 	];
 ?>

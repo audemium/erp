@@ -45,7 +45,7 @@
 					$module.find('.dataTable').DataTable({
 						'paging': false,
 						'dom': 't',
-						'order': [0, 'desc'],
+						'order': [0, 'asc'],
 						'autoWidth': false
 					});
 				});
@@ -61,7 +61,7 @@
 	<div id="content">
 		<?php
 			//TODO: get user's module setup from the db
-			$modules = [['unpaidBills', 'unpaidOrders', 'recentTransactions'], ['netIncome', 'income', 'expenses']];
+			$modules = [['unpaidBills', 'unpaidOrders', 'unapprovedTimesheets', 'recentTransactions'], ['netIncome', 'income', 'expenses']];
 		?>
 		<div id="col1">
 			<?php

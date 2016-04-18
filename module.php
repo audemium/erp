@@ -170,7 +170,15 @@
 			$sth->execute([':unix' => $unix]);
 			$expenses = $sth->fetch();
 			
-			$net = $income['total'] - $expenses['total'];
+			//TODO: I don't think this is quite correct because you'll pay some of the grossPay on the date of the paystub, but the rest you won't pay until you pay taxes
+			$sth = $dbh->prepare(
+				'SELECT SUM(grossPay) AS total
+				FROM paystubs
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$paystubs = $sth->fetch();
+			
+			$net = $income['total'] - ($expenses['total'] + $paystubs['total']);
 			if ($net > 0) {
 				$color = '#8bb50f';
 			}
@@ -215,7 +223,15 @@
 			$sth->execute([':unix' => $unix]);
 			$eo = $sth->fetch();
 			
-			$net = ($op['total'] + $os['total']) - ($ep['total'] + $eo['total']);
+			//TODO: I don't think this is quite right because sometimes accounting periods will end in between pay periods
+			$sth = $dbh->prepare(
+				'SELECT SUM(grossPay) AS total
+				FROM paystubs
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$paystubs = $sth->fetch();
+			
+			$net = ($op['total'] + $os['total']) - ($ep['total'] + $eo['total'] + $paystubs['total']);
 			if ($net > 0) {
 				$color = '#8bb50f';
 			}
@@ -286,9 +302,18 @@
 				FROM expensePayments
 				WHERE date > :unix');
 			$sth->execute([':unix' => $unix]);
-			$row = $sth->fetch();
+			$expenses = $sth->fetch();
 			
-			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($row['total'], true).'</span>';
+			//TODO: I don't think this is quite right because you'll pay some of the grossPay on the date of the paystub, but the rest you won't pay until you pay taxes
+			$sth = $dbh->prepare(
+				'SELECT SUM(grossPay) AS total
+				FROM paystubs
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$paystubs = $sth->fetch();
+			
+			$total = $expenses['total'] + $paystubs['total'];
+			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
 		else {
@@ -307,10 +332,77 @@
 			$sth->execute([':unix' => $unix]);
 			$others = $sth->fetch();
 			
-			$total = $products['total'] + $others['total'];
+			//TODO: I don't think this is quite right because sometimes accounting periods will end in between pay periods
+			$sth = $dbh->prepare(
+				'SELECT SUM(grossPay) AS total
+				FROM paystubs
+				WHERE date > :unix');
+			$sth->execute([':unix' => $unix]);
+			$paystubs = $sth->fetch();
+			
+			$total = $products['total'] + $others['total'] + $paystubs['total'];
 			$return['content'] = '<span style="color:#d41111; font-size:2.7em; font-weight:bold; display:inline-block; margin:7% 0 0 7%;">&nbsp;'.formatCurrency($total, true).'</span>';
 			$return['content'] .= '<span style="margin-left:50px;">this year</span>';
 		}
+		
+		echo json_encode($return);
+	}
+	
+	/* Unapproved Timesheets */
+	if ($_POST['module'] == 'unapprovedTimesheets') {
+		$return['title'] = 'Unapproved Timesheets';
+		
+		$return['content'] = "<script type=\"text/javascript\">
+			$('.moduleTimesheetApprove').click(function(event) {
+				var \$button = $(this);
+				$.ajax({
+					url: 'ajax.php',
+					type: 'POST',
+					data: {
+						'action': 'customAjax',
+						'type': 'employee',
+						'id': \$button.data('id'),
+						'subAction': 'approve',
+						'subType': 'timesheet',
+						'subID': \$button.data('subid')
+					}
+				}).done(function(data) {
+					var table = \$button.closest('table').DataTable();
+					table.row(\$button.closest('tr')).remove().draw();
+				});
+				
+				event.preventDefault();
+			});
+		</script>";
+		
+		$return['content'] .= '<table class="dataTable stripe row-border" style="width:100%;">
+			<thead>
+				<tr>
+					<th class="textLeft">Employee</th>
+					<th class="textLeft">Regular</th>
+					<th class="textRight">Overtime</th>
+					<th class="textRight">Holiday</th>
+					<th class="textRight">Vacation</th>
+					<th class="textRight"></th>
+				</tr>
+			</thead>
+			<tbody>';
+				$sth = $dbh->prepare(
+					'SELECT timesheets.timesheetID, employeeID, SUM(regularHours) AS regularHours, SUM(overtimeHours) AS overtimeHours, SUM(holidayHours) AS holidayHours, SUM(vacationHours) AS vacationHours
+					FROM timesheets, timesheetHours
+					WHERE timesheets.timesheetID = timesheetHours.timesheetID AND status = "P"
+					GROUP BY timesheetID');
+				$sth->execute();
+				while ($row = $sth->fetch()) {
+					$return['content'] .= '<tr><td>'.getLinkedName('employee', $row['employeeID']).'</td>';
+					$return['content'] .= '<td>'.formatNumber($row['regularHours'] + 0).'</td>';
+					$return['content'] .= '<td>'.formatNumber($row['overtimeHours'] + 0).'</td>';
+					$return['content'] .= '<td>'.formatNumber($row['holidayHours'] + 0).'</td>';
+					$return['content'] .= '<td>'.formatNumber($row['vacationHours'] + 0).'</td>';
+					$return['content'] .= '<td><a href="#" class="moduleTimesheetApprove" data-id="'.$row['employeeID'].'" data-subid="'.$row['timesheetID'].'">Approve</a></td></tr>';
+				}
+			$return['content'] .= '</tbody>
+		</table>';
 		
 		echo json_encode($return);
 	}

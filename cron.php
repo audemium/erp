@@ -143,4 +143,76 @@
 			$orderItem->updateAmountDue($row['orderID']);
 		}
 	}
+	
+	//timesheets
+	if (date('w', $today) == 0) {
+		//on Sunday, create timesheets (blank for hourly, filled in for salary) and store current pay rate
+		$lastDate = $today + (6 * 60 * 60 * 24);
+		$sth = $dbh->prepare(
+			'SELECT employeeID, payType, payAmount
+			FROM employees
+			WHERE active = 1');
+		$sth->execute();
+		while ($row = $sth->fetch()) {
+			$sth2 = $dbh->prepare(
+				'INSERT INTO timesheets (employeeID, firstDate, lastDate, payType, payAmount, status)
+				VALUES(:employeeID, :firstDate, :lastDate, :payType, :payAmount, "E")');
+			$sth2->execute([':employeeID' => $row['employeeID'], ':firstDate' => $today, ':lastDate' => $lastDate, ':payType' => $row['payType'], ':payAmount' => $row['payAmount']]);
+			if ($row['payType'] == 'S') {
+				$id = $dbh->lastInsertId();
+				for ($i = 1; $i <= 5; $i++) {
+					$date = $today + ($i * 60 * 60 * 24);
+					$sth2 = $dbh->prepare(
+						'INSERT INTO timesheetHours (timesheetID, date, regularHours)
+						VALUES(:timesheetID, :date, 8.00)');
+					$sth2->execute([':timesheetID' => $id, ':date' => $date]);
+				}
+			}
+		}
+		
+		//enable approval for last week's timesheets
+		$prevDate = $today - (7 * 60 * 60 * 24);
+		$sth = $dbh->prepare(
+			'UPDATE timesheets
+			SET status = "P"
+			WHERE firstDate = :firstDate');
+		$sth->execute([':firstDate' => $prevDate]);
+	}
+	
+	//paystubs
+	if (date('w', $today) == 4) {
+		//on Thursday, create paystubs from timesheets, ignoring unapproved ones
+		$firstDate = $today - (11 * 60 * 60 * 24);
+		$sth = $dbh->prepare(
+			'SELECT timesheetID, employeeID, payType, payAmount, status
+			FROM timesheets
+			WHERE firstDate = :firstDate');
+		$sth->execute([':firstDate' => $firstDate]);
+		while ($row = $sth->fetch()) {
+			if ($row['status'] == 'A') {
+				$hourly = ($row['payType'] == 'S') ? $row['payAmount'] / (40 * 52) : $row['payAmount'];
+				$sth2 = $dbh->prepare(
+					'SELECT SUM(regularHours) AS regularHours, SUM(overtimeHours) AS overtimeHours, SUM(holidayHours) AS holidayHours, SUM(vacationHours) AS vacationHours
+					FROM timesheetHours
+					WHERE timesheetID = :timesheetID');
+				$sth2->execute([':timesheetID' => $row['timesheetID']]);
+				$row2 = $sth2->fetch();
+				$grossPay = ($row2['regularHours'] * $hourly) + ($row2['overtimeHours'] * $hourly * 1.5) + ($row2['holidayHours'] * $hourly) + ($row2['vacationHours'] * $hourly);
+				$sth2 = $dbh->prepare(
+					'INSERT INTO paystubs (employeeID, timesheetID, date, grossPay)
+					VALUES(:employeeID, :timesheetID, :date, :grossPay)');
+				$sth2->execute([':employeeID' => $row['employeeID'], ':timesheetID' => $row['timesheetID'], ':date' => $today, ':grossPay' => $grossPay]);
+				$status = $dbh->lastInsertId();
+			}
+			else {
+				$status = 'D';
+			}
+			
+			$sth2 = $dbh->prepare(
+				'UPDATE timesheets
+				SET status = :status
+				WHERE timesheetID = :timesheetID');
+			$sth2->execute([':status' => $status, ':timesheetID' => $row['timesheetID']]);
+		}
+	}
 ?>

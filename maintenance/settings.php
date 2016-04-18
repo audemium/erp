@@ -19,6 +19,9 @@
 	//Accounting basis, values are cash OR accrual
 	$SETTINGS['accounting'] = 'accrual';
 	
+	//Pay period, values are weekly (TODO: biweekly, semimonthly, and monthly)
+	$SETTINGS['payPeriod'] = 'weekly';
+	
 	//Default timezone (see http://php.net/manual/en/timezones.php for options)
 	$SETTINGS['timeZone'] = 'America/New_York';
 	

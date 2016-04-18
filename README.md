@@ -26,7 +26,6 @@ It is currently under development and isn't ready for production systems. ONLY U
 
 ## Planned Features
 
-* Employee Time system (shift planning, paycheck tracking, etc.)
 * Cash register interface
 * Charts for Net Income / Income / Expenses
 * Access controls

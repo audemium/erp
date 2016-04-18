@@ -1,49 +1,120 @@
 $(document).ready(function() {
-	//add
-	$('#customAdd1').click(function(event) {
-		$('#customPopup1').show();
-		$('#customPopup1 input[type!="checkbox"], #customPopup1 select').val('');
-		$('#customPopup1 .invalid').qtip('destroy', true);
-		$('#customPopup1 .invalid').removeClass('invalid');
+	//view
+	$('.customViewPaystub').click(function(event) {
+		var subID = $(this).attr('id');
+		$('#customPopupPaystub').show();
+		$.ajax({
+			url: 'ajax.php',
+			type: 'POST',
+			data: {
+				'action': 'customAjax',
+				'type': type,
+				'id': id,
+				'subAction': 'view',
+				'subType': 'paystub',
+				'subID': subID
+			}
+		}).done(function(data) {
+			if (data.status == 'success') {
+				$('#customPopupPaystub #paystubID').text(subID);
+				$.each(data, function(key, value) {
+					if (key != 'status') {
+						$('#customPopupPaystub #' + key).text(value);
+					}
+				});
+			}
+		});	
 		
-		$('#customBtn1').click(function() {
-			var ajaxData = $('#customPopup1 input[type!="checkbox"], #customPopup1 select').serializeArray();
-			ajaxData.push(
-				{'name': 'action', 'value': 'customAjax'},
-				{'name': 'type', 'value': type},
-				{'name': 'id', 'value': id},
-				{'name': 'subAction', 'value': 'add'},
-				{'name': 'subType', 'value': 'vacationRequest'}
-			);
-			$.ajax({
-				url: 'ajax.php',
-				type: 'POST',
-				data: ajaxData
-			}).done(function(data) {
-				$('#customPopup1 .invalid').qtip('destroy', true);
-				$('#customPopup1 .invalid').removeClass('invalid');
-				if (data.status == 'success') {
-					location.reload();
+		event.preventDefault();
+	});
+	
+	$('.customViewTimesheet').click(function(event) {
+		var subID = $(this).attr('id');
+		$('#customPopupTimesheet').show();
+		$.ajax({
+			url: 'ajax.php',
+			type: 'POST',
+			data: {
+				'action': 'customAjax',
+				'type': type,
+				'id': id,
+				'subAction': 'view',
+				'subType': 'timesheet',
+				'subID': subID
+			}
+		}).done(function(data) {
+			if (data.status == 'success') {
+				$('#customPopupTimesheet #timesheetID').text(subID);
+				$('#tableTimesheet tbody').html(data.html);
+				$('#customBtnTimesheetEdit').hide();
+					$('#customBtnTimesheetApprove').hide();
+				if (data.timesheetStatus == 'E') {
+					$('#customBtnTimesheetEdit').show();
 				}
-				else {
-					$.each(data, function(key, value) {
-						if (key != 'status') {
-							$('#customPopup1 [name=' + key + ']').addClass('invalid');
-							$('#customPopup1 [name=' + key + ']').qtip({
-								'content': value,
-								'style': {'classes': 'qtip-tipsy-custom'},
-								'position': {
-									'my': 'bottom center',
-									'at': 'top center'
-								},
-								show: {'event': 'focus'},
-								hide: {'event': 'blur'}
+				if (data.timesheetStatus == 'P') {
+					$('#customBtnTimesheetEdit').show();
+					$('#customBtnTimesheetApprove').show();
+				}
+				
+				$('#customBtnTimesheetEdit').click(function() {
+					var ajaxData = $('#customPopupTimesheet input').serializeArray();
+					ajaxData.push(
+						{'name': 'action', 'value': 'customAjax'},
+						{'name': 'type', 'value': type},
+						{'name': 'id', 'value': id},
+						{'name': 'subAction', 'value': 'edit'},
+						{'name': 'subType', 'value': 'timesheet'},
+						{'name': 'subID', 'value': subID}
+					);
+					$.ajax({
+						url: 'ajax.php',
+						type: 'POST',
+						data: ajaxData
+					}).done(function(data) {
+						$('#customPopupTimesheet .invalid').qtip('destroy', true);
+						$('#customPopupTimesheet .invalid').removeClass('invalid');
+						if (data.status == 'success') {
+							location.reload();
+						}
+						else {
+							$.each(data, function(key, value) {
+								if (key != 'status') {
+									$('#customPopupTimesheet [name=' + key + ']').addClass('invalid');
+									$('#customPopupTimesheet [name=' + key + ']').qtip({
+										'content': value,
+										'style': {'classes': 'qtip-tipsy-custom'},
+										'position': {
+											'my': 'bottom center',
+											'at': 'top center'
+										},
+										show: {'event': 'focus'},
+										hide: {'event': 'blur'}
+									});
+								}
 							});
 						}
 					});
-				}
-			});
-		});
+				});
+				
+				$('#customBtnTimesheetApprove').click(function() {
+					$.ajax({
+						url: 'ajax.php',
+						type: 'POST',
+						data: {
+							'action': 'customAjax',
+							'type': type,
+							'id': id,
+							'subAction': 'approve',
+							'subType': 'timesheet',
+							'subID': subID
+						}
+					}).done(function(data) {
+						location.reload();
+					});
+				});
+			}
+		});	
+		
 		event.preventDefault();
 	});
 	
