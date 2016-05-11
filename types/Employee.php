@@ -283,6 +283,7 @@
 					}
 					
 					$typeArr = ['r', 'o', 'h', 'v'];
+					$return['html'] = '';
 					foreach ($table as $day => $dayArr) {
 						if ($return['timesheetStatus'] == 'E' || $return['timesheetStatus'] == 'P') {
 							$return['html'] .= '<tr><td>'.formatDate($day).'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.date('l', $day).'</td>';
