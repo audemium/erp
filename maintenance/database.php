@@ -263,6 +263,7 @@
 				`regularHours` DECIMAL(5,2) NOT NULL,
 				`overtimeHours` DECIMAL(5,2) NOT NULL,
 				`holidayHours` DECIMAL(5,2) NOT NULL,
+				`vacationHours` DECIMAL(5,2) NOT NULL,
 				PRIMARY KEY (`timesheetID`,`date`)
 			) ENGINE = InnoDB DEFAULT CHARSET=utf8',
 			'CREATE TABLE `timesheets` (
