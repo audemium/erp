@@ -1,9 +1,9 @@
 {
-    "name": "laravel/laravel",
+    "name": "audemium/erp",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
-    "license": "MIT",
+    "description": "Audemium ERP",
+    "keywords": ["audemium", "erp"],
+    "license": "AGPL",
     "require": {
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
