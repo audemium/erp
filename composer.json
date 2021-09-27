@@ -1,9 +1,9 @@
 {
     "name": "audemium/erp",
     "type": "project",
-    "description": "Audemium ERP",
+    "description": "Audemium ERP is a free and open-source Enterprise Resource Planning system for small businesses.",
     "keywords": ["audemium", "erp"],
-    "license": "AGPL",
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^7.3|^8.0",
         "fruitcake/laravel-cors": "^2.0",
