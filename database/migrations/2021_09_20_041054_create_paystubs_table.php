@@ -4,15 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaystubsTable extends Migration
-{
+class CreatePaystubsTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
-	{
+	public function up() {
 		Schema::create('paystubs', function (Blueprint $table) {
 			$table->id();
 			$table->integer('employee_id');
@@ -27,8 +25,7 @@ class CreatePaystubsTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
-	{
+	public function down() {
 		Schema::dropIfExists('paystubs');
 	}
 }

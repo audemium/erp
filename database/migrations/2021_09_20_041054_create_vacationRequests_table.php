@@ -4,15 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVacationRequestsTable extends Migration
-{
+class CreateVacationRequestsTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
-	{
+	public function up() {
 		Schema::create('vacationRequests', function (Blueprint $table) {
 			$table->id();
 			$table->integer('employee_id');
@@ -28,8 +26,7 @@ class CreateVacationRequestsTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
-	{
+	public function down() {
 		Schema::dropIfExists('vacationRequests');
 	}
 }

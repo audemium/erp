@@ -4,15 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateExpensesProductsTable extends Migration
-{
+class CreateExpensesProductsTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
-	{
+	public function up() {
 		Schema::create('expenses_products', function (Blueprint $table) {
 			$table->id();
 			$table->integer('expense_id');
@@ -35,8 +33,7 @@ class CreateExpensesProductsTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
-	{
+	public function down() {
 		Schema::dropIfExists('expenses_products');
 	}
 }

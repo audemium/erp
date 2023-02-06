@@ -4,15 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTimesheetHoursTable extends Migration
-{
+class CreateTimesheetHoursTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
 	 * @return void
 	 */
-	public function up()
-	{
+	public function up() {
 		Schema::create('timesheetHours', function (Blueprint $table) {
 			$table->integer('timesheet_id');
 			$table->integer('date');
@@ -29,8 +27,7 @@ class CreateTimesheetHoursTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
-	{
+	public function down() {
 		Schema::dropIfExists('timesheetHours');
 	}
 }
