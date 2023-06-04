@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-	return view('welcome');
+Route::view('/', 'dashboard');
+
+Route::get('/{type}', function (string $type) {
+    return view('list', ['type' => $type]);
 });

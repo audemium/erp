@@ -1,0 +1,538 @@
+/* General CSS */
+html, body {
+	background-color: #E5E5E5;
+	font-family: arial;
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+}
+html {
+	min-height: 100%;
+	position: relative;
+}
+body {
+	margin: 0 0 100px;
+}
+footer {
+	bottom: 0;
+	height: 100px;
+	left: 0;
+	line-height: 100px;
+	color: #595959;
+	font-size: 0.8em;
+	overflow: hidden;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+}
+a, a:visited {
+	color: #1A87ED;
+	text-decoration: none;
+}
+a:hover {
+	color: #ED1A87;
+}
+main {
+	min-height: 100%;
+	margin: 120px 90px 0 154px;
+}
+.settings {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -48px 0;
+	cursor: pointer;
+	float: right;
+	height: 16px;
+	width: 16px;
+}
+.settings:hover {
+	background-position: -48px -16px;
+}
+h1 {
+	font-size: 1.5em;
+	text-align: center;
+}
+h2 {
+	border-bottom: 2px solid #1A87ED;
+    font-size: 1em;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+}
+.btnSpacer {
+	text-align: center;
+	padding-top: 20px;
+}
+button {
+	cursor: pointer;
+	color: #FFFFFF;
+	font-weight: bold;
+	border-radius: 4px;
+	padding: 6px 25px;
+	background: #1A87ED;
+	border: 1px solid #1A87ED;
+}
+button:hover {
+	box-shadow: 1px 1px 2px 2px #999999;
+}
+.buttonDisabled {
+	background: #888888 ;
+	border: 1px solid #888888;
+	cursor: default;
+	box-shadow: none !important;
+}
+.valid {
+	border-color: #28921F;
+	box-shadow: 0 0 5px #5CD053;
+}
+.invalid {
+	border: 1px solid #e52d2d !important;
+	box-shadow: 0 0 5px #D45252 !important;
+}
+.textLeft {
+	text-align: left;
+}
+.textCenter {
+	text-align: center;
+}
+.textRight {
+	text-align: right;
+}
+
+/* Menu */
+nav {
+	box-shadow: 1px 3px 8px #BBBBBB;
+	background-color: #FFFFFF;
+	height: 84%;
+	position: fixed;
+	top: 8%;
+	width: 64px;
+	border-radius: 0 16px 16px 0;
+}
+nav ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 8px 0;
+
+}
+nav li {
+	padding: 8px 0 0 16px;
+}
+nav li div {
+	height: 32px;
+	width: 32px;
+}
+#searchLink {
+	cursor: pointer;
+}
+#searchDiv {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	display: none;
+	height: 80%;
+	padding: 20px;
+	position: fixed;
+	left: 124px;
+	width: 1200px;
+	top: 10%;
+	z-index: 20;
+}
+#searchTerm {
+	background-color: rgba(0, 0, 0, 0.15);
+	border: 2px solid #FFFFFF;
+	border-radius: 5px;
+	color: #FFFFFF;
+	font-weight: bold;
+	padding: 5px;
+	width: 99%;
+}
+#searchResults {
+	margin-top: 20px;
+}
+.resultItem {
+	display: inline-table;
+	margin: 10px 10px 40px;
+	text-align: center;
+	width: 96px;
+}
+.resultItem > div {
+	height: 32px;
+	margin: 0 auto 10px;
+	width: 32px;
+}
+#logo {
+	position: absolute;
+	top: 0;
+	left: 154px;
+}
+#accountBar {
+	background-color: #ffffff;
+	border-radius: 0 0 8px 8px;
+	font-size: 0.8em;
+	padding: 5px 10px;
+	position: absolute;
+	right: 90px;
+	top: 0;
+}
+
+/* Home */
+#col1, #col2 {
+	float: left;
+}
+#col2 {
+	margin-left: 50px;
+}
+.module {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 100%;
+	box-shadow: 1px 3px 8px #BBBBBB;
+	background-color: #FFFFFF;
+	border-radius: 8px;
+	margin-bottom: 25px;
+	min-height: 200px;
+	padding: 12px;
+}
+.moduleData {
+	padding: 0 2%;
+}
+.moduleData ul {
+	margin: 0;
+	padding: 0 2%;
+}
+
+/* Qtip2 - custom version of tipsy style for text and for menu */
+.qtip-tipsy-custom {
+	background-color: rgba(0, 0, 0, 0.85);
+	border-radius: 8px;
+	color: #FFFFFF;
+	border: 0 solid transparent;
+	font-size: 12px;
+	font-weight: bold;
+}
+.qtip-tipsy-custom .qtip-content {
+	padding: 6px 20px;
+}
+.qtip-tipsy-custom-menu {
+	font-size: 14px;
+}
+
+/* Datatables */
+table.dataTable thead, table.customTable thead, table.attachmentTable thead {
+	font-weight: bold;
+	background-color: #FFFFFF;
+	box-shadow: 0 8px 6px -2px #BBBBBB;
+	z-index: 11;
+}
+table.dataTable thead th, table.dataTable thead td {
+	border-bottom: 0;
+	border-top: 1px solid #DDDDDD;
+}
+table.dataTable tfoot th, table.dataTable tfoot td {
+	border-top: 1px solid #DDDDDD;
+}
+table.dataTable.no-footer {
+    border-bottom: 1px solid #DDDDDD;
+}
+
+table.customTable, table.attachmentTable {
+	/* customTable and attachmentTable essentially recreate the dataTable style without creating the dataTable in JS, which is used to remove resorting*/
+	/* if you want sorting, just use class="dataTable stripe row-border" */
+	/* there might be a reason other than sorting that I did this, but I'm not sure what it would be right now */
+	border-spacing: 0;
+	border-bottom: 1px solid #DDDDDD;
+	clear: both;
+}
+table.customTable thead th, table.customTable thead td, table.attachmentTable thead th, table.attachmentTable thead td {
+	padding: 10px;
+	border-top: 1px solid #DDDDDD;
+}
+table.customTable tbody th, table.customTable tbody td, table.attachmentTable tbody th, table.attachmentTable tbody td {
+    padding: 8px 10px;
+	border-top: 1px solid #DDDDDD;
+}
+table.customTable tbody tr:nth-child(odd), table.attachmentTable tbody tr:nth-child(odd) {
+	background-color: #F9F9F9;
+}
+.totalSeparator td {
+	border-top: 2px solid #BBBBBB !important;
+	font-weight: bold;
+}
+
+/* this is specifically for the View All footer */
+.tableFooter {
+	text-align: center;
+}
+.tableFooter a:before, .tableFooter a:after {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -64px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	vertical-align: -10%;
+	width: 16px;
+}
+.tableFooter a:before {
+	margin-right: 20px;
+}
+.tableFooter a:after {
+	margin-left: 20px;
+}
+.tableFooter a:hover:before, .tableFooter a:hover:after {
+	background-position: -64px -16px;
+}
+
+/* Timepicker */
+#ui-datepicker-div {
+	font-size: 0.9em;
+}
+.ui-datepicker-prev, .ui-datepicker-next {
+	cursor: pointer;
+}
+
+/* List View */
+#topControls {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: #FFFFFF;
+	border-radius: 8px 8px 0 0;
+	padding: 10px;
+	z-index: 10;
+}
+#topControlLeft, #topControlCenter, #topControlRight {
+	width: 33%;
+	display: inline-block;
+}
+
+#filter {
+	padding: 3px;
+	width: 250px;
+}
+
+#topControlCenter {
+	text-align: center;
+}
+.controlAdd:before , .controlEdit:before, .controlDelete:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: -10%;
+	width: 16px;
+}
+
+.addDisabled, .editDisabled, .deleteDisabled {
+	color: #888888 !important;
+	cursor: default;
+}
+.addDisabled:before {
+	background-position: 0 -32px;
+}
+.editDisabled:before {
+	background-position: -16px -32px;
+}
+.deleteDisabled:before {
+	background-position: -32px -32px;
+}
+
+.addEnabled:before {
+	background-position: 0 0;
+}
+.addEnabled:hover:before {
+	background-position: 0 -16px;
+}
+.editEnabled:before {
+	background-position: -16px 0;
+}
+.editEnabled:hover:before {
+	background-position: -16px -16px;
+}
+.deleteEnabled:before {
+	background-position: -32px 0;
+}
+.deleteEnabled:hover:before {
+	background-position: -32px -16px;
+}
+
+#topControlCenter .controlAdd , #topControlCenter .controlEdit {
+	margin-right: 32px;
+}
+.selectCol {
+	text-align: center;
+}
+#employeesTable_wrapper {
+	margin-bottom: 50px;
+}
+
+/* Individual View */
+#data {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-color: #FFFFFF;
+	border-radius: 0 0 8px 8px;
+	padding: 10px 10px 30px;
+	margin-bottom: 50px;
+	z-index: 10;
+}
+section {
+	margin-top: 30px;
+}
+.sectionData {
+	padding: 0 4%;
+}
+.sectionData:after {
+	clear: both;
+	content: "";
+	display: block;
+}
+.sectionData > dl {
+	float: left;
+	width: 50%;
+	margin: 0;
+}
+.sectionData > dl > dt {
+	float: left;
+	clear: both;
+	width: 31%;
+	font-weight: bold;
+	padding: 2px 0;
+}
+.sectionData > dl > dt:after {
+	content: ":";
+}
+.sectionData > dl > dd {
+	float: left;
+	padding: 2px 0;
+}
+.customAddLink {
+	margin-bottom: 10px;
+	float: right;
+}
+
+/* Popups */
+.popup {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+	z-index: 100;
+	display: none;
+}
+.popup > div {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 20px 10px;
+    position: relative;
+	margin: 10% auto;
+    width: 700px;
+}
+.close {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px #000000;
+    color: #1A87ED;
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 25px;
+    position: absolute;
+    right: -12px;
+    text-align: center;
+    top: -10px;
+    width: 24px;
+}
+.close:hover {
+	color: #ED1A87;
+}
+
+.sectionData ul {
+	float: left;
+	width: 50%;
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+.sectionData li {
+    padding: 3px 0;
+}
+label {
+	display: inline-block;
+	width: 150px;
+	font-weight: bold;
+}
+label:after {
+	content: ":";
+}
+input[type="text"], input[type="password"], select, textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: 1px solid #AAAAAA;
+    border-radius: 4px;
+    box-shadow: 0 0 3px #CCCCCC;
+    padding: 2px;
+    width: 125px;
+}
+
+.meter {
+	border: 1px solid #999999;
+	border-radius: 16px;
+	height: 16px;
+	margin: 20px auto 0;
+	width: 50%;
+}
+.meter > span {
+	background-color: #1a87ed;
+	border-radius: 16px 0 0 16px;
+	box-shadow: 0 2px 9px rgba(255, 255, 255, 0.3) inset, 0 -2px 6px rgba(0, 0, 0, 0.4) inset;
+	display: block;
+	height: 100%;
+}
+
+#customPopupTimesheet input {
+	width: 50px;
+}
+
+/* Icons */
+.controlEmail:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -80px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: -10%;
+	width: 16px;
+}
+.controlEmail:hover:before {
+	background-position: -80px -16px;
+}
+.controlPDF:before {
+	background-image: url("../images/sprites_16.png");
+	background-repeat: no-repeat;
+	background-position: -96px 0;
+	content: "";
+	display: inline-block;
+	height: 16px;
+	margin-right: 5px;
+	vertical-align: -10%;
+	width: 16px;
+}
+.controlPDF:hover:before {
+	background-position: -96px -16px;
+}
