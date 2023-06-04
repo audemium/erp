@@ -16,5 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'dashboard');
 
 Route::get('/{type}', function (string $type) {
-    return view('list', ['type' => $type]);
+	return view('list', ['type' => $type]);
 });
