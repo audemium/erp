@@ -11,6 +11,50 @@ requiredData
 */
 
 return [
+	//Demo mode (disables password reset if true)
+	'demoMode' => false,
+
+	//Company information
+	'companyName' => 'Audemium',
+
+	//Accounting basis, values are cash OR accrual
+	'accounting' => 'accrual',
+
+	//Pay period, values are weekly (TODO: biweekly, semimonthly, and monthly)
+	'payPeriod' => 'weekly',
+
+	//Default timezone (see http://php.net/manual/en/timezones.php for options)
+	'timeZone' => 'America/New_York',
+
+	//Date/time formats (see http://php.net/manual/en/function.date.php for options)
+	'dateTimeFormat' => 'd-M-Y g:i A',
+	'dateFormat' => 'd-M-Y',
+	'timeFormat' => 'g:i A',
+
+	//Date/time formats in Javascript (see http://trentrichardson.com/examples/timepicker/ for options)
+	'dateFormatJS' => 'dd-M-yy',
+	'timeFormatJS' => 'h:mm TT',
+
+	//Currency and number formatting
+	'currencySymbol' => '$',			//can be a character or html entity
+	'negativeCurrencyFormat' => 0,	//0 = negative sign ex. -$10.00		1 = parentheses ex. ($10.00)
+	'decimalFormat' => '.',
+	'thousandsSeparator' => ',',
+
+	//Default columns for list views
+	'columns' => [
+		'employees' => ['name', 'positionID', 'locationID', 'payType', 'payAmount'],
+		'orders' => ['orderID', 'customerID', 'employeeID'],
+		'locations' => ['name', 'address', 'city', 'state', 'zip'],
+		'positions' => ['name'],
+		'products' => ['name', 'defaultPrice'],
+		'services' => ['name', 'defaultPrice'],
+		'customers' => ['name'],
+		'discounts' => ['name', 'discountType', 'discountAmount'],
+		'expenses' => ['expenseID', 'supplierID', 'employeeID'],
+		'suppliers' => ['name'],
+	],
+
 	'types' => [
 		'order' => [
 			'pluralName' => 'orders',

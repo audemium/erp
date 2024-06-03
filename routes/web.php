@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'dashboard');
 
-Route::get('/{type}', function (string $type) {
-	return view('list', ['type' => $type]);
+Route::group(['namespace' => 'App\Http\Controllers'], function () {
+	Route::get('/employees', 'EmployeeController@list');
 });
