@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\View;
-
 use App\Models\Employee;
+
+use Illuminate\View\View;
 
 class EmployeeController extends GenericController {
 	public const METADATA = [
