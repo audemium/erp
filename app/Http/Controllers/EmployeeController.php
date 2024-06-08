@@ -180,12 +180,10 @@ class EmployeeController extends GenericController {
 				if (str_contains($column, '.')) {
 					[$class, $property] = explode('.', $column);
 					$row[$column] = $employee->$class->$property;
-				}
-				else {
+				} else {
 					if ($column == 'name') {
 						$row[$column] = [$employee->url, $employee->$column];
-					}
-					else {
+					} else {
 						$row[$column] = $employee->$column;
 					}
 				}
@@ -209,12 +207,10 @@ class EmployeeController extends GenericController {
 			if (str_contains($column, '.')) {
 				[$class, $property] = explode('.', $column);
 				$data[$column] = $employee->$class->$property;
-			}
-			else {
+			} else {
 				if ($column == 'name') {
 					$data[$column] = [$employee->url, $employee->$column];
-				}
-				else {
+				} else {
 					$data[$column] = $employee->$column;
 				}
 			}
