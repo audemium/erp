@@ -43,7 +43,7 @@ return [
 
 	//Default columns for list views
 	'columns' => [
-		'employees' => ['name', 'positionID', 'locationID', 'payType', 'payAmount'],
+		'employees' => ['name', 'position.name', 'location.name', 'payType', 'payAmount'],
 		'orders' => ['orderID', 'customerID', 'employeeID'],
 		'locations' => ['name', 'address', 'city', 'state', 'zip'],
 		'positions' => ['name'],

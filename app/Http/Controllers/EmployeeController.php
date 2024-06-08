@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 
+use Illuminate\Support\Arr;
 use Illuminate\View\View;
 
 class EmployeeController extends GenericController {
-	public const METADATA = [
+	public static $metadata = [
 		'pluralName' => 'employees',
 		'formalName' => 'Employee',
 		'formalPluralName' => 'Employees',
@@ -15,7 +16,7 @@ class EmployeeController extends GenericController {
 		'formData' => [
 			'Basic Information' => [
 				['firstName', 'lastName', 'payType', 'payAmount', 'workEmail'],
-				['locationID', 'positionID', 'managerID', 'vacationTotal']
+				['location.name', 'position.name', 'managerID', 'vacationTotal']
 			],
 			'Personal Information' => [
 				['address', 'city'],
@@ -48,12 +49,12 @@ class EmployeeController extends GenericController {
 				'typeData' => ['dec', [12, 2]],
 				'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
 			],
-			'locationID' => [
+			'location' => [
 				'formalName' => 'Location',
 				'typeData' => ['id', 'location'],
 				'requiredData' => ['add' => 0, 'edit' => 0, 'delete' => 0]
 			],
-			'positionID' => [
+			'position' => [
 				'formalName' => 'Position',
 				'typeData' => ['id', 'position'],
 				'requiredData' => ['add' => 1, 'edit' => 1, 'delete' => 1]
@@ -112,6 +113,24 @@ class EmployeeController extends GenericController {
 		]
 	];
 
+	public static $fieldMapping = [
+		'name' => 'Name',
+		'username' => 'Username',
+		'firstName' => 'First Name',
+		'lastName' => 'Last Name',
+		'payType' => 'Pay Type',
+		'payAmount' => 'Pay Amount',
+		'location' => 'Location',
+		'position' => 'Position',
+		'managerID' => 'Manager',
+		'vacationTotal' => 'Total Vacation (hours)',
+		'address' => 'Address',
+		'city' => 'City',
+		'state' => 'State',
+		'zip' => 'Zip',
+		'workEmail' => 'Email',
+	];
+
 	public function list(): View {
 		/*//check to see if the user has a custom config, otherwise use default
 		$sth = $dbh->prepare(
@@ -127,7 +146,9 @@ class EmployeeController extends GenericController {
 			$columns = $SETTINGS['columns'][$_GET['type']];
 		}*/
 		$columns = config('audemium.columns.employees');
-		//$formalName = (!isset($TYPES[$_GET['type']]['fields'][$column]) && $column == 'name') ? 'Name' : $TYPES[$_GET['type']]['fields'][$column]['formalName'];
+		foreach ($columns as $column) {
+			$column = (str_contains($column, '.')) ? strstr($column, '.', true) : $column;
+		}
 
 
 		/*$sth = $dbh->prepare(
@@ -156,7 +177,18 @@ class EmployeeController extends GenericController {
 			$row['id'] = $employee->id;
 
 			foreach ($columns as $column) {
-				$row[$column] = $employee->$column;
+				if (str_contains($column, '.')) {
+					[$class, $property] = explode('.', $column);
+					$row[$column] = $employee->$class->$property;
+				}
+				else {
+					if ($column == 'name') {
+						$row[$column] = [$employee->url, $employee->$column];
+					}
+					else {
+						$row[$column] = $employee->$column;
+					}
+				}
 			}
 
 			$data[] = $row;
@@ -164,6 +196,33 @@ class EmployeeController extends GenericController {
 
 		return view('list', [
 			'columns' => $columns,
+			'fieldMapping' => self::$fieldMapping,
+			'data' => $data
+		]);
+	}
+
+	public function show($id): View {
+		$employee = Employee::find($id);
+		$data = [];
+
+		foreach (Arr::flatten(self::$metadata['formData']) as $column) {
+			if (str_contains($column, '.')) {
+				[$class, $property] = explode('.', $column);
+				$data[$column] = $employee->$class->$property;
+			}
+			else {
+				if ($column == 'name') {
+					$data[$column] = [$employee->url, $employee->$column];
+				}
+				else {
+					$data[$column] = $employee->$column;
+				}
+			}
+		}
+
+		return view('item', [
+			'formData' => self::$metadata['formData'],
+			'fieldMapping' => self::$fieldMapping,
 			'data' => $data
 		]);
 	}

@@ -55,4 +55,10 @@ class Employee extends Authenticatable {
 			get: fn (mixed $value, array $attributes) => $attributes['firstName'].' '.$attributes['lastName'],
 		);
 	}
+
+	protected function url(): Attribute {
+		return Attribute::make(
+			get: fn (mixed $value, array $attributes) => route('employees.show', ['id' => $attributes['id']]),
+		);
+	}
 }

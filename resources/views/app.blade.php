@@ -4,12 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@yield('title')</title>
-    <link rel="icon" href="images/favicon-16x16.png" type="image/png">
-	<link type="text/css" rel="stylesheet" href="css/styles.css">
+
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css" />
+	<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+	<script>
+		$(document).ready(function() {
+			//set up dataTables
+			var table = $('#itemTable').DataTable({
+				'paging': false,
+				'dom': 'rti',
+				'order': [1, 'asc'],
+				'columnDefs': [
+					{'orderable': false, 'targets': 0},
+					{'searchable': false, 'targets': 0}
+				]
+			});
+		});
+	</script>
+
+    <link rel="icon" href="/images/favicon-16x16.png" type="image/png">
+	<link type="text/css" rel="stylesheet" href="/css/styles.css">
   </head>
   <body>
 	<header>
-		<img id="logo" src="images/logo.png" alt="logo">
+		<img id="logo" src="/images/logo.png" alt="logo">
 		<div id="accountBar"><a href="account.php" style="margin-right:20px;">Account Settings</a> <a href="logout.php">Sign out</a></div>
 	</header>
 	<nav>
@@ -19,15 +38,15 @@
 		</div>
 		<ul>
 			<li id="search">
-				<div id="searchLink"><div style="background-image:url('images/icons/search.png');" title="Search"></div></div>
+				<div id="searchLink"><div style="background-image:url('/images/icons/search.png');" title="Search"></div></div>
 			</li>
 			<li id="index">
-				<a href="/"><div style="background-image:url('images/icons/home.png');" title="Home"></div></a>
+				<a href="/"><div style="background-image:url('/images/icons/home.png');" title="Home"></div></a>
 			</li>
 			@foreach (config('audemium.types') as $key => $value)
 				<li id="{{$key}}">
 					<a href="/{{$value['pluralName']}}">
-						<div style="background-image:url('images/icons/{{$key}}.png');" title="{{$value['formalPluralName']}}"></div>
+						<div style="background-image:url('/images/icons/{{$key}}.png');" title="{{$value['formalPluralName']}}"></div>
 					</a>
 				</li>
 			@endforeach
