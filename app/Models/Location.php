@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Location extends Model {
-	public function employees() {
+	public function employees(): HasMany {
 		return $this->hasMany(Employee::class);
 	}
 
-	public function products() {
+	public function products(): BelongsToMany {
 		return $this->belongsToMany(Product::class);
 	}
 }

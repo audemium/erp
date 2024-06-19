@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Employee extends Authenticatable {
@@ -38,15 +39,15 @@ class Employee extends Authenticatable {
 		];
 	}
 
-	public function location() {
+	public function location(): BelongsTo {
 		return $this->belongsTo(Location::class);
 	}
 
-	public function position() {
+	public function position(): BelongsTo {
 		return $this->belongsTo(Position::class);
 	}
 
-	public function manager() {
+	public function manager(): BelongsTo {
 		return $this->belongsTo(Employee::class, 'id', 'managerID');
 	}
 
