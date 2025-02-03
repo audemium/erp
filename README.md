@@ -1,3 +1,5 @@
+[UNMAINTAINED] This repository is unmaintained and has at least one known security vulnerability.
+
 ## Synopsis
 
 Audemium ERP is a free and open-source Enterprise Resource Planning system for small businesses. It provides essential features in a clean and intuitive interface, and includes comprehensive search functionality.
